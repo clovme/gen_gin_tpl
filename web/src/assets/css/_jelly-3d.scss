@@ -1,0 +1,51 @@
+.jelly-3d-btn {
+  padding: 18px 40px;
+  font-size: 22px;
+  border: none;
+  border-radius: 60px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255,255,255,0.05));
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+          inset -8px -8px 20px rgba(255,255,255,0.3),
+          inset 8px 8px 20px rgba(0,0,0,0.3),
+          0 10px 20px rgba(0,0,0,0.5),
+          0 4px 10px rgba(255,255,255,0.1);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.jelly-3d-btn::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  left: -30%;
+  width: 160%;
+  height: 160%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), transparent 60%);
+  opacity: 0.8;
+  filter: blur(18px);
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+.jelly-3d-btn:hover {
+  transform: scale(1.06);
+  box-shadow:
+          inset -10px -10px 30px rgba(255,255,255,0.35),
+          inset 10px 10px 30px rgba(0,0,0,0.35),
+          0 16px 30px rgba(0,0,0,0.6),
+          0 6px 12px rgba(255,255,255,0.15);
+}
+
+.jelly-3d-btn:active {
+  transform: scale(0.96);
+  box-shadow:
+          inset -4px -4px 8px rgba(255,255,255,0.3),
+          inset 4px 4px 8px rgba(0,0,0,0.3),
+          0 4px 8px rgba(0,0,0,0.5),
+          0 2px 4px rgba(255,255,255,0.1);
+}
