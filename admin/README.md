@@ -1,4 +1,4 @@
-# Vxe 后台管理系统模板
+# gen_gin_tpl 后台管理系统
 
 一个基于 [Vxe UI](https://vxeui.com) 轻量级、极致流畅的系统模板
 

@@ -1,6 +1,6 @@
 {
-  "name": "vxe-admin-template",
-  "description": "Vxe 后台管理系统模板",
+  "name": "gen_gin_tpl",
+  "description": "gen_gin_tpl 后台管理系统模板",
   "private": true,
   "version": "4.0.0",
   "type": "module",

@@ -1,33 +1,12 @@
 <script lang="ts" setup>
 import PageView from '@/views/layout/PageView.vue'
 import { ref, watch } from 'vue'
-import VxeUI, { VxeFormListeners, VxeFormProps } from 'vxe-pc-ui'
+import { VxeUI, VxeFormProps, VxeFormListeners } from 'vxe-pc-ui'
 import { getFormConfig, postFormConfig } from '@/api/initiate.ts'
+import { FormDataVO } from '@/utils/interfaces/form.ts'
+import { useAppStore } from '@/store/app.ts'
 
-interface FormDataVO {
-  OtherDbType: string,
-  OtherCacheType: string,
-  OtherDataPath: string,
-  SQLiteDbName: string,
-  MySQLHost: string,
-  MySQLPort: number,
-  MySQLUsername: string,
-  MySQLPassword: string,
-  MySQLDbName: string,
-  WebHost: string,
-  WebPor: number,
-  RedisHost: string,
-  RedisPort: number,
-  RedisPassword: string,
-  LoggerLevel: string,
-  LoggerLogs: string,
-  LoggerFormatJson: boolean,
-  LoggerCompress: boolean,
-  LoggerMaxSize: number,
-  LoggerMaxAge: number,
-  LoggerMaxBackups: number
-}
-
+const appStore = useAppStore()
 let configData = {}
 const watchType = {}
 const formOptions = ref<VxeFormProps<FormDataVO>>()
@@ -35,7 +14,10 @@ const formOptions = ref<VxeFormProps<FormDataVO>>()
 function filterVisibleItems (items, data) {
   return items.filter(group => {
     if (group.showWhen) {
-      const { field, value } = group.showWhen
+      const {
+        field,
+        value
+      } = group.showWhen
       watchType[field] = value
       return data[field] === value
     }
@@ -44,6 +26,9 @@ function filterVisibleItems (items, data) {
 }
 
 getFormConfig().then((config) => {
+  VxeUI.loading.open({
+    text: '正则加载数据，请稍后...'
+  })
   configData = JSON.parse(JSON.stringify(config.data.items))
   formOptions.value = config.data as VxeFormProps<FormDataVO>
 
@@ -58,23 +43,19 @@ getFormConfig().then((config) => {
       }
     })
   }
+  VxeUI.loading.close()
 })
 
 const formEvents: VxeFormListeners<FormDataVO> = {
   submit () {
-    // @ts-ignore
-    formOptions.value.loading = true
-    postFormConfig(formOptions.value?.data).then(result => {
-      if (result.code === 10000) {
-        VxeUI.modal.message({ content: '系统初始化完成，请查看日志信息', status: 'success' })
-        setTimeout(() => {
-          window.location.href = result.message
-        }, 2000)
-      } else {
-        // @ts-ignore
-        formOptions.value.loading = false
-        VxeUI.modal.message({ content: '系统初始化失败，请检查', status: 'error' })
-      }
+    appStore.setIsMaximize(true)
+    VxeUI.loading.open({
+      text: '正在检测配置项，请稍后...'
+    })
+    postFormConfig(formOptions.value?.data as FormDataVO).then(() => {
+      VxeUI.loading.open({ text: '初始化成功，请稍后...' })
+    }).catch(() => {
+      VxeUI.loading.close()
     })
   }
 }
@@ -83,7 +64,7 @@ const formEvents: VxeFormListeners<FormDataVO> = {
 <template>
   <PageView class="initialize-page" :padding="true" :background="true">
     <div>
-      <vxe-form class-name="initialize-page-form" v-bind="formOptions" v-on="formEvents" />
+      <vxe-form class-name="initialize-page-form" v-bind="formOptions" v-on="formEvents"/>
     </div>
   </PageView>
 </template>
@@ -94,7 +75,25 @@ const formEvents: VxeFormListeners<FormDataVO> = {
   justify-content: center;
 
   .initialize-page-form {
-    width: 800px;
+    width: var(--min-width);
+  }
+
+  :deep(.grid-lines-5-box) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 5px;
+  }
+
+  :deep(.grid-lines-4-box) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 5px;
+  }
+
+  :deep(.grid-lines-3-box) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 5px;
   }
 }
 </style>

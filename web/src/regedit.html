@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ .WebTitle }} - {{ .PageTitle }}</title>
+    <script src="/assets/plugins/bootstrap/bootstrap.bundle.min.js?_t={{ timeStamp }}"></script>
+    <script src="/assets/plugins/tippy.js/popper.min.js?_t={{ timeStamp }}"></script>
+    <script src="/assets/plugins/tippy.js/tippy-bundle.iife.min.js?_t={{ timeStamp }}"></script>
+    <script src="/assets/js/axios.js?_t={{ timeStamp }}"></script>
+    <script src="/assets/js/common.js?_t={{ timeStamp }}"></script>
+    <link href="/assets/plugins/bootstrap/bootstrap.min.css?_t={{ timeStamp }}" rel="stylesheet">
+    <link href="/assets/css/common.scss?_t={{ timeStamp }}" rel="stylesheet">
+    <link href="/assets/css/login.scss?_t={{ timeStamp }}" rel="stylesheet">
+</head>
+<body style="background-image:url(assets/images/bg.jpg?_t={{ timeStamp }});">
+<nav class="navbar fixed-top navbar-expand-md bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">知识库</a>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/">首页</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#">搜索</a>
+            </li>
+        </ul>
+
+        <ul class="navbar-nav d-flex mb-2 mb-lg-0">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">个人中心</a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">个人中心</a></li>
+                    <li><a class="dropdown-item" href="#">消息</a></li>
+                    <li><a class="dropdown-item" href="#">浏览历史</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">注销用户</a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#">写作</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#">系统管理</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="/login.html?_t={{ timeStamp }}">登录</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="/regedit.html?_t={{ timeStamp }}">注册</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="card login-container" style="--container-width: 700px;">
+            <div class="card-body">
+                <div class="login-tip"><h1>创建账户</h1>
+                    <p> 欢迎加入我的知识库，这里是我的学习笔记和知识总结。 </p></div>
+                <div class="login-split"></div>
+                <form class="float-form" method="post" action="__LOCALHOST__/regedit.html?_t={{ timeStamp }}" novalidate>
+                    <input type="hidden" name="captcha_id" value="{{ .Data.CaptchaId }}">
+                    <div class="form-floating mb-3" data-validate="email">
+                        <input type="email" class="form-control" value="{{ .Data.Email }}" name="email" id="floatingEmail" placeholder required data-bs-toggle="tooltip">
+                        <label for="floatingEmail">用户邮箱</label>
+                    </div>
+                    <div class="send-email-code mb-3" data-validate="email_code">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" value="{{ .Data.EmailCode }}" name="email_code" id="floatingEmailCode" placeholder required>
+                            <label for="floatingEmailCode">邮箱验证码</label>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary email-validate-code">发送验证码</button>
+                    </div>
+                    <div class="form-floating mb-3" data-validate="password">
+                        <input type="password" class="form-control" value="{{ .Data.Password }}" name="password" id="floatingPassword" placeholder required>
+                        <label for="floatingPassword">请输入密码</label>
+                    </div>
+                    <div class="form-floating mb-3" data-validate="confirm_password">
+                        <input type="password" class="form-control" value="{{ .Data.ConfirmPassword }}" name="confirm_password" id="floatingConfirmPassword" placeholder required>
+                        <label for="floatingConfirmPassword">请确认密码</label>
+                    </div>
+                    <div class="form-floating mb-4 verification-code-box" data-validate="captcha">
+                        <input type="text" class="form-control" value="{{ .Data.Captcha }}" name="captcha" id="floatingCaptcha" placeholder required>
+                        <label for="floatingCaptcha">请输入验证码</label>
+                        <img alt="验证码" class="verification-img" src="">
+                    </div>
+                    <div class="form-floating login-buttons">
+                        <a href="/login.html?_t={{ timeStamp }}" type="button" class="btn btn-sm btn-light">用户登录</a>
+                        <button type="button" data-type="submit" class="btn btn-sm btn-primary">注册</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="application/javascript">
+    window.onload = function () {
+        const captchaInput = onSwitchCaptcha()
+        captchaInput.addEventListener("focus", onSwitchCaptcha)
+        document.querySelector('.verification-img').addEventListener("click", onSwitchCaptcha)
+
+        addEmailValidateClickEventListener(".email-validate-code", ".float-form", "#floatingEmail")
+        addRegeditEventListener()
+    }
+</script>
+</body>
+</html>

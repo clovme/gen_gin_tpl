@@ -1,13 +1,23 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import XEUtils from 'xe-utils'
+import { getCopyrightConfig } from '@/api/initiate.ts'
 
-const dateStr = ref(XEUtils.toDateString(new Date(), 'yyyy'))
+const data = ref({
+  name: '[{ .Title }]',
+  startTime: XEUtils.toDateString(new Date(), 'yyyy'),
+  endTime: XEUtils.toDateString(new Date(), 'yyyy')
+})
+
+getCopyrightConfig().then(result => {
+  data.value = result.data
+})
 </script>
 
 <template>
   <div class="page-footer">
-    <span>版权所有 ©<vxe-link href="https://vxeui.com/" target="_blank">vxe</vxe-link> 2018-{{ dateStr }}</span>
+    <span v-if="data.startTime != data.endTime">版权所有 ©{{ data.name }} {{ data.startTime }}-{{ data.endTime }}</span>
+    <span v-else>版权所有 ©{{ data.name }} {{ data.endTime }}</span>
   </div>
 </template>
 

@@ -23,7 +23,7 @@ defineProps({
 .page-view {
   position: relative;
   height: 100%;
-  min-width: 800px;
+  min-width: var(--min-width);
   overflow: auto;
   border-radius: 6px;
 

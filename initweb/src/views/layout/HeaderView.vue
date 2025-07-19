@@ -1,4 +1,3 @@
-
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 import { VxeGlobalI18nLocale, VxePulldownEvents } from 'vxe-pc-ui'
@@ -9,8 +8,7 @@ const appStore = useAppStore()
 const title = ref(document.title)
 
 const langPullList = ref([
-  { label: '简体中文', value: 'zh-CN' },
-  { label: 'English', value: 'en-US' }
+  { label: '简体中文', value: 'zh-CN' }
 ])
 
 const langLabel = computed(() => {
@@ -24,6 +22,15 @@ const currTheme = computed({
   },
   set (name) {
     appStore.setTheme(name)
+  }
+})
+
+const maximize = computed({
+  get () {
+    return appStore.isMaximize
+  },
+  set (name) {
+    appStore.setIsMaximize(name)
   }
 })
 
@@ -66,15 +73,11 @@ const langOptionClickEvent: VxePulldownEvents.OptionClick = ({ option }) => {
     <div class="header-left"><h2 v-text="title"></h2></div>
     <div class="header-right">
       <span class="right-item">
-        <vxe-switch
-          class="right-item-comp"
-          v-model="currTheme"
-          size="mini"
-          open-value="light"
-          open-label="白天"
-          close-value="dark"
-          close-label="夜间">
-        </vxe-switch>
+        <vxe-switch class="maximize-log-switch" v-model="maximize" size="mini" :open-value="false" open-label="显示日志" :close-value="true" close-label="隐藏日志" />
+      </span>
+
+      <span class="right-item">
+        <vxe-switch class="right-item-comp" v-model="currTheme" size="mini" open-value="light" open-label="白天" close-value="dark" close-label="夜间" />
       </span>
 
       <span class="right-item">
@@ -95,6 +98,10 @@ const langOptionClickEvent: VxePulldownEvents.OptionClick = ({ option }) => {
 </template>
 
 <style lang="scss" scoped>
+:deep(.maximize-log-switch.is--off .vxe-switch--button) {
+  background-color: #13ce66 !important;
+}
+
 .page-header {
   display: flex;
   flex-direction: row;

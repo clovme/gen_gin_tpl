@@ -1,0 +1,83 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+
+  .login-container {
+    --login-container-padding-height: 80px;
+    min-width: var(--container-width);
+    padding: var(--login-container-padding-height) 20px;
+
+    .card-body {
+      display: flex;
+      gap: 20px;
+
+      .login-tip {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        width: 200px;
+        align-items: center;
+
+        h1 {
+          font-size: 24px;
+          font-weight: 700;
+          margin-bottom: 10px;
+        }
+      }
+
+      .login-split {
+        background-color: #747675ba;
+        width: 1px;
+      }
+
+      .float-form {
+        .send-email-code {
+          display: flex;
+          gap: 5px;
+
+          .form-floating {
+            flex: 1;
+          }
+        }
+
+        .verification-code-box {
+          position: relative;
+
+          input[name="captcha"] {
+            background: unset;
+          }
+
+          .verification-img {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            height: 33px;
+            user-select: none;
+            border-radius: 0 5px 5px 0;
+          }
+        }
+        .login-buttons {
+          display: flex;
+          gap: 10px;
+
+          .btn:first-child {
+            --bs-btn-bg: unset;
+            --bs-btn-border-color: unset;
+            padding-top: 5px;
+          }
+
+          .btn {
+            border-radius: 20px;
+          }
+
+          .btn:last-child {
+            width: 100px;
+          }
+        }
+      }
+    }
+  }
+}

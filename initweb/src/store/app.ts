@@ -35,6 +35,7 @@ if (currPrimaryColor) {
 export const useAppStore = defineStore('app', {
   state: () => {
     return {
+      isMaximize: false,
       theme: currTheme,
       primaryColor: currPrimaryColor,
       componentsSize: currComponentsSize,
@@ -53,6 +54,20 @@ export const useAppStore = defineStore('app', {
       this.theme = theme
       VxeUI.setTheme(theme)
       localStorage.setItem('APP_THEME', theme || '')
+    },
+    setIsMaximize (isStatus: boolean) {
+      const logContainer = document.querySelector('.log-container') as HTMLElement
+      if (isStatus && logContainer) {
+        const height = window.innerHeight - 50
+        logContainer.style.padding = '2px 5px'
+        logContainer.style.zIndex = '200'
+        logContainer.style.height = `${height}px`
+      } else {
+        logContainer.style.zIndex = '-1'
+        logContainer.style.padding = '0'
+        logContainer.style.height = '0'
+      }
+      this.isMaximize = isStatus
     },
     setPrimaryColor (color: string) {
       updatePrimaryColor(color)

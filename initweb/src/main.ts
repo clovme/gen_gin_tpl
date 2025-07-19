@@ -1,6 +1,5 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import i18n from './i18n'
 import pinia from './store'
 
 import VxeTable from 'vxe-table'
@@ -11,6 +10,10 @@ import 'vxe-pc-ui/lib/style.css'
 
 import './style/style.scss'
 
+import VxeUIPluginValidator from '@vxe-ui/plugin-validator'
+
+VxeUI.use(VxeUIPluginValidator)
+
 const app = createApp(App)
 
-app.use(i18n).use(pinia).use(VxeUI).use(VxeTable).mount('#app')
+app.use(pinia).use(VxeUI).use(VxeTable).mount('#app')

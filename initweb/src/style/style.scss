@@ -20,3 +20,10 @@ html, body {
 html, body, #app, .app-container {
   height: 100%;
 }
+
+.vxe-radio--label,
+.vxe-form--item-title,
+.vxe-form--group-title,
+.vxe-checkbox--label {
+  user-select: none;
+}

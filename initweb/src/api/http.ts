@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, AxiosRequestConfig, Axios } from 'axios'
-import { VxeUI } from 'vxe-pc-ui'
+import VxeUI from 'vxe-pc-ui'
 
 interface CustomResponseResult<T = any> {
   code: number

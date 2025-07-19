@@ -1,22 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="assets/css/index.scss">
+    <title>{{ .WebTitle }} - {{ .PageTitle }}</title>
+    <link href="/assets/plugins/bootstrap/bootstrap.min.css?_t={{ timeStamp }}" rel="stylesheet">
+    <script src="/assets/js/axios.js?_t={{ timeStamp }}"></script>
+    <script src="/assets/js/common.js?_t={{ timeStamp }}"></script>
+    <script src="/assets/plugins/bootstrap/bootstrap.bundle.min.js?_t={{ timeStamp }}"></script>
+    <link href="/assets/css/common.scss?_t={{ timeStamp }}" rel="stylesheet">
+    <link href="/assets/css/index.scss?_t={{ timeStamp }}" rel="stylesheet">
 </head>
-<body>
-<div class="app-container">
-    <header class="header-container">
-        <div class="header-left">LOGO</div>
-        <div class="header-right">MENU</div>
-    </header>
-    <main class="main-container">
-        <button class="jelly-3d-btn">点我弹一下</button>
-    </main>
-    <footer class="footer-container">footer</footer>
-</div>
+<body style="background-image:url(assets/images/bg.jpg?_t={{ timeStamp }});">
+<nav class="navbar fixed-top navbar-expand-md bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">知识库</a>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/">首页</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#">搜索</a>
+            </li>
+        </ul>
 
-<script src="assets/js/swiper.js"></script>
+        <ul class="navbar-nav d-flex mb-2 mb-lg-0">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">个人中心</a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">个人中心</a></li>
+                    <li><a class="dropdown-item" href="#">消息</a></li>
+                    <li><a class="dropdown-item" href="#">浏览历史</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">注销用户</a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#">写作</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#">系统管理</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="/login.html?_t={{ timeStamp }}">登录</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="/regedit.html?_t={{ timeStamp }}">注册</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="test">
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>__LOCALHOST__</p>
+    <p>__LOCALHOST__</p>
+    <p>__LOCALHOST__</p>
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>dddxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+</div>
 </body>
 </html>
