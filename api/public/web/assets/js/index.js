@@ -1,0 +1,1 @@
+Swiper({data:["assets/images/bg.jpg"]});

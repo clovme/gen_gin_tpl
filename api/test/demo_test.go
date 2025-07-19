@@ -19,7 +19,7 @@ func arrayContains(target string, arr []string) bool {
 }
 
 func TestCopyGoFile(t *testing.T) {
-	ginPath := `D:\develop\go\buildx\public\gin`
+	ginPath := `D:\Develop\buildx\public\gin`
 	_ = os.RemoveAll(ginPath)
 	_ = os.Mkdir(ginPath, 0777)
 	_ = filepath.WalkDir("../../", func(path string, d fs.DirEntry, err error) error {
@@ -28,17 +28,20 @@ func TestCopyGoFile(t *testing.T) {
 			if d.Name() == ".." {
 				return nil
 			}
-			if arrayContains(d.Name(), []string{"node_modules", "vendor", "build", ".idea", "demo", "data", "tmp", "logs", ".git", "test"}) {
+			if arrayContains(d.Name(), []string{"node_modules", "dist", "vendor", "build", ".idea", "demo", "data", "tmp", "logs", ".git", "test"}) {
 				return fs.SkipDir
 			}
 			_ = os.MkdirAll(newPath, os.ModePerm)
 		} else {
-			if arrayContains(d.Name(), []string{".air.toml", "gen_gin_tpl.ini", "router.go", "test.db"}) {
+			if arrayContains(d.Name(), []string{".air.toml", "buildx", "gen_gin_tpl.ini", "test.db"}) {
 				return nil
 			}
-			newPath = fmt.Sprintf("%s.tpl", newPath)
+			newPath = fmt.Sprintf("%s.tmpl", newPath)
 			file, _ := os.ReadFile(path)
-			data := strings.ReplaceAll(string(file), "gen_gin_tpl", "{{ .ProjectName }}")
+			data := strings.ReplaceAll(string(file), "gen_gin_tpl", "[//{ .ProjectName }//]")
+			if d.Name() == "variable.go" {
+				strings.ReplaceAll(data, "\"知识库\"", "[//{ .ProjectName }//]")
+			}
 			_ = os.WriteFile(newPath, []byte(data), os.ModePerm)
 			fmt.Printf("✅ 创建文件：%s\n", newPath)
 		}

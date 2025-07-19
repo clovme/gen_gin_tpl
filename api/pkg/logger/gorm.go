@@ -8,10 +8,26 @@ import (
 	"time"
 )
 
+// GormLogger 自定义 gorm logger，实现 gorm logger.Interface 接口
 type GormLogger struct {
 	level logger.LogLevel
 }
 
+// GetGormLogger 获取 gorm logger
+// 返回值：
+//   - *gorm.Config: gorm config
+//
+// 注意：
+//   - 日志级别映射：
+//   - zerolog.TraceLevel: logger.Info
+//   - zerolog.DebugLevel: logger.Info
+//   - zerolog.InfoLevel: logger.Info
+//   - zerolog.WarnLevel: logger.Warn
+//   - zerolog.ErrorLevel: logger.Error
+//   - zerolog.FatalLevel: logger.Error
+//   - zerolog.PanicLevel: logger.Error
+//   - zerolog.Disabled: logger.Silent
+//   - zerolog.NoLevel: logger.Silent
 func GetGormLogger() *gorm.Config {
 	var logLevelMap = map[zerolog.Level]logger.LogLevel{
 		zerolog.TraceLevel: logger.Info,
@@ -31,16 +47,31 @@ func GetGormLogger() *gorm.Config {
 	}
 
 	return &gorm.Config{
-		Logger: &GormLogger{level: level},
+		CreateBatchSize: 1000,
+		Logger:          &GormLogger{level: level},
 	}
 }
 
+// LogMode 日志级别
+// 参数：
+//   - level: logger.LogLevel
+//
+// 返回值：
+//   - logger.Interface: gorm logger
 func (l *GormLogger) LogMode(level logger.LogLevel) logger.Interface {
 	newlogger := *l
 	newlogger.level = level
 	return &newlogger
 }
 
+// Info 打印 info 日志
+// 参数：
+//   - ctx: context.Context
+//   - s: string
+//   - args: ...interface{}
+//
+// 返回值：
+//   - 无
 func (l *GormLogger) Info(ctx context.Context, s string, args ...interface{}) {
 	if l.level >= logger.Info {
 		_log := loggers[DbInfo]
@@ -48,6 +79,14 @@ func (l *GormLogger) Info(ctx context.Context, s string, args ...interface{}) {
 	}
 }
 
+// Warn 打印 warn 日志
+// 参数：
+//   - ctx: context.Context
+//   - s: string
+//   - args:...interface{}
+//
+// 返回值：
+//   - 无
 func (l *GormLogger) Warn(ctx context.Context, s string, args ...interface{}) {
 	if l.level >= logger.Warn {
 		_log := loggers[DbWarn]
@@ -55,6 +94,14 @@ func (l *GormLogger) Warn(ctx context.Context, s string, args ...interface{}) {
 	}
 }
 
+// Error 打印 error 日志
+// 参数：
+//   - ctx: context.Context
+//   - s: string
+//   - args:...interface{}
+//
+// 返回值：
+//   - 无
 func (l *GormLogger) Error(ctx context.Context, s string, args ...interface{}) {
 	if l.level >= logger.Error {
 		_log := loggers[DbError]
@@ -62,6 +109,15 @@ func (l *GormLogger) Error(ctx context.Context, s string, args ...interface{}) {
 	}
 }
 
+// Trace 打印 trace 日志
+// 参数：
+//   - ctx: context.Context
+//   - begin: time.Time
+//   - fc: func() (string, int64)
+//   - err: error
+//
+// 返回值：
+//   - 无
 func (l *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
 	elapsed := time.Since(begin)
 	sql, rows := fc()

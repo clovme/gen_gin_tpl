@@ -9,12 +9,13 @@
 *.so
 *.upx
 *.dylib
+*.ini
 
-logs
-tmp
-demo
-build
-data
+/logs
+/tmp
+/demo
+/build
+/data
 
 # Test binary, built with 'go test -c'
 *.test
@@ -23,7 +24,7 @@ data
 *.out
 
 # Dependency directories (remove the comment below to include it)
-vendor
+/vendor
 
 # Go workspace file
 go.work
@@ -31,5 +32,4 @@ go.work.sum
 .air.toml
 
 *.db
-data
 *.sqlite

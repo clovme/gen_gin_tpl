@@ -14,11 +14,11 @@ isVer  = false
 isGen   = false
 isGui   = false
 isAll   = false
-isUpx   = false
+isUpx   = true
 isMode  = false
 plat    = windows
 arch    = amd64
-version = 0,0,4
+version = 0,3,3
 
 [other]
 isComment = false

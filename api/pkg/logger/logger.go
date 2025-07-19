@@ -12,35 +12,55 @@ import (
 	"time"
 )
 
+// LoggerConfig 日志配置
+//
+//	type LoggerConfig struct {
+//			Dir        string // 日志目录，如 ./logs
+//			MaxSize    int    // MB
+//			MaxBackups int    // 个数
+//			MaxAge     int    // 天
+//			Compress   bool	  // 是否压缩
+//			FormatJSON bool   // 是否 JSON 格式
+//			Level      string // 最低输出级别，如 debug、info、error
+//			Lvl        zerolog.Level
+//	}
 type LoggerConfig struct {
 	Dir        string // 日志目录，如 ./logs
 	MaxSize    int    // MB
 	MaxBackups int    // 个数
 	MaxAge     int    // 天
-	Compress   bool
+	Compress   bool   // 是否压缩
 	FormatJSON bool   // 是否 JSON 格式
 	Level      string // 最低输出级别，如 debug、info、error
 	Lvl        zerolog.Level
 }
 
 var (
-	consoleWriter io.Writer
-	loggers       map[string]zerolog.Logger
-	mu            sync.RWMutex
-	initialized   bool
-	CurrentCfg    *LoggerConfig
+	consoleWriter io.Writer                 // 控制台输出
+	loggers       map[string]zerolog.Logger // 日志记录器
+	mu            sync.RWMutex              // 读写锁
+	initialized   bool                      // 初始化标志
+	CurrentCfg    *LoggerConfig             // 当前配置
 )
 
-var loc, _ = time.LoadLocation("Asia/Shanghai")
+var loc, _ = time.LoadLocation("Asia/Shanghai") // 设置为上海时间
 
+// 格式化时间
 func formatTimestamp(i interface{}) string {
 	return time.Now().In(loc).Format("[2006-01-02 15:04:05]")
 }
 
+// 格式化日志级别
 func formatLevel(i interface{}) string {
 	return fmt.Sprintf("[%s]", i)
 }
 
+// InitLogger 初始化日志
+// 参数：
+//   - cfg: LoggerConfig
+//
+// 返回值：
+//   - error: 初始化错误
 func InitLogger(cfg LoggerConfig) {
 	CurrentCfg = &cfg
 	mu.Lock()
@@ -106,7 +126,7 @@ func InitLogger(cfg LoggerConfig) {
 
 			if cfg.FormatJSON {
 				// JSON 格式：直接复用 zerolog 默认 JSON 格式输出
-				writer = io.MultiWriter(consoleWriter, fileWriter)
+				writer = io.MultiWriter(consoleWriter, fileWriter, NewWebSocketWriter())
 			} else {
 				// ConsoleWriter 格式：也要给 file 和 WebSocket 同样的格式化输出
 				textWriter := zerolog.ConsoleWriter{
@@ -115,20 +135,30 @@ func InitLogger(cfg LoggerConfig) {
 					FormatTimestamp: formatTimestamp,
 					FormatLevel:     formatLevel,
 				}
-				writer = io.MultiWriter(consoleWriter, textWriter)
+				writer = io.MultiWriter(consoleWriter, textWriter, NewWebSocketWriter())
 			}
 
 			_callerSkipFrames := 2
 			if skip, ok := callerSkipFrames[t]; ok {
 				_callerSkipFrames = skip
 			}
-			loggers[fmt.Sprintf("%s_%s", t, level.String())] = zerolog.New(writer).Level(lvl).With().CallerWithSkipFrameCount(_callerSkipFrames).Timestamp().Logger()
+			if cfg.Level != "info" && cfg.Level != "warn" {
+				loggers[fmt.Sprintf("%s_%s", t, level.String())] = zerolog.New(writer).Level(lvl).With().CallerWithSkipFrameCount(_callerSkipFrames).Timestamp().Logger()
+			} else {
+				loggers[fmt.Sprintf("%s_%s", t, level.String())] = zerolog.New(writer).Level(lvl).With().Timestamp().Logger()
+			}
 		}
 	}
 
 	initialized = true
 }
 
+// GetLogger 获取指定文件名的日志记录器
+// 参数：
+//   - filename: 日志文件名
+//
+// 返回值：
+//   - zerolog.Logger: 日志记录器
 func GetLogger(filename string) zerolog.Logger {
 	return loggers[filename]
 }

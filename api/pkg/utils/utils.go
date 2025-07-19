@@ -1,29 +1,15 @@
 package utils
 
 import (
-	"os"
 	"unicode"
 )
 
-// IsDirExist 判断文件夹是否存在
-func IsDirExist(folderPath string) bool {
-	info, err := os.Stat(folderPath)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return info.IsDir()
-}
-
-// IsFileExist 判断文件是否存在
-func IsFileExist(filePath string) bool {
-	info, err := os.Stat(filePath)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return !info.IsDir()
-}
-
 // Capitalize 首字符大写
+// 参数：
+//   - s 字符串
+//
+// 返回值：
+//   - string 首字符大写后的字符串
 func Capitalize(s string) string {
 	if s == "" {
 		return ""
