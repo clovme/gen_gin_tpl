@@ -5,8 +5,8 @@ import (
 	"crypto/tls"
 	"fmt"
 	"gen_gin_tpl/pkg/cfg"
-	"gen_gin_tpl/pkg/utils/u_array"
-	"gen_gin_tpl/pkg/utils/u_email"
+	"gen_gin_tpl/pkg/utils/array"
+	utilEmail "gen_gin_tpl/pkg/utils/email"
 	"gen_gin_tpl/pkg/variable"
 	"gen_gin_tpl/public"
 	"github.com/jordan-wright/email"
@@ -27,7 +27,7 @@ func (c *emailTmpl) SendCode(to, flag string) error {
 	charset := strings.Split("0123456789ABCDEFGHJKMNOQRSTUVXYZ", "")
 	codeRunes := make([]string, cfg.CCaptcha.Length)
 	for i := range codeRunes {
-		codeRunes[i] = u_array.RandomArray[string](charset)
+		codeRunes[i] = array.RandomArray[string](charset)
 	}
 	code := strings.Join(codeRunes, "")
 
@@ -39,7 +39,7 @@ func (c *emailTmpl) SendCode(to, flag string) error {
 	if err := ce.SendEmail([]string{to}, flag, data); err != nil {
 		return err
 	}
-	u_email.SetEmailCodeValue(to, code, time.Minute)
+	utilEmail.SetEmailCodeValue(to, code, time.Minute)
 	return nil
 }
 

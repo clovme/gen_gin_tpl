@@ -1,3 +1,5 @@
+const BROWSER_USER_ID = btoa(String.fromCharCode(...new TextEncoder().encode("browser-user-id")))
+
 /*************************************************** 全局方法常量 ************************************************************
  * @function {toast} - 全局 toast 方法
  **************************************************** 全局方法常量 ***********************************************************/
@@ -188,13 +190,22 @@ const currentTime = async function (key = 'second') {
     return data.data[key]
 }
 
+const getBrowserUserId = () => {
+    let id = localStorage.getItem(BROWSER_USER_ID)
+    if (!id) {
+        id = btoa(String.fromCharCode(...new TextEncoder().encode(window.navigation.currentEntry.id)))
+        localStorage.setItem(BROWSER_USER_ID, id)
+    }
+    return new TextDecoder().decode(Uint8Array.from(atob(id), c => c.charCodeAt(0)))
+}
+
 /**
  * 设置 localStorage 存储
  * @param value
  * @param suffix
  */
 const setLocalStorage = function (value, suffix=null) {
-    const id = window.navigation.currentEntry.id
+    const id = getBrowserUserId()
     if (suffix) {
         localStorage.setItem(`${id}-${suffix}`, value)
         return
@@ -208,7 +219,7 @@ const setLocalStorage = function (value, suffix=null) {
  * @returns {string|null}
  */
 const getLocalStorage = function (suffix=null) {
-    const id = window.navigation.currentEntry.id
+    const id = getBrowserUserId()
     if (suffix) {
         return localStorage.getItem(`${id}-${suffix}`)
     }
@@ -216,11 +227,12 @@ const getLocalStorage = function (suffix=null) {
 }
 
 const removeLocalStorage = function (suffix=null) {
-    const id = window.navigation.currentEntry.id
+    const id = getBrowserUserId()
     if (suffix) {
         localStorage.removeItem(`${id}-${suffix}`)
     }
     localStorage.removeItem(id)
+    localStorage.removeItem(BROWSER_USER_ID)
 }
 
 const createTippy = (name, content='') => {

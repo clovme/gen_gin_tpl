@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ .WebTitle }} - {{ .PageTitle }}</title>
-    <link href="/assets/plugins/bootstrap/bootstrap.min.css?_t={{ timeStamp }}" rel="stylesheet">
+    <script src="/assets/plugins/bootstrap/bootstrap.bundle.min.js?_t={{ timeStamp }}"></script>
+    <script src="/assets/plugins/tippy.js/popper.min.js?_t={{ timeStamp }}"></script>
+    <script src="/assets/plugins/tippy.js/tippy-bundle.iife.min.js?_t={{ timeStamp }}"></script>
     <script src="/assets/js/axios.js?_t={{ timeStamp }}"></script>
     <script src="/assets/js/common.js?_t={{ timeStamp }}"></script>
-    <script src="/assets/plugins/bootstrap/bootstrap.bundle.min.js?_t={{ timeStamp }}"></script>
+    <link href="/assets/plugins/bootstrap/bootstrap.min.css?_t={{ timeStamp }}" rel="stylesheet">
     <link href="/assets/css/common.css?_t={{ timeStamp }}" rel="stylesheet">
     <link href="/assets/css/login.css?_t={{ timeStamp }}" rel="stylesheet">
 </head>
@@ -58,23 +60,23 @@
                     <p> 欢迎使用我的知识库，这里是我的学习笔记和知识总结。 </p></div>
                 <div class="login-split"></div>
                 <form class="float-form" method="post" novalidate>
-                    <input type="hidden" name="captcha_id" value="">
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" value="" name="username" id="floatingUser" placeholder required data-bs-toggle="tooltip">
-                        <label for="floatingUser">用户名/邮箱</label>
+                    <input type="hidden" name="captcha_id" value="{{ .Data.CaptchaId }}">
+                    <div class="form-floating mb-3" data-validate="email">
+                        <input type="email" class="form-control" value="{{ .Data.Email }}" name="email" id="floatingEmail" placeholder required data-bs-toggle="tooltip">
+                        <label for="floatingEmail">用户邮箱</label>
                     </div>
-                    <div class="form-floating mb-3">
-                        <input type="password" class="form-control" value="" name="password" id="floatingPassword" placeholder required data-bs-toggle="tooltip">
+                    <div class="form-floating mb-3" data-validate="password">
+                        <input type="password" class="form-control" value="{{ .Data.Password }}" name="password" id="floatingPassword" placeholder required>
                         <label for="floatingPassword">请输入密码</label>
                     </div>
-                    <div class="form-floating mb-4 verification-code-box">
-                        <input type="text" class="form-control" value="" name="captcha" id="floatingCaptcha" placeholder required data-bs-toggle="tooltip">
+                    <div class="form-floating mb-4 verification-code-box" data-validate="captcha">
+                        <input type="text" class="form-control" value="{{ .Data.Captcha }}" name="captcha" id="floatingCaptcha" placeholder required>
                         <label for="floatingCaptcha">请输入验证码</label>
-                        <img alt="验证码" class="verification-code" src="">
+                        <img alt="验证码" class="verification-img" src="">
                     </div>
                     <div class="form-floating login-buttons">
-                        <a href="/regedit.html?_t={{ timeStamp }}" type="button" class="btn btn-sm btn-light">注册用户</a>
-                        <button type="submit" class="btn btn-sm btn-primary">登录</button>
+                        <a href="/regedit.html?_t={{ timeStamp }}" type="button" class="btn btn-sm btn-light">用户登录</a>
+                        <button type="button" data-type="submit" class="btn btn-sm btn-primary">注册</button>
                     </div>
                 </form>
             </div>
@@ -84,8 +86,9 @@
 
 <script type="application/javascript">
     window.onload = function () {
-        validateLoginForm()
-        addSwitchCaptchaClickEventListener(".verification-code", `input[name='captcha_id']`)
+        const captchaInput = onSwitchCaptcha()
+        captchaInput.addEventListener("focus", onSwitchCaptcha)
+        document.querySelector('.verification-img').addEventListener("click", onSwitchCaptcha)
     }
 </script>
 </body>

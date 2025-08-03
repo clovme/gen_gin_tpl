@@ -6,10 +6,10 @@ type Enums struct {
 	Desc string
 }
 
-type Enum interface {
+type Enum[T any] interface {
 	Key() string
 	Name() string
 	Desc() string
-	Int() int
-	String() string
+	Enum() int
+	Is(v T) bool
 }

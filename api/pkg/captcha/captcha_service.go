@@ -1,7 +1,7 @@
 package captcha
 
 import (
-	"gen_gin_tpl/pkg/utils/u_array"
+	"gen_gin_tpl/pkg/utils/array"
 	"github.com/mojocn/base64Captcha"
 )
 
@@ -16,7 +16,7 @@ import (
 //   - answer 验证码答案
 //   - err    错误信息
 func NewGenerate() (id string, b64s string, answer string, err error) {
-	captcha := u_array.RandomArray[*base64Captcha.Captcha](captchaList)
+	captcha := array.RandomArray[*base64Captcha.Captcha](captchaList)
 
 	return captcha.Generate()
 }

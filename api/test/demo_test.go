@@ -36,7 +36,7 @@ func TestCopyGoFile(t *testing.T) {
 			if arrayContains(d.Name(), []string{".air.toml", "buildx", "gen_gin_tpl.ini", "test.db"}) {
 				return nil
 			}
-			newPath = fmt.Sprintf("%s.tmpl", newPath)
+			newPath = fmt.Sprintf("%s.tpl", newPath)
 			file, _ := os.ReadFile(path)
 			data := strings.ReplaceAll(string(file), "gen_gin_tpl", "[//{ .ProjectName }//]")
 			if d.Name() == "variable.go" {

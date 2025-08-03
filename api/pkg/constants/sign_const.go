@@ -10,5 +10,5 @@ const (
 	PublicPEM          = "public_pem"            // 公钥, 用于加密解密
 	PrivatePEM         = "private_pem"           // 私钥, 用于加密解密
 	WebTitle           = "web_title"             // 站点标题标志
-	Countdown          = "countdown"             // 站点标题标志
+	Countdown          = "countdown"             // 倒计时标记
 )

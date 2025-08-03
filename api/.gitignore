@@ -16,6 +16,7 @@
 /demo
 /build
 /data
+/test
 
 # Test binary, built with 'go test -c'
 *.test

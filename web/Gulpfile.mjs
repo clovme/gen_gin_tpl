@@ -36,9 +36,9 @@ if (isDev) {
 // 正则
 const rmspaceOpen = /%}\s+\{\{/g;
 const rmspaceClose = /}}\s+\{%/g;
-const host = 'http://192.168.1.3:9527'
+const host = 'http://192.168.1.2:9527'
 
-const htmlReplace =()  => {
+const hostReplace =()  => {
     if (isDev) {
         return host;
     } else {
@@ -63,7 +63,7 @@ const html = series(cleanHtml, () =>
                 css: conf.dest,
             },
         }))
-        .pipe(replace('__LOCALHOST__', htmlReplace()))
+        .pipe(replace('__LOCALHOST__', hostReplace()))
         .pipe(replace('.scss', '.css'))
         .pipe(replace(rmspaceOpen, '%}{{'))
         .pipe(replace(rmspaceClose, '}}{%'))
@@ -95,7 +95,7 @@ const css = series(cleanCss, () =>
 // 编译JS
 const js = series(cleanJs, () => {
     const source = src(`${conf.src}/assets/js/**/*.js`)
-        .pipe(replace('__LOCALHOST__', host))
+        .pipe(replace('__LOCALHOST__', hostReplace()))
         .pipe(gulpIf(isDev, sourcemaps.init()));
     const sourceClone = source.pipe(clone());
 

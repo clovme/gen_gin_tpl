@@ -2,7 +2,7 @@ package resp
 
 import (
 	"gen_gin_tpl/pkg/constants"
-	"gen_gin_tpl/pkg/enums/em_http"
+	"gen_gin_tpl/pkg/enums/code"
 	"gen_gin_tpl/pkg/variable"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -10,9 +10,9 @@ import (
 
 // response 响应结构体
 type response struct {
-	Code    em_http.ResponseCode `json:"code"`
-	Message string               `json:"message"`
-	Data    interface{}          `json:"data"`
+	Code    code.ResponseCode `json:"code"`
+	Message string            `json:"message"`
+	Data    interface{}       `json:"data"`
 }
 
 // setResponse 设置响应头
@@ -25,54 +25,76 @@ func setResponse(c *gin.Context, flag bool) {
 	}
 }
 
-// JsonSafeCode 安全响应
-// 参数：
-//   - c: gin.Context
-//   - code: 响应码
-//   - message: 响应消息
-//   - obj: 响应数据
-//
-// 返回值：
-//   - 无
-func JsonSafeCode(c *gin.Context, code em_http.ResponseCode, message string, obj interface{}) {
-	setResponse(c, true)
-	c.JSON(http.StatusOK, response{Code: code, Message: message, Data: obj})
-}
-
 // JsonSafe 安全响应
 // 参数：
 //   - c: gin.Context
+//   - code: 响应码
 //   - message: 响应消息
-//   - obj: 响应数据
+//   - data: 响应数据
 //
 // 返回值：
 //   - 无
-func JsonSafe(c *gin.Context, message string, obj interface{}) {
-	JsonSafeCode(c, em_http.Success, message, obj)
+func JsonSafe(c *gin.Context, httpCode code.ResponseCode, message string, data interface{}) {
+	setResponse(c, true)
+	c.JSON(http.StatusOK, response{Code: httpCode, Message: message, Data: data})
 }
 
-// JsonUnSafeCode 不安全响应
+// JsonSafeDesc 安全响应
 // 参数：
 //   - c: gin.Context
 //   - code: 响应码
-//   - message: 响应消息
-//   - obj: 响应数据
+//   - data: 响应数据
 //
 // 返回值：
 //   - 无
-func JsonUnSafeCode(c *gin.Context, code em_http.ResponseCode, message string, obj interface{}) {
-	setResponse(c, false)
-	c.JSON(http.StatusOK, response{Code: code, Message: message, Data: obj})
+func JsonSafeDesc(c *gin.Context, httpCode code.ResponseCode, data interface{}) {
+	JsonSafe(c, httpCode, httpCode.Desc(), data)
+}
+
+// JsonSafeSuccess 安全响应成功
+// 参数：
+//   - c: gin.Context
+//   - data: 响应数据
+//
+// 返回值：
+//   - 无
+func JsonSafeSuccess(c *gin.Context, data interface{}) {
+	JsonSafe(c, code.Success, code.Success.Desc(), data)
 }
 
 // JsonUnSafe 不安全响应
 // 参数：
 //   - c: gin.Context
+//   - code: 响应码
 //   - message: 响应消息
-//   - obj: 响应数据
+//   - data: 响应数据
 //
 // 返回值：
 //   - 无
-func JsonUnSafe(c *gin.Context, message string, obj interface{}) {
-	JsonUnSafeCode(c, em_http.Success, message, obj)
+func JsonUnSafe(c *gin.Context, code code.ResponseCode, message string, data interface{}) {
+	setResponse(c, false)
+	c.JSON(http.StatusOK, response{Code: code, Message: message, Data: data})
+}
+
+// JsonUnSafeDesc 不安全响应
+// 参数：
+//   - c: gin.Context
+//   - code: 响应码
+//   - data: 响应数据
+//
+// 返回值：
+//   - 无
+func JsonUnSafeDesc(c *gin.Context, httpCode code.ResponseCode, data interface{}) {
+	JsonUnSafe(c, httpCode, httpCode.Desc(), data)
+}
+
+// JsonUnSafeSuccess 不安全响应成功
+// 参数：
+//   - c: gin.Context
+//   - data: 响应数据
+//
+// 返回值：
+//   - 无
+func JsonUnSafeSuccess(c *gin.Context, data interface{}) {
+	JsonUnSafe(c, code.Success, code.Success.Desc(), data)
 }

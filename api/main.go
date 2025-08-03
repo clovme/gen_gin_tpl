@@ -8,8 +8,8 @@ import (
 	"gen_gin_tpl/pkg/crypto"
 	"gen_gin_tpl/pkg/logger/log"
 	"gen_gin_tpl/pkg/utils"
-	"gen_gin_tpl/pkg/utils/u_file"
-	"gen_gin_tpl/pkg/utils/u_network"
+	"gen_gin_tpl/pkg/utils/file"
+	"gen_gin_tpl/pkg/utils/network"
 	"gen_gin_tpl/pkg/variable"
 	"gen_gin_tpl/public"
 	"github.com/gin-gonic/gin"
@@ -30,7 +30,7 @@ func init() {
 
 	variable.CaptchaStore = base64Captcha.NewMemoryStore(base64Captcha.GCLimitNumber, 2*time.Minute)
 
-	variable.IsInitialized.Store(u_file.IsFileExist(variable.ConfigPath))
+	variable.IsInitialized.Store(file.IsFileExist(variable.ConfigPath))
 
 	utils.InitSnowflake(1)
 	if err := crypto.ParseRsaKeys(public.PublicPEM, public.PrivatePEM); err != nil {
@@ -40,7 +40,7 @@ func init() {
 }
 
 func main() {
-	exePath, err := u_file.GetFileAbsPath(".", "")
+	exePath, err := file.GetFileAbsPath(".", "")
 
 	if err != nil {
 		log.Error().Err(err).Msg("获取程序所在路径失败")
@@ -63,7 +63,7 @@ func main() {
 	engine := initialize.Initialization()
 	ip := cfg.CWeb.Host
 	if ip == "0.0.0.0" {
-		ip = u_network.GetLocalIP(cfg.CWeb.Host)
+		ip = network.GetLocalIP(cfg.CWeb.Host)
 	}
 	for i, route := range engine.Routes() {
 		if strings.HasSuffix(route.Path, "*filepath") {

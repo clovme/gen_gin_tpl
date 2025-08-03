@@ -3,7 +3,7 @@ package captcha
 import (
 	"fmt"
 	"gen_gin_tpl/pkg/logger/log"
-	"gen_gin_tpl/pkg/utils/u_array"
+	"gen_gin_tpl/pkg/utils/array"
 	"gen_gin_tpl/pkg/variable"
 	"github.com/mojocn/base64Captcha"
 	"image/color"
@@ -126,7 +126,7 @@ func computationWidth(length int) (width, height int) {
 //   - typeList   包含要生成的验证码类型的字符串切片。
 func InitImageCaptcha(length, noiseCount int, showLine []int, fontsList, typeList []string) {
 	fonts := captchaFonts(fontsList)
-	lineOpt := u_array.RandomArray[int](showLine)
+	lineOpt := array.RandomArray[int](showLine)
 	width, height := computationWidth(length)
 	bgColor := &color.RGBA{R: uint8(0), G: uint8(0), B: uint8(0), A: uint8(0)}
 

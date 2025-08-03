@@ -3,8 +3,8 @@ package cfg
 import (
 	"fmt"
 	"gen_gin_tpl/pkg/constants"
-	"gen_gin_tpl/pkg/utils/u_file"
-	"gen_gin_tpl/pkg/utils/u_network"
+	"gen_gin_tpl/pkg/utils/file"
+	"gen_gin_tpl/pkg/utils/network"
 	"gen_gin_tpl/pkg/variable"
 	"github.com/mojocn/base64Captcha"
 	"github.com/rs/zerolog"
@@ -37,14 +37,14 @@ func init() {
 				DbName: fmt.Sprintf("%s.db", constants.ProjectName),
 			},
 			MySQL: MySQL{
-				Host:     u_network.GetLanIP(),
+				Host:     network.GetLanIP(),
 				Port:     3306,
 				Username: "root",
 				Password: "",
 				DbName:   constants.ProjectName,
 			},
 			Redis: Redis{
-				Host:     u_network.GetLanIP(),
+				Host:     network.GetLanIP(),
 				Port:     6379,
 				Password: "",
 				DB:       0,
@@ -54,7 +54,7 @@ func init() {
 				SMTPPort: 587,
 			},
 			Web: Web{
-				Host: u_network.GetLanIP(),
+				Host: network.GetLanIP(),
 				Port: 9527,
 			},
 			Logger: Logger{
@@ -96,7 +96,7 @@ func init() {
 		}
 
 		// ini 覆盖
-		path, err := u_file.GetFileAbsPath(".", fmt.Sprintf("%s.ini", constants.ProjectName))
+		path, err := file.GetFileAbsPath(".", fmt.Sprintf("%s.ini", constants.ProjectName))
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(-1)
