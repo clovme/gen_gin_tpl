@@ -13,20 +13,24 @@ import (
 type routeGroup struct {
 	noAuthView *gin.RouterGroup
 	public *gin.RouterGroup
+	publicView *gin.RouterGroup
 }
 
 func (r *routeGroup) register(db *gorm.DB) {
 	// 初始化仓库和服务
 	ctx := bootstrap.NewAppContext(db)
 
-	r.noAuthView.GET("/", ctx.WebViewsHandler.ViewsIndexHandler)
 	r.noAuthView.GET("/login.html", ctx.WebViewsHandler.ViewsLoginHandler)
+	r.noAuthView.POST("/login.html", ctx.WebViewsHandler.PostViewsLoginHandler)
 	r.noAuthView.GET("/regedit.html", ctx.WebViewsHandler.ViewsRegeditHandler)
+	r.noAuthView.POST("/regedit.html", ctx.WebViewsHandler.PostViewsRegeditHandler)
 
-	r.public.POST("/public/key", ctx.ApiPublicHandler.PostPublicKey)
-	r.public.POST("/public/enums", ctx.ApiPublicHandler.PostHttpCode)
+	r.public.GET("/public/key", ctx.ApiPublicHandler.GetPublicKey)
+	r.public.GET("/public/enums", ctx.ApiPublicHandler.GetEnumsList)
 	r.public.GET("/public/ping", ctx.ApiPublicHandler.GetPing)
-	r.public.GET("/public/time", ctx.ApiPublicHandler.GetSecond)
-	r.public.POST("/public/captcha", ctx.ApiPublicHandler.PostCaptcha)
+	r.public.GET("/public/time", ctx.ApiPublicHandler.GetServerTime)
 	r.public.POST("/public/email/code", ctx.ApiPublicHandler.PostSendEmailCaptcha)
+
+	r.publicView.GET("/public/captcha.png", ctx.WebViewsHandler.GetImagesCaptcha)
+	r.publicView.GET("/", ctx.WebViewsHandler.ViewsIndexHandler)
 }

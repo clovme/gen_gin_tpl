@@ -5,21 +5,21 @@ GOOS   = windows
 GOARCH = amd64
 
 [filename]
-name   = gen_gin_tpl
-isPlat = false
-isArch = false
-isVer  = false
+name    = gen_gin_tpl
+is_plat = false
+is_arch = false
+is_ver  = false
 
 [build]
-isGen   = false
-isGui   = false
-isAll   = false
-isUpx   = true
-isMode  = false
+is_gen  = false
+is_gui  = false
+is_all  = false
+is_upx  = false
+is_mode = false
 plat    = windows
 arch    = amd64
-version = 0,3,3
+version = 0,3,4
 
 [other]
-isComment = false
-goVersion = go1.24.3
+isComment  = false
+go_version = go1.24.4

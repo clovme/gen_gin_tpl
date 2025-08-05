@@ -1,6 +1,7 @@
 package resp
 
 import (
+	"fmt"
 	"gen_gin_tpl/pkg/constants"
 	"gen_gin_tpl/pkg/enums/code"
 	"gen_gin_tpl/pkg/variable"
@@ -36,7 +37,7 @@ func setResponse(c *gin.Context, flag bool) {
 //   - 无
 func JsonSafe(c *gin.Context, httpCode code.ResponseCode, message string, data interface{}) {
 	setResponse(c, true)
-	c.JSON(http.StatusOK, response{Code: httpCode, Message: message, Data: data})
+	c.JSON(http.StatusOK, response{Code: httpCode, Message: fmt.Sprintf("[%d] %s", httpCode.Enum(), message), Data: data})
 }
 
 // JsonSafeDesc 安全响应
@@ -71,9 +72,9 @@ func JsonSafeSuccess(c *gin.Context, data interface{}) {
 //
 // 返回值：
 //   - 无
-func JsonUnSafe(c *gin.Context, code code.ResponseCode, message string, data interface{}) {
+func JsonUnSafe(c *gin.Context, httpCode code.ResponseCode, message string, data interface{}) {
 	setResponse(c, false)
-	c.JSON(http.StatusOK, response{Code: code, Message: message, Data: data})
+	c.JSON(http.StatusOK, response{Code: httpCode, Message: fmt.Sprintf("[%d] %s", httpCode.Enum(), message), Data: data})
 }
 
 // JsonUnSafeDesc 不安全响应

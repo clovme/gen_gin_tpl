@@ -21,10 +21,10 @@ type PublicHandler struct {
 	Service *publicService.ApiPublicService
 }
 
-// PostPublicKey 公钥
-// @Router			/public/key [POST]
+// GetPublicKey 公钥
+// @Router			/public/key [GET]
 // @Group 			public
-func (h *PublicHandler) PostPublicKey(c *gin.Context) {
+func (r *PublicHandler) GetPublicKey(c *gin.Context) {
 	data := base64.StdEncoding.EncodeToString(public.PublicPEM)
 	for i := 0; i < 10; i++ {
 		data = base64.StdEncoding.EncodeToString([]byte(data))
@@ -32,11 +32,11 @@ func (h *PublicHandler) PostPublicKey(c *gin.Context) {
 	c.String(http.StatusOK, data)
 }
 
-// PostHttpCode 自定义Http状态码
-// @Router			/public/enums [POST]
+// GetEnumsList 自定义Http状态码
+// @Router			/public/enums [GET]
 // @Group 			public
-func (h *PublicHandler) PostHttpCode(c *gin.Context) {
-	enums, err := h.Service.GetAllEnumsData()
+func (r *PublicHandler) GetEnumsList(c *gin.Context) {
+	enums, err := r.Service.GetAllEnumsData()
 	if err != nil {
 		resp.JsonUnSafeDesc(c, code.InternalServerError, err.Error())
 		return
@@ -47,14 +47,14 @@ func (h *PublicHandler) PostHttpCode(c *gin.Context) {
 // GetPing 自定义Http状态码
 // @Router			/public/ping [GET]
 // @Group 			public
-func (h *PublicHandler) GetPing(c *gin.Context) {
+func (r *PublicHandler) GetPing(c *gin.Context) {
 	resp.JsonUnSafeSuccess(c, nil)
 }
 
-// GetSecond 自定义Http状态码
+// GetServerTime 自定义Http状态码
 // @Router			/public/time [GET]
 // @Group 			public
-func (h *PublicHandler) GetSecond(c *gin.Context) {
+func (r *PublicHandler) GetServerTime(c *gin.Context) {
 	now := time.Now()
 	// 年初
 	yearTime := time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location())
@@ -80,25 +80,10 @@ func (h *PublicHandler) GetSecond(c *gin.Context) {
 	})
 }
 
-// PostCaptcha 生成验证码
-// @Router			/public/captcha [POST]
-// @Group 			public
-func (h *PublicHandler) PostCaptcha(c *gin.Context) {
-	// 生成验证码
-	id, b64s, _, err := captcha.NewGenerate()
-	if err != nil {
-		log.Error().Err(err).Msg("验证码生成失败")
-		resp.JsonSafe(c, code.InternalServerError, "验证码生成失败", nil)
-		return
-	}
-
-	resp.JsonSafe(c, code.Success, "验证码生成成功", gin.H{"captchaId": id, "b64s": b64s})
-}
-
 // PostSendEmailCaptcha 发送邮箱验证码
 // @Router			/public/email/code [POST]
 // @Group 			public
-func (h *PublicHandler) PostSendEmailCaptcha(c *gin.Context) {
+func (r *PublicHandler) PostSendEmailCaptcha(c *gin.Context) {
 	var data dto.EmailCode
 	if err := c.ShouldBindJSON(&data); err != nil {
 		log.Error().Err(err).Msg("验证码发送失败！")
@@ -109,15 +94,16 @@ func (h *PublicHandler) PostSendEmailCaptcha(c *gin.Context) {
 	if !status {
 		return
 	}
+	emailId := email.GetEmailId(c, data.Email)
 	if strings.EqualFold(data.Email, cfg.CEmail.From) {
 		resp.JsonSafeDesc(c, code.InternalServerError, c.Params)
 		return
 	}
-	if email.GetEmailCodeValue(data.Email) != "" {
+	if email.GetEmailCodeValue(emailId) != "" {
 		resp.JsonSafe(c, code.Unknown, "验证码发送频繁，请稍后再试！", c.Params)
 		return
 	}
-	if err := captcha.NewEmail().SendCode(data.Email, flag); err != nil {
+	if err := captcha.NewEmail().SendCode(emailId, data.Email, flag); err != nil {
 		log.Error().Err(err).Msg("验证码发送失败！")
 		resp.JsonSafe(c, code.Unknown, "验证码发送失败！", c.Params)
 		return

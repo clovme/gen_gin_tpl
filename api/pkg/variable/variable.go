@@ -11,4 +11,5 @@ var (
 	IsEnableEncryptedKey bool
 	IsInitialized        atomic.Bool
 	CaptchaStore         = base64Captcha.DefaultMemStore
+	IsEnableEmail        atomic.Bool
 )

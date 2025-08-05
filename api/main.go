@@ -28,9 +28,9 @@ func init() {
 
 	//cfg.SaveToIni()
 
-	variable.CaptchaStore = base64Captcha.NewMemoryStore(base64Captcha.GCLimitNumber, 2*time.Minute)
-
+	variable.IsEnableEmail.Store(cfg.COther.IsEmail)
 	variable.IsInitialized.Store(file.IsFileExist(variable.ConfigPath))
+	variable.CaptchaStore = base64Captcha.NewMemoryStore(base64Captcha.GCLimitNumber, 2*time.Minute)
 
 	utils.InitSnowflake(1)
 	if err := crypto.ParseRsaKeys(public.PublicPEM, public.PrivatePEM); err != nil {

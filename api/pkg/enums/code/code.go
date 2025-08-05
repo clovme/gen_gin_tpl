@@ -30,14 +30,14 @@ const (
 
 var (
 	initiate = map[ResponseCode]enums.Enums{
-		Success:             {Key: "Success", Name: "成功", Desc: "请求已成功处理"},
-		VerifyError:         {Key: "VerifyError", Name: "验证失败", Desc: "数据验证失败，请检查输入数据"},
-		CreateError:         {Key: "CreateError", Name: "创建失败", Desc: "数据创建失败，请稍后重试"},
-		BadRequest:          {Key: "BadRequest", Name: "错误请求", Desc: "请求参数格式错误或缺失，服务器无法处理"},
-		Unauthorized:        {Key: "Unauthorized", Name: "未认证", Desc: "当前请求需要用户认证或认证已失效"},
-		Forbidden:           {Key: "Forbidden", Name: "禁止访问", Desc: "当前用户无权访问此资源"},
-		NotFound:            {Key: "NotFound", Name: "资源不存在", Desc: "请求的资源不存在或已被删除"},
-		Unknown:             {Key: "Unknown", Name: "未知错误", Desc: "未知错误或异常，请检查请求参数或配置"},
+		Success:             {Key: "Success", Name: "成功", Desc: "请求已成功处理！"},
+		VerifyError:         {Key: "VerifyError", Name: "验证失败", Desc: "数据验证失败，请检查输入数据！"},
+		CreateError:         {Key: "CreateError", Name: "创建失败", Desc: "数据创建失败，请稍后重试！"},
+		BadRequest:          {Key: "BadRequest", Name: "错误请求", Desc: "请求参数格式错误或缺失，服务器无法处理！"},
+		Unauthorized:        {Key: "Unauthorized", Name: "未认证", Desc: "当前请求需要用户认证或认证已失效！"},
+		Forbidden:           {Key: "Forbidden", Name: "禁止访问", Desc: "当前用户无权访问此资源！"},
+		NotFound:            {Key: "NotFound", Name: "资源不存在", Desc: "请求的资源不存在或已被删除！"},
+		Unknown:             {Key: "Unknown", Name: "未知错误", Desc: "未知错误或异常，请检查请求参数或配置！"},
 		InternalServerError: {Key: "InternalServerError", Name: "服务器内部错误", Desc: "服务器开小差了，请稍后再试！"},
 	}
 

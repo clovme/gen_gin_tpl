@@ -23,7 +23,7 @@ type emailTmpl struct{}
 //
 // 返回值：
 //   - string 验证码
-func (c *emailTmpl) SendCode(to, flag string) error {
+func (c *emailTmpl) SendCode(emailId, to, flag string) error {
 	charset := strings.Split("0123456789ABCDEFGHJKMNOQRSTUVXYZ", "")
 	codeRunes := make([]string, cfg.CCaptcha.Length)
 	for i := range codeRunes {
@@ -39,7 +39,7 @@ func (c *emailTmpl) SendCode(to, flag string) error {
 	if err := ce.SendEmail([]string{to}, flag, data); err != nil {
 		return err
 	}
-	utilEmail.SetEmailCodeValue(to, code, time.Minute)
+	utilEmail.SetEmailCodeValue(emailId, code, time.Minute)
 	return nil
 }
 

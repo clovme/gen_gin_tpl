@@ -1,17 +1,21 @@
 package page
 
 import (
-	"gen_gin_tpl/pkg/cfg"
+	"gen_gin_tpl/pkg/constants"
+	"gen_gin_tpl/pkg/session"
 	"gen_gin_tpl/pkg/variable"
+	"github.com/gin-gonic/gin"
 )
 
 // ViewRoot 视图数据结构
 type ViewRoot[T any] struct {
-	WebTitle  string
-	PageTitle string
-	IsEmail   bool
-	Data      T
-	Errors    map[string]string
+	Data          T
+	IsEnableEmail bool
+	IsLogin       bool
+	WebTitle      string
+	PageTitle     string
+	ClientID      string
+	Errors        map[string]string
 }
 
 // ViewData 模版数据结构
@@ -22,13 +26,15 @@ type ViewRoot[T any] struct {
 //
 // 返回值：
 //   - ViewRoot[T] 视图数据结构
-func ViewData[T any](title string, data T, err map[string]string) ViewRoot[T] {
+func ViewData[T any](c *gin.Context, title string, data T, err map[string]string) ViewRoot[T] {
 	return ViewRoot[T]{
-		WebTitle:  variable.WebTitle,
-		PageTitle: title,
-		IsEmail:   cfg.COther.IsEmail,
-		Data:      data,
-		Errors:    err,
+		Errors:        err,
+		Data:          data,
+		PageTitle:     title,
+		WebTitle:      variable.WebTitle,
+		IsLogin:       session.IsLogin(c),
+		IsEnableEmail: variable.IsEnableEmail.Load(),
+		ClientID:      session.Get(c, constants.ClientID).(string),
 	}
 }
 
@@ -38,10 +44,12 @@ func ViewData[T any](title string, data T, err map[string]string) ViewRoot[T] {
 //
 // 返回值：
 //   - ViewRoot[struct{}] 视图数据结构
-func ViewDataNil(title string) ViewRoot[struct{}] {
+func ViewDataNil(c *gin.Context, title string) ViewRoot[struct{}] {
 	return ViewRoot[struct{}]{
-		WebTitle:  variable.WebTitle,
-		IsEmail:   cfg.COther.IsEmail,
-		PageTitle: title,
+		PageTitle:     title,
+		WebTitle:      variable.WebTitle,
+		IsLogin:       session.IsLogin(c),
+		IsEnableEmail: variable.IsEnableEmail.Load(),
+		ClientID:      session.Get(c, constants.ClientID).(string),
 	}
 }

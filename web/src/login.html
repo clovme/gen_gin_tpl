@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ .WebTitle }} - {{ .PageTitle }}</title>
+    <script type="application/javascript">window.clientId = '{{ .ClientID }}'</script>
     <script src="/assets/plugins/bootstrap/bootstrap.bundle.min.js?_t={{ timeStamp }}"></script>
     <script src="/assets/plugins/tippy.js/popper.min.js?_t={{ timeStamp }}"></script>
     <script src="/assets/plugins/tippy.js/tippy-bundle.iife.min.js?_t={{ timeStamp }}"></script>
@@ -26,6 +27,7 @@
         </ul>
 
         <ul class="navbar-nav d-flex mb-lg-0">
+            {{- if .IsLogin }}
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">个人中心</a>
                 <ul class="dropdown-menu">
@@ -42,12 +44,14 @@
             <li class="nav-item">
                 <a class="nav-link" aria-current="page" href="#">系统管理</a>
             </li>
+            {{- else }}
             <li class="nav-item">
                 <a class="nav-link" aria-current="page" href="/login.html?_t={{ timeStamp }}">登录</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" aria-current="page" href="/regedit.html?_t={{ timeStamp }}">注册</a>
             </li>
+            {{- end }}
         </ul>
     </div>
 </nav>
@@ -59,11 +63,10 @@
                 <div class="login-tip"><h1>登录</h1>
                     <p> 欢迎使用我的知识库，这里是我的学习笔记和知识总结。 </p></div>
                 <div class="login-split"></div>
-                <form class="float-form" method="post" novalidate>
-                    <input type="hidden" name="captcha_id" value="{{ .Data.CaptchaId }}">
-                    <div class="form-floating mb-3" data-validate="email">
-                        <input type="email" class="form-control" value="{{ .Data.Email }}" name="email" id="floatingEmail" placeholder required data-bs-toggle="tooltip">
-                        <label for="floatingEmail">用户邮箱</label>
+                <form class="float-form" method="post" action="__LOCALHOST__/login.html?_t={{ timeStamp }}" novalidate>
+                    <div class="form-floating mb-3" data-validate="username">
+                        <input type="text" class="form-control" value="{{ .Data.Username }}" name="username" id="floatingUsername" placeholder required>
+                        <label for="floatingUsername">请输入用户名</label>
                     </div>
                     <div class="form-floating mb-3" data-validate="password">
                         <input type="password" class="form-control" value="{{ .Data.Password }}" name="password" id="floatingPassword" placeholder required>
@@ -72,11 +75,11 @@
                     <div class="form-floating mb-4 verification-code-box" data-validate="captcha">
                         <input type="text" class="form-control" value="{{ .Data.Captcha }}" name="captcha" id="floatingCaptcha" placeholder required>
                         <label for="floatingCaptcha">请输入验证码</label>
-                        <img alt="验证码" class="verification-img" src="">
+                        <img alt="验证码" class="verification-img" src="__LOCALHOST__/public/captcha.png?_t={{ timeStamp }}">
                     </div>
                     <div class="form-floating login-buttons">
-                        <a href="/regedit.html?_t={{ timeStamp }}" type="button" class="btn btn-sm btn-light">用户登录</a>
-                        <button type="button" data-type="submit" class="btn btn-sm btn-primary">注册</button>
+                        <a href="/regedit.html?_t={{ timeStamp }}" type="button" class="btn btn-sm btn-light">用户注册</a>
+                        <button type="button" data-type="submit" class="btn btn-sm btn-primary">登录</button>
                     </div>
                 </form>
             </div>
@@ -85,11 +88,10 @@
 </div>
 
 <script type="application/javascript">
-    window.onload = function () {
-        const captchaInput = onSwitchCaptcha()
-        captchaInput.addEventListener("focus", onSwitchCaptcha)
-        document.querySelector('.verification-img').addEventListener("click", onSwitchCaptcha)
-    }
+    eventListener.addLoadEventListener(() => {
+        eventListener.globalOnSwitchCaptcha('.verification-img')
+        eventListener.userLoginForm()
+    })
 </script>
 </body>
 </html>

@@ -1,55 +1,55 @@
 package email
 
 import (
-	"fmt"
 	"gen_gin_tpl/pkg/cache"
 	"gen_gin_tpl/pkg/enums/code"
 	"gen_gin_tpl/pkg/resp"
+	"gen_gin_tpl/pkg/session"
 	"github.com/gin-gonic/gin"
 	"strings"
 	"time"
 )
 
-// GetEmailCodeKey 邮箱验证码的缓存key
-// 格式：1__email_code__:email
+// GetEmailId 邮箱验证码的缓存key
+//
 // 参数:
+//   - c: *gin.Context
 //   - email: 邮箱地址
 //
 // 返回值:
 //   - string: 缓存key
-func GetEmailCodeKey(email string) string {
-	return fmt.Sprintf("1__email_code__:%s", strings.ToLower(email))
-
+func GetEmailId(c *gin.Context, email string) string {
+	return session.GetCaptchaID(c, strings.ToLower(email))
 }
 
 // GetEmailCodeValue 获取邮箱验证码的缓存value
 // 参数:
-//   - email: 邮箱地址
+//   - emailId: 邮箱地址 emailId
 //
 // 返回值:
 //   - string: 缓存key
-func GetEmailCodeValue(email string) string {
-	return cache.GetString(GetEmailCodeKey(email))
+func GetEmailCodeValue(emailId string) string {
+	return cache.GetString(emailId)
 }
 
 // SetEmailCodeValue 设置邮箱验证码的缓存value
 // 参数:
-//   - email: 邮箱地址
+//   - emailId: 邮箱地址 emailId
 //   - code: 验证码
 //   - expiration: 过期时间
-func SetEmailCodeValue(email string, code string, expiration time.Duration) {
-	cache.Set(GetEmailCodeKey(email), code, expiration)
+func SetEmailCodeValue(emailId string, code string, expiration time.Duration) {
+	_ = cache.Set(emailId, code, expiration)
 }
 
 // IsEmailCodeValue 判断邮箱验证码是否正确
 // 参数:
-//   - email: 邮箱地址
+//   - emailId: 邮箱地址 emailId
 //   - code: 验证码
 //
 // 返回值:
 //   - bool: 是否正确
-func IsEmailCodeValue(email string, code string) bool {
-	return strings.EqualFold(GetEmailCodeValue(email), code)
+func IsEmailCodeValue(emailId string, code string) bool {
+	return strings.EqualFold(GetEmailCodeValue(emailId), code)
 }
 
 // GetEmailTitleTagName 获取邮箱标题

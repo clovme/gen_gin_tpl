@@ -1,6 +1,7 @@
 package public
 
 import (
+	"gen_gin_tpl/internal/models"
 	"gen_gin_tpl/pkg/enums/status"
 	"time"
 )
@@ -20,4 +21,23 @@ type ApiUserVO struct {
 	CreatedAt   time.Time     `json:"createdAt"`
 	UpdatedAt   time.Time     `json:"updatedAt"`
 	DeletedAt   *time.Time    `json:"deletedAt"`
+}
+
+func ToVO(user models.User) *ApiUserVO {
+	return &ApiUserVO{
+		ID:          user.ID,
+		Username:    user.Username,
+		Email:       user.Email,
+		Phone:       user.Phone,
+		Password:    user.Password,
+		Nickname:    user.Nickname,
+		Avatar:      user.Avatar,
+		Gender:      user.Gender,
+		Birthday:    user.Birthday,
+		Status:      user.Status,
+		Description: user.Description,
+		CreatedAt:   user.CreatedAt,
+		UpdatedAt:   user.UpdatedAt,
+		DeletedAt:   user.DeletedAt,
+	}
 }

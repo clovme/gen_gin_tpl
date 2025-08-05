@@ -2,16 +2,19 @@ package dto
 
 import (
 	"errors"
+	"gen_gin_tpl/pkg/variable"
+	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
 type RegeditDTO struct {
-	CaptchaId       string `json:"captcha_id" binding:"required"`
-	Email           string `json:"email" binding:"required,emailValid,uniqueEmailValid"`
-	EmailCode       string `json:"email_code" binding:"required,emailCodeValid"`
-	Password        string `json:"password" binding:"required,passwordValid"`
-	ConfirmPassword string `json:"confirm_password" binding:"required,eqfield=Password"`
-	Captcha         string `json:"captcha" binding:"required,captchaValid"`
+	Context         *gin.Context `json:"-"`
+	Email           string       `json:"email" binding:"required,emailValid,uniqueEmailValid"`
+	Username        string       `json:"username" binding:"required,usernameValid,uniqueUsernameValid"`
+	EmailCode       string       `json:"email_code" binding:"required,regeditEmailCodeValid"`
+	Password        string       `json:"password" binding:"required,passwordValid"`
+	ConfirmPassword string       `json:"confirm_password" binding:"required,eqfield=Password"`
+	Captcha         string       `json:"captcha" binding:"required,regeditCaptchaValid"`
 }
 
 func (l RegeditDTO) TranslateError(err error) map[string]string {
@@ -30,10 +33,14 @@ func (l RegeditDTO) TranslateError(err error) map[string]string {
 		tag := e.Tag()
 
 		switch field {
-		case "CaptchaId":
+		case "Username":
 			switch tag {
 			case "required":
-				result["captcha_id"] = "验证码ID不能为空"
+				result["username"] = "用户名不能为空"
+			case "usernameValid":
+				result["username"] = "您输入的用户名格式不正确"
+			case "uniqueUsernameValid":
+				result["username"] = "用户名已存在，请检查或使用其他用户名"
 			}
 		case "Email":
 			switch tag {
@@ -45,11 +52,13 @@ func (l RegeditDTO) TranslateError(err error) map[string]string {
 				result["email"] = "邮箱已存在，请检查或使用其他邮箱"
 			}
 		case "EmailCode":
-			switch tag {
-			case "required":
-				result["email_code"] = "邮箱验证码不能为空"
-			case "emailCodeValid":
-				result["email_code"] = "邮箱验证码错误或者已过期"
+			if variable.IsEnableEmail.Load() {
+				switch tag {
+				case "required":
+					result["email_code"] = "邮箱验证码不能为空"
+				case "regeditEmailCodeValid":
+					result["email_code"] = "邮箱验证码错误或者已过期"
+				}
 			}
 		case "Password":
 			switch tag {
@@ -69,7 +78,7 @@ func (l RegeditDTO) TranslateError(err error) map[string]string {
 			switch tag {
 			case "required":
 				result["captcha"] = "验证码不能为空"
-			case "captchaValid":
+			case "regeditCaptchaValid":
 				result["captcha"] = "验证码错误"
 			}
 		}

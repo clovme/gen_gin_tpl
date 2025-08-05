@@ -2,6 +2,7 @@ package models
 
 import (
 	"gen_gin_tpl/pkg/enums/status"
+	"gen_gin_tpl/pkg/pwd"
 	"gen_gin_tpl/pkg/utils"
 	"gorm.io/gorm"
 	"time"
@@ -28,15 +29,15 @@ import (
 
 type User struct {
 	ID          int64         `gorm:"primaryKey;type:bigint"`
-	Username    string        `gorm:"type:varchar(50);uniqueIndex;not null"`  // 用户名，唯一
-	Email       string        `gorm:"type:varchar(100);uniqueIndex;not null"` // 邮箱，唯一且必须
-	Phone       string        `gorm:"type:varchar(20);uniqueIndex"`           // 电话，可以为空，唯一
-	Password    string        `gorm:"type:varchar(255);not null"`             // 密码哈希，别json序列化
-	Nickname    string        `gorm:"type:varchar(50)"`                       // 昵称，非必填
-	Avatar      string        `gorm:"type:varchar(255)"`                      // 头像URL
-	Gender      int           `gorm:"type:int;default:0"`                     // 性别 0未知 1男 2女
-	Birthday    *time.Time    `json:"birthday,omitempty"`                     // 生日，指针，允许空
-	Status      status.Status `gorm:"type:int;default:1"`                     // 状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)
+	Username    string        `gorm:"type:varchar(50);uniqueIndex;not null"` // 用户名，唯一
+	Email       string        `gorm:"type:varchar(50);uniqueIndex;not null"` // 邮箱，唯一且必须
+	Phone       string        `gorm:"type:varchar(20);uniqueIndex"`          // 电话，可以为空，唯一
+	Password    string        `gorm:"type:varchar(50);not null"`             // 密码哈希，别json序列化
+	Nickname    string        `gorm:"type:varchar(50)"`                      // 昵称，非必填
+	Avatar      string        `gorm:"type:varchar(50)"`                      // 头像URL
+	Gender      int           `gorm:"type:int;default:0"`                    // 性别 0未知 1男 2女
+	Birthday    *time.Time    `json:"birthday,omitempty"`                    // 生日，指针，允许空
+	Status      status.Status `gorm:"type:int;default:1"`                    // 状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)
 	Description string        `gorm:"type:varchar(255)"`
 	CreatedAt   time.Time     `gorm:"autoCreateTime:nano"`
 	UpdatedAt   time.Time     `gorm:"autoUpdateTime:nano"`
@@ -47,5 +48,6 @@ func (r *User) BeforeCreate(tx *gorm.DB) (err error) {
 	if r.ID == 0 {
 		r.ID = utils.GenerateID()
 	}
+	r.Password = pwd.Encryption(r.Password)
 	return
 }

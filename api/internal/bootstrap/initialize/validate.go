@@ -11,9 +11,14 @@ func initFormValidate() {
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		// 注册自定义验证器
 		_ = v.RegisterValidation("emailValid", validate.EmailValid)
+		_ = v.RegisterValidation("usernameValid", validate.UsernameValid)
 		_ = v.RegisterValidation("passwordValid", validate.PasswordValid)
-		_ = v.RegisterValidation("captchaValid", validate.CaptchaValid)
-		_ = v.RegisterValidation("emailCodeValid", validate.EmailCodeValid)
 		_ = v.RegisterValidation("uniqueEmailValid", validate.UniqueEmailValid)
+		_ = v.RegisterValidation("uniqueUsernameValid", validate.UniqueUsernameValid)
+		// 注册登录验证码校验器
+		_ = v.RegisterValidation("regeditCaptchaValid", validate.RegeditCaptchaValid)
+		_ = v.RegisterValidation("regeditEmailCodeValid", validate.RegeditEmailCodeValid)
+		// 登录验证码校验器
+		_ = v.RegisterValidation("loginCaptchaValid", validate.LoginCaptchaValid)
 	}
 }

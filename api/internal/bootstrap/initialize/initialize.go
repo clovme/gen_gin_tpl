@@ -25,6 +25,7 @@ func Initialization() *gin.Engine {
 		fmt.Println("获取数据目录失败:", err)
 		os.Exit(-1)
 	}
+
 	// 初始化系统日志
 	InitializationLogger()
 

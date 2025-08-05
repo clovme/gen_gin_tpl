@@ -4363,7 +4363,7 @@
     // 自定义默认配置
     function configDefaults$1() {
         const config = {
-            baseURL: '__LOCALHOST__/api',
+            baseURL: '__LOCALHOST__/api/v1',
             timeout: 10000,
             headers: {
                 'Content-Type': 'application/json'
@@ -4379,11 +4379,11 @@
             if (result.data.code === 10000) {
                 return result.data;
             }
-            toast.warning(`[${result.data.code}] ${result.data.message}`);
+            toast.warning(result.data.message);
             return Promise.reject(result.data);
         }, error => {
             if (error.response.data) {
-                toast.error(`[${error.response.data.code}] ${error.response.data.message}`);
+                toast.error(error.response.data.message);
             } else {
                 toast.error(error.message);
             }

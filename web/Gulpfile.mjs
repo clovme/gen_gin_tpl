@@ -68,9 +68,6 @@ const html = series(cleanHtml, () =>
         .pipe(replace(rmspaceOpen, '%}{{'))
         .pipe(replace(rmspaceClose, '}}{%'))
         .pipe(dest(conf.dest))
-        .on('end', () => {
-            console.log('HTML写入完成，磁盘已 flush');
-        })
         .pipe(bs.stream())
 );
 
@@ -86,9 +83,6 @@ const css = series(cleanCss, () =>
         // .pipe(gulpIf(!isDev, rename({suffix: '.min'})))
         .pipe(gulpIf(isDev, sourcemaps.write('./maps', {addComment: false})))
         .pipe(gulpIf(!isDev, dest(`${conf.dest}/assets/css/`)))
-        .on('end', () => {
-            console.log('CSS写入完成，磁盘已 flush');
-        })
         .pipe(bs.stream())
 );
 
@@ -109,9 +103,6 @@ const js = series(cleanJs, () => {
         // .pipe(gulpIf(!isDev, rename({suffix: '.min'})))
         .pipe(gulpIf(isDev, sourcemaps.write('./maps', {addComment: false})))
         .pipe(gulpIf(!isDev, dest(`${conf.dest}/assets/js/`)))
-        .on('end', () => {
-            console.log('JS写入完成，磁盘已 flush');
-        })
         .pipe(bs.stream());
 
     return sourceClone;
@@ -121,9 +112,6 @@ const js = series(cleanJs, () => {
 const images = series(cleanImg, () =>
     src(`${conf.src}/assets/images/**`, {encoding: false})
         .pipe(dest(`${conf.dest}/assets/images/`))
-        .on('end', () => {
-            console.log('图片写入完成，磁盘已 flush');
-        })
         .pipe(bs.stream())
 );
 
@@ -131,9 +119,6 @@ const images = series(cleanImg, () =>
 const plugins = series(cleanPlugins, () =>
     src(`${conf.src}/assets/plugins/**`, {encoding: false})
         .pipe(dest(`${conf.dest}/assets/plugins/`))
-        .on('end', () => {
-            console.log('插件写入完成，磁盘已 flush');
-        })
         .pipe(bs.stream())
 );
 
@@ -141,8 +126,6 @@ const plugins = series(cleanPlugins, () =>
 const watchFiles = (cb) => {
     if (!isDev) {
         deleteAsync(['dist'], {force: true})
-        console.log('Build 完成...')
-        console.log(`Dist 目录：${conf.dest}`)
         cb()
         return
     }

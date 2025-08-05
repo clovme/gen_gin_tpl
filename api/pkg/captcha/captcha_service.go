@@ -1,9 +1,25 @@
 package captcha
 
 import (
+	"encoding/base64"
+	"fmt"
+	"gen_gin_tpl/pkg/constants"
+	"gen_gin_tpl/pkg/session"
 	"gen_gin_tpl/pkg/utils/array"
+	"github.com/gin-gonic/gin"
 	"github.com/mojocn/base64Captcha"
+	"strings"
 )
+
+func base64DecodeImage(b64Str string) ([]byte, error) {
+	idx := strings.Index(b64Str, ",")
+	if idx == -1 {
+		return nil, fmt.Errorf("invalid base64 string, no comma found")
+	}
+
+	raw := b64Str[idx+1:]
+	return base64.StdEncoding.DecodeString(raw)
+}
 
 // NewGenerate 生成图形验证码。
 //
@@ -15,10 +31,22 @@ import (
 //   - b64s   验证码图片 Base64 字符串
 //   - answer 验证码答案
 //   - err    错误信息
-func NewGenerate() (id string, b64s string, answer string, err error) {
+func NewGenerate(c *gin.Context) (imageBytes []byte, err error) {
 	captcha := array.RandomArray[*base64Captcha.Captcha](captchaList)
 
-	return captcha.Generate()
+	_, content, answer := captcha.Driver.GenerateIdQuestionAnswer()
+	item, err := captcha.Driver.DrawCaptcha(content)
+	if err != nil {
+		return nil, err
+	}
+
+	id := session.GetCaptchaID(c, constants.CaptchaSuffix)
+
+	if err = captcha.Store.Set(id, answer); err != nil {
+		return nil, err
+	}
+	imageBytes, err = base64DecodeImage(item.EncodeB64string())
+	return
 }
 
 // NewEmail 创建一个新的邮件客户端。
