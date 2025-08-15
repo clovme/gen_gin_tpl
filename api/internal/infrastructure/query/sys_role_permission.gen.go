@@ -32,7 +32,7 @@ func newRolePermission(db *gorm.DB, opts ...gen.DOOption) rolePermission {
 	_rolePermission.PermissionID = field.NewInt64(tableName, "permission_id")
 	_rolePermission.CreatedAt = field.NewTime(tableName, "created_at")
 	_rolePermission.Status = field.NewInt(tableName, "status")
-	_rolePermission.DeletedAt = field.NewTime(tableName, "deleted_at")
+	_rolePermission.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_rolePermission.fillFieldMap()
 
@@ -43,12 +43,12 @@ type rolePermission struct {
 	rolePermissionDo
 
 	ALL          field.Asterisk
-	ID           field.Int64
-	RoleID       field.Int64
-	PermissionID field.Int64
-	CreatedAt    field.Time
-	Status       field.Int
-	DeletedAt    field.Time
+	ID           field.Int64 // 角色权限ID，主键
+	RoleID       field.Int64 // 角色ID
+	PermissionID field.Int64 // 权限ID
+	CreatedAt    field.Time  // 创建时间
+	Status       field.Int   // 状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)
+	DeletedAt    field.Field // 软删除标记，空值表示未删除
 
 	fieldMap map[string]field.Expr
 }
@@ -70,7 +70,7 @@ func (r *rolePermission) updateTableName(table string) *rolePermission {
 	r.PermissionID = field.NewInt64(table, "permission_id")
 	r.CreatedAt = field.NewTime(table, "created_at")
 	r.Status = field.NewInt(table, "status")
-	r.DeletedAt = field.NewTime(table, "deleted_at")
+	r.DeletedAt = field.NewField(table, "deleted_at")
 
 	r.fillFieldMap()
 

@@ -61,8 +61,8 @@ func (c DType) Desc() string {
 	return "Int"
 }
 
-// Enum 获取枚举值
-func (c DType) Enum() int {
+// Int 获取枚举值
+func (c DType) Int() int {
 	return int(c)
 }
 

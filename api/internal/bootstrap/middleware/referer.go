@@ -1,18 +1,17 @@
 package middleware
 
 import (
+	"gen_gin_tpl/internal/core"
 	"gen_gin_tpl/pkg/enums/code"
-	"gen_gin_tpl/pkg/resp"
-	"github.com/gin-gonic/gin"
 )
 
 // RefererCheck 强制要求 Referer 且校验是否合法
-func RefererCheck() gin.HandlerFunc {
-	return func(c *gin.Context) {
+func RefererCheck() core.HandlerFunc {
+	return func(c *core.Context) {
 		referer := c.GetHeader("Referer")
 		if referer == "" {
 
-			resp.JsonSafe(c, code.Forbidden, code.Forbidden.Desc(), nil)
+			c.JsonSafeDesc(code.Forbidden, nil)
 			c.Abort()
 			return
 		}

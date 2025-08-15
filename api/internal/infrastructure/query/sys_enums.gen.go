@@ -38,6 +38,7 @@ func newEnums(db *gorm.DB, opts ...gen.DOOption) enums {
 	_enums.Description = field.NewString(tableName, "description")
 	_enums.CreatedAt = field.NewTime(tableName, "created_at")
 	_enums.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_enums.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_enums.fillFieldMap()
 
@@ -48,17 +49,18 @@ type enums struct {
 	enumsDo
 
 	ALL         field.Asterisk
-	ID          field.Int64
-	Category    field.String
-	Key         field.String
-	Name        field.String
-	Value       field.Int
-	ValueT      field.Int
-	Sort        field.Int
-	Status      field.Int
-	Description field.String
-	CreatedAt   field.Time
-	UpdatedAt   field.Time
+	ID          field.Int64  // 枚举项ID，主键
+	Category    field.String // 枚举分类
+	Key         field.String // 枚举键（唯一标识）
+	Name        field.String // 枚举名称（显示用）
+	Value       field.Int    // 枚举值（数字）
+	ValueT      field.Int    // 值类型
+	Sort        field.Int    // 排序
+	Status      field.Int    // 状态
+	Description field.String // 描述
+	CreatedAt   field.Time   // 创建时间
+	UpdatedAt   field.Time   // 更新时间
+	DeletedAt   field.Field  // 软删除标记，空值表示未删除
 
 	fieldMap map[string]field.Expr
 }
@@ -86,6 +88,7 @@ func (e *enums) updateTableName(table string) *enums {
 	e.Description = field.NewString(table, "description")
 	e.CreatedAt = field.NewTime(table, "created_at")
 	e.UpdatedAt = field.NewTime(table, "updated_at")
+	e.DeletedAt = field.NewField(table, "deleted_at")
 
 	e.fillFieldMap()
 
@@ -102,7 +105,7 @@ func (e *enums) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (e *enums) fillFieldMap() {
-	e.fieldMap = make(map[string]field.Expr, 11)
+	e.fieldMap = make(map[string]field.Expr, 12)
 	e.fieldMap["id"] = e.ID
 	e.fieldMap["category"] = e.Category
 	e.fieldMap["key"] = e.Key
@@ -114,6 +117,7 @@ func (e *enums) fillFieldMap() {
 	e.fieldMap["description"] = e.Description
 	e.fieldMap["created_at"] = e.CreatedAt
 	e.fieldMap["updated_at"] = e.UpdatedAt
+	e.fieldMap["deleted_at"] = e.DeletedAt
 }
 
 func (e enums) clone(db *gorm.DB) enums {

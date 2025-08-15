@@ -3,12 +3,12 @@ package api
 import (
 	"encoding/base64"
 	publicService "gen_gin_tpl/internal/application/public"
+	"gen_gin_tpl/internal/core"
 	"gen_gin_tpl/internal/schema/dto"
 	"gen_gin_tpl/pkg/captcha"
 	"gen_gin_tpl/pkg/cfg"
 	"gen_gin_tpl/pkg/enums/code"
 	"gen_gin_tpl/pkg/logger/log"
-	"gen_gin_tpl/pkg/resp"
 	"gen_gin_tpl/pkg/utils/email"
 	"gen_gin_tpl/public"
 	"github.com/gin-gonic/gin"
@@ -24,7 +24,9 @@ type PublicHandler struct {
 // GetPublicKey 公钥
 // @Router			/public/key [GET]
 // @Group 			public
-func (r *PublicHandler) GetPublicKey(c *gin.Context) {
+// @Summary			公钥
+// @Type			api
+func (r *PublicHandler) GetPublicKey(c *core.Context) {
 	data := base64.StdEncoding.EncodeToString(public.PublicPEM)
 	for i := 0; i < 10; i++ {
 		data = base64.StdEncoding.EncodeToString([]byte(data))
@@ -32,29 +34,35 @@ func (r *PublicHandler) GetPublicKey(c *gin.Context) {
 	c.String(http.StatusOK, data)
 }
 
-// GetEnumsList 自定义Http状态码
+// GetEnumsList 枚举列表
 // @Router			/public/enums [GET]
 // @Group 			public
-func (r *PublicHandler) GetEnumsList(c *gin.Context) {
+// @Summary			枚举列表
+// @Type			api
+func (r *PublicHandler) GetEnumsList(c *core.Context) {
 	enums, err := r.Service.GetAllEnumsData()
 	if err != nil {
-		resp.JsonUnSafeDesc(c, code.InternalServerError, err.Error())
+		c.JsonUnSafeDesc(code.InternalServerError, err.Error())
 		return
 	}
-	resp.JsonUnSafeSuccess(c, enums)
+	c.JsonUnSafeSuccess(enums)
 }
 
-// GetPing 自定义Http状态码
+// GetPing 心跳
 // @Router			/public/ping [GET]
 // @Group 			public
-func (r *PublicHandler) GetPing(c *gin.Context) {
-	resp.JsonUnSafeSuccess(c, nil)
+// @Summary			心跳
+// @Type			api
+func (r *PublicHandler) GetPing(c *core.Context) {
+	c.JsonUnSafeSuccess(nil)
 }
 
-// GetServerTime 自定义Http状态码
+// GetServerTime 服务器时间
 // @Router			/public/time [GET]
 // @Group 			public
-func (r *PublicHandler) GetServerTime(c *gin.Context) {
+// @Summary			服务器时间
+// @Type			api
+func (r *PublicHandler) GetServerTime(c *core.Context) {
 	now := time.Now()
 	// 年初
 	yearTime := time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location())
@@ -67,7 +75,7 @@ func (r *PublicHandler) GetServerTime(c *gin.Context) {
 	// 当前秒
 	secondTime := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second(), 0, now.Location())
 
-	resp.JsonSafeDesc(c, code.Success, gin.H{
+	c.JsonSafeDesc(code.Success, gin.H{
 		"year":        yearTime.Unix(),
 		"day":         dayTime.Unix(),
 		"hour":        hourTime.Unix(),
@@ -83,30 +91,32 @@ func (r *PublicHandler) GetServerTime(c *gin.Context) {
 // PostSendEmailCaptcha 发送邮箱验证码
 // @Router			/public/email/code [POST]
 // @Group 			public
-func (r *PublicHandler) PostSendEmailCaptcha(c *gin.Context) {
-	var data dto.EmailCode
-	if err := c.ShouldBindJSON(&data); err != nil {
+// @Summary			发送邮箱验证码
+// @Type			api
+func (r *PublicHandler) PostSendEmailCaptcha(c *core.Context) {
+	var emailCode dto.EmailCode
+	if err := c.ShouldBindJSON(&emailCode); err != nil {
 		log.Error().Err(err).Msg("验证码发送失败！")
-		resp.JsonSafe(c, code.VerifyError, "验证码发送失败！", c.Params)
+		c.JsonSafe(code.VerifyError, "验证码发送失败！", c.Params)
 		return
 	}
-	flag, status := email.GetEmailTitleTagName(c)
+	flag, status := email.GetEmailTitleTagName(c.Context.GetHeader("Referer"))
 	if !status {
+		c.JsonSafeDesc(code.Unknown, c.Params)
 		return
 	}
-	emailId := email.GetEmailId(c, data.Email)
-	if strings.EqualFold(data.Email, cfg.CEmail.From) {
-		resp.JsonSafeDesc(c, code.InternalServerError, c.Params)
+	if strings.EqualFold(emailCode.Email, cfg.CEmail.From) {
+		c.JsonSafeDesc(code.InternalServerError, c.Params)
 		return
 	}
-	if email.GetEmailCodeValue(emailId) != "" {
-		resp.JsonSafe(c, code.Unknown, "验证码发送频繁，请稍后再试！", c.Params)
+	if email.GetEmailValue(c.Session.GetImageCaptchaID()) != "" {
+		c.JsonSafe(code.Unknown, "验证码发送频繁，请稍后再试！", c.Params)
 		return
 	}
-	if err := captcha.NewEmail().SendCode(emailId, data.Email, flag); err != nil {
+	if err := captcha.NewEmail().SendCode(c.Session.GetEmailCaptchaID(), emailCode.Email, flag); err != nil {
 		log.Error().Err(err).Msg("验证码发送失败！")
-		resp.JsonSafe(c, code.Unknown, "验证码发送失败！", c.Params)
+		c.JsonSafe(code.Unknown, "验证码发送失败！", c.Params)
 		return
 	}
-	resp.JsonSafe(c, code.Success, "验证码发送成功！", nil)
+	c.JsonSafe(code.Success, "验证码发送成功！", nil)
 }

@@ -3,8 +3,6 @@ package validate
 import (
 	"gen_gin_tpl/internal/schema/dto"
 	"gen_gin_tpl/pkg/cfg"
-	"gen_gin_tpl/pkg/constants"
-	"gen_gin_tpl/pkg/session"
 	"gen_gin_tpl/pkg/variable"
 	"github.com/go-playground/validator/v10"
 )
@@ -21,8 +19,6 @@ func LoginCaptchaValid(fl validator.FieldLevel) bool {
 		return false
 	}
 
-	captchaId := session.GetCaptchaID(_form.Context, constants.CaptchaSuffix)
-
 	// 校验验证码是否匹配
-	return variable.CaptchaStore.Verify(captchaId, value, true)
+	return variable.CaptchaStore.Verify(_form.CaptchaID, value, true)
 }

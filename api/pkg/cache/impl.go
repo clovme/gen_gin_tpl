@@ -37,8 +37,8 @@ func GetString(key string) string {
 //
 // 返回值:
 //   - error: 错误信息
-func Set(key string, value any, expiration time.Duration) error {
-	return Context(5).Set(key, value, expiration)
+func Set(key string, value any, expiration time.Duration) {
+	_ = Context(5).Set(key, value, expiration)
 }
 
 // Del 删除缓存

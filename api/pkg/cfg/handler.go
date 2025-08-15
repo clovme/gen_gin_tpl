@@ -56,6 +56,7 @@ func init() {
 			Web: Web{
 				Host: network.GetLanIP(),
 				Port: 9527,
+				Mode: "release",
 			},
 			Logger: Logger{
 				Level:      zerolog.InfoLevel.String(),

@@ -55,8 +55,8 @@ func (c Gender) Desc() string {
 	return "Unknown"
 }
 
-// Enum 获取枚举值
-func (c Gender) Enum() int {
+// Int 获取枚举值
+func (c Gender) Int() int {
 	return int(c)
 }
 

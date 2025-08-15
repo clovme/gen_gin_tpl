@@ -19,11 +19,16 @@ import (
 // EmailTmpl 邮件模板
 type emailTmpl struct{}
 
+// clientEmail 邮件客户端
+type clientEmail struct {
+	tmpl string // 模板名称
+}
+
 // SendCode 生成验证码
 //
 // 返回值：
 //   - string 验证码
-func (c *emailTmpl) SendCode(emailId, to, flag string) error {
+func (c *emailTmpl) SendCode(emailId string, to, flag string) error {
 	charset := strings.Split("0123456789ABCDEFGHJKMNOQRSTUVXYZ", "")
 	codeRunes := make([]string, cfg.CCaptcha.Length)
 	for i := range codeRunes {
@@ -39,13 +44,8 @@ func (c *emailTmpl) SendCode(emailId, to, flag string) error {
 	if err := ce.SendEmail([]string{to}, flag, data); err != nil {
 		return err
 	}
-	utilEmail.SetEmailCodeValue(emailId, code, time.Minute)
+	utilEmail.SetEmailValue(emailId, code, time.Minute)
 	return nil
-}
-
-// clientEmail 邮件客户端
-type clientEmail struct {
-	tmpl string // 模板名称
 }
 
 // SendEmail 发送邮件

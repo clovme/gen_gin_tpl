@@ -74,6 +74,7 @@ type FormData struct {
 	MySQLDbName       string   `json:"MySQLDbName"`
 	WebHost           string   `json:"WebHost"`
 	WebPort           int      `json:"WebPort"`
+	WebMode           string   `json:"WebMode"`
 	RedisHost         string   `json:"RedisHost"`
 	RedisPort         int      `json:"RedisPort"`
 	RedisUsername     string   `json:"RedisUsername"`

@@ -34,7 +34,7 @@ func newUserRole(db *gorm.DB, opts ...gen.DOOption) userRole {
 	_userRole.Status = field.NewInt(tableName, "status")
 	_userRole.Description = field.NewString(tableName, "description")
 	_userRole.CreatedAt = field.NewTime(tableName, "created_at")
-	_userRole.DeletedAt = field.NewTime(tableName, "deleted_at")
+	_userRole.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_userRole.fillFieldMap()
 
@@ -45,14 +45,14 @@ type userRole struct {
 	userRoleDo
 
 	ALL         field.Asterisk
-	ID          field.Int64
-	UserID      field.Int64
-	RoleID      field.Int64
-	ExpireAt    field.Time
-	Status      field.Int
-	Description field.String
-	CreatedAt   field.Time
-	DeletedAt   field.Time
+	ID          field.Int64  // 用户角色ID，主键
+	UserID      field.Int64  // 用户ID
+	RoleID      field.Int64  // 角色ID
+	ExpireAt    field.Time   // 角色到期时间
+	Status      field.Int    // 状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)
+	Description field.String // 角色描述
+	CreatedAt   field.Time   // 创建时间
+	DeletedAt   field.Field  // 软删除标记，空值表示未删除
 
 	fieldMap map[string]field.Expr
 }
@@ -76,7 +76,7 @@ func (u *userRole) updateTableName(table string) *userRole {
 	u.Status = field.NewInt(table, "status")
 	u.Description = field.NewString(table, "description")
 	u.CreatedAt = field.NewTime(table, "created_at")
-	u.DeletedAt = field.NewTime(table, "deleted_at")
+	u.DeletedAt = field.NewField(table, "deleted_at")
 
 	u.fillFieldMap()
 

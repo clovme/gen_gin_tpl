@@ -57,8 +57,8 @@ func (c Perm) Desc() string {
 	return "Unknown"
 }
 
-// Enum 获取枚举值
-func (c Perm) Enum() int {
+// Int 获取枚举值
+func (c Perm) Int() int {
 	return int(c)
 }
 

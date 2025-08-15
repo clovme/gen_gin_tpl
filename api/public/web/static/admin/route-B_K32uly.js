@@ -1,0 +1,1 @@
+import{A as t}from"./index-Cvc_Iv1t.js";function o(e){return t({url:"/api/pub/admin/route/list/all",method:"get",params:e})}function a(e){return t({url:"/api/pub/admin/route/save/batch",method:"post",data:e})}function r(e){return t({url:"/api/pub/admin/route/delete",method:"delete",data:e})}export{r as d,o as g,a as p};

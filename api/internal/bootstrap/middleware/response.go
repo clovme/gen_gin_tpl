@@ -40,10 +40,9 @@ func EncryptResponse() gin.HandlerFunc {
 		c.Next()
 
 		// 那些请求直接返原路返回
-		encrypt, exists := c.Get(constants.ContextIsEncrypted)
-		if !exists || !encrypt.(bool) || !variable.IsEnableEncryptedKey {
+		if !c.GetBool(constants.ContextIsEncrypted) || !variable.IsEnableEncryptedKey {
 			// 不加密，直接返回原始
-			origin.Write(buf.Bytes())
+			_, _ = origin.Write(buf.Bytes())
 			return
 		}
 
@@ -51,7 +50,7 @@ func EncryptResponse() gin.HandlerFunc {
 		aesKey := make([]byte, 16)
 		if _, err := rand.Read(aesKey); err != nil {
 			// 生成密钥失败，返回错误信息
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "服务器异常"})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "服务器异常"})
 			return
 		}
 
@@ -60,7 +59,7 @@ func EncryptResponse() gin.HandlerFunc {
 		if err != nil {
 			httpLog.Error(c).Err(err).Msg("AES 加密失败")
 			// 加密失败，返回错误信息
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "服务器异常"})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "服务器异常"})
 			return
 		}
 
@@ -69,7 +68,7 @@ func EncryptResponse() gin.HandlerFunc {
 		if err != nil {
 			httpLog.Error(c).Err(err).Msg("RSA 加密失败")
 			// 加密失败，返回错误信息
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "服务器异常"})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "服务器异常"})
 			return
 		}
 
@@ -81,7 +80,7 @@ func EncryptResponse() gin.HandlerFunc {
 		if err != nil {
 			httpLog.Error(c).Err(err).Msg("签名失败")
 			// 加密失败，返回错误信息
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "签名失败"})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "签名失败"})
 			return
 		}
 
@@ -95,6 +94,6 @@ func EncryptResponse() gin.HandlerFunc {
 			origin.WriteHeader(http.StatusOK)
 		}
 
-		origin.Write([]byte(encrypted))
+		_, _ = origin.Write([]byte(encrypted))
 	}
 }

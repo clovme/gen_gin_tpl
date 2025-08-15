@@ -17,6 +17,10 @@ import (
 // 一个 Gin 处理函数，可作为中间件使用。
 func CorsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if gin.Mode() == gin.ReleaseMode {
+			c.Next()
+			return
+		}
 		// 从请求头中获取请求的源地址
 		origin := c.Request.Header.Get("Origin")
 

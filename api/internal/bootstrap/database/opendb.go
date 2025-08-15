@@ -95,6 +95,7 @@ func OpenConnectDB(username, password, host string, port int, dbName, dbType, sQ
 		if !file.IsDirExist(filepath.Dir(sQLitePath)) {
 			_ = os.MkdirAll(filepath.Dir(sQLitePath), os.ModePerm)
 		}
+		//dsn = sqlite.Open(fmt.Sprintf("file:%s?mode=&cache=shared&_foreign_keys=1", sQLitePath))
 		dsn = sqlite.Open(sQLitePath)
 	} else {
 		if !checkAndCreateDatabase(username, password, host, port, dbName) { // 先检查并建库

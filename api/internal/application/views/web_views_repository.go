@@ -1,30 +1,30 @@
 package views
 
 import (
+	"gen_gin_tpl/internal/core"
 	"gen_gin_tpl/internal/schema/dto"
-	"github.com/gin-gonic/gin"
 )
 
 type Repository interface {
-	// CreateUser 创建用户
+	// RegeditUser 用户注册
 	//
 	// 参数:
-	//   - c: gin.Context
-	//   - regeditDTO: dto.RegeditDTO
+	//   - regeditDTO: 注册信息
+	//   - session: 会话信息
 	//
 	// 返回值:
 	//   - bool: 创建成功返回true，否则返回false
 	//   - string: 创建成功返回用户ID，否则返回错误信息
-	CreateUser(c *gin.Context, regeditDTO dto.RegeditDTO) (bool, string)
+	RegeditUser(regeditDTO dto.RegeditDTO, session core.Session) (bool, string)
 
 	// UserLogin 用户登录
 	//
 	// 参数:
-	//   - c: gin.Context
-	//   - loginDTO: dto.LoginDTO
+	//   - loginDTO: 登录信息
+	//   - session: 会话信息
 	//
 	// 返回值:
 	//   - bool: 登录成功返回true，否则返回false
 	//   - string: 登录成功返回token，否则返回错误信息
-	UserLogin(c *gin.Context, loginDTO dto.LoginDTO) (bool, string)
+	UserLogin(loginDTO dto.LoginDTO, session core.Session) (bool, string)
 }

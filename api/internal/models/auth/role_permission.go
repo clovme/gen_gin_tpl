@@ -7,22 +7,14 @@ import (
 	"time"
 )
 
-/*
-| ID | Name  | Code         | Type | Path           | Method |
-| -- | ----- | ------------ | ---- | -------------- | ------ |
-| 1  | 用户查询 | user_list   | api  | /api/user      | GET    |
-| 2  | 新增用户 | user_create | api  | /api/user      | POST   |
-| 3  | 删除用户 | user_delete | api  | /api/user/\:id | DELETE |
-| 4  | 菜单管理 | menu_manage | menu | /menu          |        |
-*/
-
+// RolePermission 角色权限表
 type RolePermission struct {
-	ID           int64         `gorm:"primaryKey;type:bigint"`
-	RoleID       int64         `gorm:"type:bigint;not null;index"`
-	PermissionID int64         `gorm:"type:bigint;not null;index"`
-	CreatedAt    time.Time     `gorm:"autoCreateTime:nano"`
-	Status       status.Status `gorm:"type:int;default:1"` // 状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)
-	DeletedAt    *time.Time    `gorm:"index"`
+	ID           int64          `gorm:"primaryKey;type:bigint;autoIncrement:false;comment:角色权限ID，主键"`
+	RoleID       int64          `gorm:"type:bigint;not null;index;comment:角色ID"`
+	PermissionID int64          `gorm:"type:bigint;not null;index;comment:权限ID"`
+	CreatedAt    *time.Time     `gorm:"autoCreateTime:nano;comment:创建时间"`
+	Status       status.Status  `gorm:"type:int;default:1;comment:状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)"`
+	DeletedAt    gorm.DeletedAt `gorm:"comment:软删除标记，空值表示未删除"`
 }
 
 func (r *RolePermission) BeforeCreate(tx *gorm.DB) (err error) {
@@ -34,4 +26,8 @@ func (r *RolePermission) BeforeCreate(tx *gorm.DB) (err error) {
 
 func (r *RolePermission) TableName() string {
 	return "sys_role_permission"
+}
+
+func (r *RolePermission) TableComment() string {
+	return "角色权限表"
 }

@@ -10,6 +10,6 @@ type Enum[T any] interface {
 	Key() string
 	Name() string
 	Desc() string
-	Enum() int
+	Int() int
 	Is(v T) bool
 }

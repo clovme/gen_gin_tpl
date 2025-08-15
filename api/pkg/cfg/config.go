@@ -13,8 +13,9 @@ type MySQL struct {
 }
 
 type Web struct {
-	Host string `ini:"host" json:"host" comment:"Web 服务器监听地址，通常为 IP 或域名"`
-	Port int    `ini:"port" json:"port" comment:"Web 服务器监听端口"`
+	Host string `ini:"host" json:"host" comment:"Web 服务监听地址，通常为 IP 或域名"`
+	Port int    `ini:"port" json:"port" comment:"Web 服务监听端口"`
+	Mode string `ini:"mode" json:"mode" comment:"Web 服务模式，debug 调试模式，release 发布模式"`
 }
 
 type Redis struct {

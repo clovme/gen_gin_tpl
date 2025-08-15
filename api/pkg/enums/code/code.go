@@ -74,8 +74,8 @@ func (c ResponseCode) Desc() string {
 	return "未知错误或异常，请检查请求参数或联系管理员"
 }
 
-// Enum 获取枚举值
-func (c ResponseCode) Enum() int {
+// Int 获取枚举值
+func (c ResponseCode) Int() int {
 	return int(c)
 }
 

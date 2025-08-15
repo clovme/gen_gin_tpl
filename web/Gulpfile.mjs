@@ -23,7 +23,8 @@ const sass = gulpSass(dartSass);
 const bs = browserSync.create();
 
 const conf = {
-    dest: '../api/public/web',
+    dest: '../api/public/web/templates/views',
+    destAssets: '../api/public/web/static/assets',
     src: 'src',
     watch: {events: ['add', 'change', 'unlink'], queue: true},
 };
@@ -31,6 +32,7 @@ const conf = {
 const isDev = process.env.MODE === 'development';
 if (isDev) {
     conf.dest = 'dist'
+    conf.destAssets = 'dist/assets'
 }
 
 // 正则
@@ -47,11 +49,11 @@ const hostReplace =()  => {
 }
 
 // 删除文件
-const cleanCss = () => deleteAsync([`${conf.dest}/assets/css`], {force: true});
-const cleanJs = () => deleteAsync([`${conf.dest}/assets/js`], {force: true});
-const cleanImg = () => deleteAsync([`${conf.dest}/assets/images`], {force: true});
+const cleanCss = () => deleteAsync([`${conf.destAssets}/css`], {force: true});
+const cleanJs = () => deleteAsync([`${conf.destAssets}/js`], {force: true});
+const cleanImg = () => deleteAsync([`${conf.destAssets}/images`], {force: true});
 const cleanHtml = () => deleteAsync([`${conf.dest}/*.html`], {force: true});
-const cleanPlugins = () => deleteAsync([`${conf.dest}/assets/plugins`], {force: true});
+const cleanPlugins = () => deleteAsync([`${conf.destAssets}/plugins`], {force: true});
 
 // 处理 HTML
 const html = series(cleanHtml, () =>
@@ -59,8 +61,8 @@ const html = series(cleanHtml, () =>
         .pipe(revCollector({
             replaceReved: true,
             dirReplacements: {
-                js: conf.dest,
-                css: conf.dest,
+                js: conf.destAssets,
+                css: conf.destAssets,
             },
         }))
         .pipe(replace('__LOCALHOST__', hostReplace()))
@@ -73,28 +75,28 @@ const html = series(cleanHtml, () =>
 
 // 编译SCSS → CSS
 const css = series(cleanCss, () =>
-    src(`${conf.src}/assets/css/**/*.scss`)
+    src(`${conf.src}/assets/views/css/**/*.scss`)
         .pipe(gulpIf(isDev, sourcemaps.init()))
         .pipe(sass().on('error', sass.logError))
         .pipe(replace(/url\(([^)]+)\.scss\)/g, "url($1.css)"))
-        .pipe(gulpIf(isDev, dest(`${conf.dest}/assets/css/`)))
+        .pipe(gulpIf(isDev, dest(`${conf.destAssets}/css/`)))
         .pipe(postcss([autoprefixer()]))
         .pipe(gulpIf(!isDev, cssnano()))
         // .pipe(gulpIf(!isDev, rename({suffix: '.min'})))
         .pipe(gulpIf(isDev, sourcemaps.write('./maps', {addComment: false})))
-        .pipe(gulpIf(!isDev, dest(`${conf.dest}/assets/css/`)))
+        .pipe(gulpIf(!isDev, dest(`${conf.destAssets}/css/`)))
         .pipe(bs.stream())
 );
 
 // 编译JS
 const js = series(cleanJs, () => {
-    const source = src(`${conf.src}/assets/js/**/*.js`)
+    const source = src(`${conf.src}/assets/views/js/**/*.js`)
         .pipe(replace('__LOCALHOST__', hostReplace()))
         .pipe(gulpIf(isDev, sourcemaps.init()));
     const sourceClone = source.pipe(clone());
 
     // 原文件
-    source.pipe(gulpIf(isDev, dest(`${conf.dest}/assets/js/`)));
+    source.pipe(gulpIf(isDev, dest(`${conf.destAssets}/js/`)));
 
     // 压缩文件
     sourceClone
@@ -102,7 +104,7 @@ const js = series(cleanJs, () => {
         .pipe(gulpIf(!isDev, terser()))
         // .pipe(gulpIf(!isDev, rename({suffix: '.min'})))
         .pipe(gulpIf(isDev, sourcemaps.write('./maps', {addComment: false})))
-        .pipe(gulpIf(!isDev, dest(`${conf.dest}/assets/js/`)))
+        .pipe(gulpIf(!isDev, dest(`${conf.destAssets}/js/`)))
         .pipe(bs.stream());
 
     return sourceClone;
@@ -110,15 +112,15 @@ const js = series(cleanJs, () => {
 
 // 复制图片
 const images = series(cleanImg, () =>
-    src(`${conf.src}/assets/images/**`, {encoding: false})
-        .pipe(dest(`${conf.dest}/assets/images/`))
+    src(`${conf.src}/assets/views/images/**`, {encoding: false})
+        .pipe(dest(`${conf.destAssets}/images/`))
         .pipe(bs.stream())
 );
 
 // 复制插件文件
 const plugins = series(cleanPlugins, () =>
-    src(`${conf.src}/assets/plugins/**`, {encoding: false})
-        .pipe(dest(`${conf.dest}/assets/plugins/`))
+    src(`${conf.src}/assets/views/plugins/**`, {encoding: false})
+        .pipe(dest(`${conf.destAssets}/plugins/`))
         .pipe(bs.stream())
 );
 
@@ -139,16 +141,16 @@ const watchFiles = (cb) => {
         notify: false,
     });
 
-    watch(`${conf.src}/assets/js/**/*.js`, conf.watch, js);
-    watch(`${conf.src}/assets/css/**/*.scss`, conf.watch, css);
+    watch(`${conf.src}/assets/views/js/**/*.js`, conf.watch, js);
+    watch(`${conf.src}/assets/views/css/**/*.scss`, conf.watch, css);
     watch(`${conf.src}/*.html`, conf.watch, html);
     watch(`${conf.src}/assets/plugins/**/*.*`, conf.watch, plugins);
     watch(
         [
-            `${conf.src}/assets/images/**/*.png`,
-            `${conf.src}/assets/images/**/*.jpg`,
-            `${conf.src}/assets/images/**/*.jpeg`,
-            `${conf.src}/assets/images/**/*.gif`,
+            `${conf.src}/assets/views/images/**/*.png`,
+            `${conf.src}/assets/views/images/**/*.jpg`,
+            `${conf.src}/assets/views/images/**/*.jpeg`,
+            `${conf.src}/assets/views/images/**/*.gif`,
         ],
         conf.watch,
         images

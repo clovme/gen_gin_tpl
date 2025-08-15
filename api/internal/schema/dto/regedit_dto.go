@@ -3,18 +3,19 @@ package dto
 import (
 	"errors"
 	"gen_gin_tpl/pkg/variable"
-	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
 type RegeditDTO struct {
-	Context         *gin.Context `json:"-"`
-	Email           string       `json:"email" binding:"required,emailValid,uniqueEmailValid"`
-	Username        string       `json:"username" binding:"required,usernameValid,uniqueUsernameValid"`
-	EmailCode       string       `json:"email_code" binding:"required,regeditEmailCodeValid"`
-	Password        string       `json:"password" binding:"required,passwordValid"`
-	ConfirmPassword string       `json:"confirm_password" binding:"required,eqfield=Password"`
-	Captcha         string       `json:"captcha" binding:"required,regeditCaptchaValid"`
+	CaptchaID       string `json:"-"`
+	EmailID         string `json:"-"`
+	Phone           string `json:"-"`
+	Email           string `json:"email" binding:"required,emailValid,uniqueEmailValid"`
+	Username        string `json:"username" binding:"required,usernameValid,uniqueUsernameValid"`
+	EmailCode       string `json:"email_code" binding:"required,regeditEmailCodeValid"`
+	Password        string `json:"password" binding:"required,passwordValid"`
+	ConfirmPassword string `json:"confirm_password" binding:"required,eqfield=Password"`
+	Captcha         string `json:"captcha" binding:"required,regeditCaptchaValid"`
 }
 
 func (l RegeditDTO) TranslateError(err error) map[string]string {

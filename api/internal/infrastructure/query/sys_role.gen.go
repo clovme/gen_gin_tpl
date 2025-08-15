@@ -37,7 +37,7 @@ func newRole(db *gorm.DB, opts ...gen.DOOption) role {
 	_role.RoleGroupID = field.NewInt64(tableName, "role_group_id")
 	_role.CreatedAt = field.NewTime(tableName, "created_at")
 	_role.UpdatedAt = field.NewTime(tableName, "updated_at")
-	_role.DeletedAt = field.NewTime(tableName, "deleted_at")
+	_role.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_role.fillFieldMap()
 
@@ -48,17 +48,17 @@ type role struct {
 	roleDo
 
 	ALL         field.Asterisk
-	ID          field.Int64
-	Name        field.String
-	Type        field.Int
-	Code        field.String
-	CreatedBy   field.Int64
-	Description field.String
-	Status      field.Int
-	RoleGroupID field.Int64
-	CreatedAt   field.Time
-	UpdatedAt   field.Time
-	DeletedAt   field.Time
+	ID          field.Int64  // 角色ID，主键
+	Name        field.String // 角色名称
+	Type        field.Int    // 角色类型
+	Code        field.String // 角色编码（英文唯一）
+	CreatedBy   field.Int64  // 创建人ID
+	Description field.String // 角色说明
+	Status      field.Int    // 状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)
+	RoleGroupID field.Int64  // 角色组ID
+	CreatedAt   field.Time   // 创建时间
+	UpdatedAt   field.Time   // 更新时间
+	DeletedAt   field.Field  // 软删除标记，空值表示未删除*
 
 	fieldMap map[string]field.Expr
 }
@@ -85,7 +85,7 @@ func (r *role) updateTableName(table string) *role {
 	r.RoleGroupID = field.NewInt64(table, "role_group_id")
 	r.CreatedAt = field.NewTime(table, "created_at")
 	r.UpdatedAt = field.NewTime(table, "updated_at")
-	r.DeletedAt = field.NewTime(table, "deleted_at")
+	r.DeletedAt = field.NewField(table, "deleted_at")
 
 	r.fillFieldMap()
 

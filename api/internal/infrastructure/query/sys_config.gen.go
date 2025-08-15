@@ -36,6 +36,7 @@ func newConfig(db *gorm.DB, opts ...gen.DOOption) config {
 	_config.Description = field.NewString(tableName, "description")
 	_config.CreatedAt = field.NewTime(tableName, "created_at")
 	_config.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_config.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_config.fillFieldMap()
 
@@ -46,15 +47,16 @@ type config struct {
 	configDo
 
 	ALL         field.Asterisk
-	ID          field.Int64
-	Name        field.String
-	Value       field.String
-	Default     field.String
-	Show        field.Int
-	Status      field.Int
-	Description field.String
-	CreatedAt   field.Time
-	UpdatedAt   field.Time
+	ID          field.Int64  // 配置项ID，主键
+	Name        field.String // 配置项名称
+	Value       field.String // 当前配置值
+	Default     field.String // 默认配置值
+	Show        field.Int    // 是否启用
+	Status      field.Int    // 状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)
+	Description field.String // 配置项说明
+	CreatedAt   field.Time   // 创建时间
+	UpdatedAt   field.Time   // 更新时间
+	DeletedAt   field.Field  // 软删除标记，空值表示未删除
 
 	fieldMap map[string]field.Expr
 }
@@ -80,6 +82,7 @@ func (c *config) updateTableName(table string) *config {
 	c.Description = field.NewString(table, "description")
 	c.CreatedAt = field.NewTime(table, "created_at")
 	c.UpdatedAt = field.NewTime(table, "updated_at")
+	c.DeletedAt = field.NewField(table, "deleted_at")
 
 	c.fillFieldMap()
 
@@ -96,7 +99,7 @@ func (c *config) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (c *config) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 9)
+	c.fieldMap = make(map[string]field.Expr, 10)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["name"] = c.Name
 	c.fieldMap["value"] = c.Value
@@ -106,6 +109,7 @@ func (c *config) fillFieldMap() {
 	c.fieldMap["description"] = c.Description
 	c.fieldMap["created_at"] = c.CreatedAt
 	c.fieldMap["updated_at"] = c.UpdatedAt
+	c.fieldMap["deleted_at"] = c.DeletedAt
 }
 
 func (c config) clone(db *gorm.DB) config {

@@ -31,7 +31,6 @@ func newToken(db *gorm.DB, opts ...gen.DOOption) token {
 	_token.UserID = field.NewInt64(tableName, "user_id")
 	_token.Token = field.NewString(tableName, "token")
 	_token.Type = field.NewString(tableName, "type")
-	_token.ExpiresAt = field.NewTime(tableName, "expires_at")
 	_token.Revoked = field.NewBool(tableName, "revoked")
 	_token.CreatedAt = field.NewTime(tableName, "created_at")
 	_token.UpdatedAt = field.NewTime(tableName, "updated_at")
@@ -45,14 +44,13 @@ type token struct {
 	tokenDo
 
 	ALL       field.Asterisk
-	ID        field.Int64
-	UserID    field.Int64
-	Token     field.String
-	Type      field.String
-	ExpiresAt field.Time
-	Revoked   field.Bool
-	CreatedAt field.Time
-	UpdatedAt field.Time
+	ID        field.Int64  // 令牌ID，主键
+	UserID    field.Int64  // 关联的用户ID，外键
+	Token     field.String // 令牌字符串，通常长点
+	Type      field.String // 令牌类型，比如 access、refresh、api、admin
+	Revoked   field.Bool   // 是否被吊销
+	CreatedAt field.Time   // 创建时间
+	UpdatedAt field.Time   // 更新时间
 
 	fieldMap map[string]field.Expr
 }
@@ -73,7 +71,6 @@ func (t *token) updateTableName(table string) *token {
 	t.UserID = field.NewInt64(table, "user_id")
 	t.Token = field.NewString(table, "token")
 	t.Type = field.NewString(table, "type")
-	t.ExpiresAt = field.NewTime(table, "expires_at")
 	t.Revoked = field.NewBool(table, "revoked")
 	t.CreatedAt = field.NewTime(table, "created_at")
 	t.UpdatedAt = field.NewTime(table, "updated_at")
@@ -93,12 +90,11 @@ func (t *token) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (t *token) fillFieldMap() {
-	t.fieldMap = make(map[string]field.Expr, 8)
+	t.fieldMap = make(map[string]field.Expr, 7)
 	t.fieldMap["id"] = t.ID
 	t.fieldMap["user_id"] = t.UserID
 	t.fieldMap["token"] = t.Token
 	t.fieldMap["type"] = t.Type
-	t.fieldMap["expires_at"] = t.ExpiresAt
 	t.fieldMap["revoked"] = t.Revoked
 	t.fieldMap["created_at"] = t.CreatedAt
 	t.fieldMap["updated_at"] = t.UpdatedAt

@@ -8,7 +8,6 @@ import (
 )
 
 // LogMiddleware 请求日志中间件
-// LogMiddleware 请求日志中间件
 func LogMiddleware(threshold time.Duration) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now() // ⚠️ 注意：放在 c.Next() 之前

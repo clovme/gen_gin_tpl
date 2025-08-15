@@ -24,6 +24,7 @@ func _field(_log *zerolog.Event, c *gin.Context) *zerolog.Event {
 	return _log.Str("Method", c.Request.Method).
 		Str("TraceID", c.GetHeader("X-Trace-Id")).
 		Int("Status", c.Writer.Status()).
+		Str("X-Requested-With", c.GetHeader("X-Requested-With")).
 		Str("ClientIP", c.ClientIP()).
 		Str("UserAgent", c.Request.UserAgent()).
 		Str("Path", c.Request.URL.Path).
@@ -57,9 +58,12 @@ func _addDebugFields(_log *zerolog.Event, c *gin.Context) *zerolog.Event {
 		Bytes("Body", bodyBytes).
 		Interface("Header", c.Request.Header).
 		Interface("Query", c.Request.URL.Query()).
-		Interface("Form", c.Request.PostForm).
+		Interface("PostForm", c.Request.PostForm).
+		Interface("Form", c.Request.Form).
+		Interface("Body", c.Request.Body).
+		Interface("TransferEncoding", c.Request.TransferEncoding).
 		Interface("MultipartForm", c.Request.MultipartForm).
-		Str("RemoteAddr", c.Request.RemoteAddr).
+		Interface("RemoteAddr", c.Request.RemoteAddr).
 		Interface("TLS", c.Request.TLS).
 		Interface("Response", c.Writer)
 }

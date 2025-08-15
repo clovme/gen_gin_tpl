@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type WebUserVO struct {
+type LoginUserVO struct {
 	ID          int64         `json:"id"`
 	Username    string        `json:"username"`
 	Email       string        `json:"email"`

@@ -10,7 +10,7 @@ import (
 
 // InitializationLogger 初始化日志
 func InitializationLogger() {
-	path, err := file.GetFileAbsPath(cfg.CLogger.LogPath, "")
+	path, err := file.GetFileAbsPath(cfg.CLogger.LogPath)
 	if err != nil {
 		fmt.Println("获取日志目录失败:", err)
 		os.Exit(-1)

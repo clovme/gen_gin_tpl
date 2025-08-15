@@ -5,7 +5,7 @@ import (
 	modelAuth "gen_gin_tpl/internal/models/auth"
 	"gen_gin_tpl/pkg/enums/perm"
 	"gen_gin_tpl/pkg/logger/log"
-	"path/filepath"
+	"gen_gin_tpl/pkg/pwd"
 	"strings"
 )
 
@@ -17,12 +17,8 @@ func (d *InitData) Permission() {
 		if strings.HasSuffix(route.Path, "*filepath") {
 			continue
 		}
-		name := filepath.Base(strings.Split(route.Handler, ".(*")[0])
-		if name == "web" {
-			name = perm.Page.Key()
-		}
-		temp := fmt.Sprintf("%s-%s", route.Method, route.Path)
-		modelList = append(modelList, modelAuth.Permission{Name: temp, Code: temp, PID: 0, Type: perm.Code(name), Uri: route.Path, Method: route.Method, Sort: i + 1, Description: route.Path})
+		temp := strings.ToLower(pwd.Encryption(fmt.Sprintf("%s-%s", route.Method, route.Path)))
+		modelList = append(modelList, modelAuth.Permission{Name: route.Name, Code: temp, PID: 0, Type: perm.Code(route.Type), Uri: route.Path, Method: route.Method, Sort: i + 1, Description: route.Name})
 	}
 
 	newModelList := insertIfNotExist[modelAuth.Permission](modelList, func(model modelAuth.Permission) (*modelAuth.Permission, error) {

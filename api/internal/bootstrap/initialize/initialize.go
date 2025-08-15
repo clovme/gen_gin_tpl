@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gen_gin_tpl/internal/bootstrap/database"
 	"gen_gin_tpl/internal/bootstrap/routers"
+	"gen_gin_tpl/internal/core"
 	"gen_gin_tpl/internal/infrastructure/query"
 	"gen_gin_tpl/pkg/captcha"
 	"gen_gin_tpl/pkg/cfg"
@@ -19,8 +20,8 @@ import (
 // Initialization 初始化系统
 // 返回值：
 //   - *gin.Engine 初始化后的Gin引擎
-func Initialization() *gin.Engine {
-	dataPath, err := file.GetFileAbsPath(cfg.COther.DataPath, "")
+func Initialization() *core.Engine {
+	dataPath, err := file.GetFileAbsPath(cfg.COther.DataPath)
 	if err != nil {
 		fmt.Println("获取数据目录失败:", err)
 		os.Exit(-1)
@@ -50,7 +51,7 @@ func Initialization() *gin.Engine {
 	}
 	engine := routers.Initialization(db, static)
 
-	if !file.IsFileExist(variable.ConfigPath) {
+	if !file.IsFileExist(variable.ConfigPath) || gin.IsDebugging() || gin.TestMode == gin.Mode() {
 		if err := database.AutoMigrate(db, query.Q, engine.Routes()); err != nil {
 			log.Error().Err(err).Msg("[初始化]数据库迁移失败！")
 			return nil

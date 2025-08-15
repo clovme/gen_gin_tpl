@@ -1,0 +1,1 @@
+import{A as s}from"./index-Cvc_Iv1t.js";function t(e){return s({url:"/api/pub/admin/permissions/list/all",method:"get",params:e})}function n(e){return s({url:"/api/pub/admin/permissions/save/batch",method:"post",data:e})}function r(e){return s({url:"/api/pub/admin/permissions/delete",method:"delete",data:e})}export{r as d,t as g,n as p};

@@ -12,15 +12,16 @@ import (
 	"gen_gin_tpl/pkg/utils/network"
 	"gen_gin_tpl/pkg/variable"
 	"gen_gin_tpl/public"
+	"io"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/mojocn/base64Captcha"
-	"strings"
-	"time"
 )
 
 func init() {
-	gin.SetMode(gin.ReleaseMode)
 	time.Local = time.UTC
+	gin.SetMode(cfg.CWeb.Mode)
 
 	//u_file.RemoveAllData(variable.ConfigPath, true)
 	//u_file.RemoveAllData(cfg.COther.DataPath, false)
@@ -40,7 +41,7 @@ func init() {
 }
 
 func main() {
-	exePath, err := file.GetFileAbsPath(".", "")
+	exePath, err := file.GetFileAbsPath(".")
 
 	if err != nil {
 		log.Error().Err(err).Msg("获取程序所在路径失败")
@@ -57,20 +58,19 @@ func main() {
 			}
 			time.Sleep(5 * time.Second)
 		}
-		gin.SetMode(gin.ReleaseMode)
+		gin.SetMode(cfg.CWeb.Mode)
 	}
 
+	// 禁用 Gin 框架的日志输出
+	gin.DefaultWriter = io.Discard
 	engine := initialize.Initialization()
 	ip := cfg.CWeb.Host
 	if ip == "0.0.0.0" {
 		ip = network.GetLocalIP(cfg.CWeb.Host)
 	}
 	for i, route := range engine.Routes() {
-		if strings.HasSuffix(route.Path, "*filepath") {
-			continue
-		}
 		method := fmt.Sprintf("[%s]", route.Method)
-		log.Info().Msgf("%03d %-6s http://%s:%d%-30s%-10s%s", i+1, method, ip, cfg.CWeb.Port, route.Path, "->", route.Handler)
+		log.Info().Msgf("%03d %-6s http://%s:%d%-30s%-10s%s", i+1, method, ip, cfg.CWeb.Port, route.Path, "-->", route.Name)
 	}
 
 	log.Info().Msgf("程序所在路径 %s", exePath)

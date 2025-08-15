@@ -40,7 +40,7 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 	_user.Description = field.NewString(tableName, "description")
 	_user.CreatedAt = field.NewTime(tableName, "created_at")
 	_user.UpdatedAt = field.NewTime(tableName, "updated_at")
-	_user.DeletedAt = field.NewTime(tableName, "deleted_at")
+	_user.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_user.fillFieldMap()
 
@@ -51,20 +51,20 @@ type user struct {
 	userDo
 
 	ALL         field.Asterisk
-	ID          field.Int64
-	Username    field.String
-	Email       field.String
-	Phone       field.String
-	Password    field.String
-	Nickname    field.String
-	Avatar      field.String
-	Gender      field.Int
-	Birthday    field.Time
-	Status      field.Int
-	Description field.String
-	CreatedAt   field.Time
-	UpdatedAt   field.Time
-	DeletedAt   field.Time
+	ID          field.Int64  // 用户ID，主键
+	Username    field.String // 用户名，唯一
+	Email       field.String // 邮箱，唯一且必须
+	Phone       field.String // 电话，唯一但可以为空
+	Password    field.String // 密码，别json序列化
+	Nickname    field.String // 昵称，非必填
+	Avatar      field.String // 头像URL
+	Gender      field.Int    // 性别 0未知 1男 2女
+	Birthday    field.Time   // 生日
+	Status      field.Int    // 状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)
+	Description field.String // 个人简介、备注
+	CreatedAt   field.Time   // 创建时间
+	UpdatedAt   field.Time   // 更新时间
+	DeletedAt   field.Field  // 软删除标记，空值表示未删除
 
 	fieldMap map[string]field.Expr
 }
@@ -94,7 +94,7 @@ func (u *user) updateTableName(table string) *user {
 	u.Description = field.NewString(table, "description")
 	u.CreatedAt = field.NewTime(table, "created_at")
 	u.UpdatedAt = field.NewTime(table, "updated_at")
-	u.DeletedAt = field.NewTime(table, "deleted_at")
+	u.DeletedAt = field.NewField(table, "deleted_at")
 
 	u.fillFieldMap()
 

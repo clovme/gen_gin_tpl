@@ -44,8 +44,8 @@ func (c Status) Desc() string {
 	return initiate[c].Desc
 }
 
-// Enum 获取枚举值
-func (c Status) Enum() int {
+// Int 获取枚举值
+func (c Status) Int() int {
 	return int(c)
 }
 

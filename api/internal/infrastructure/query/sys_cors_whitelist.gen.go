@@ -44,13 +44,13 @@ type corsWhitelist struct {
 	corsWhitelistDo
 
 	ALL         field.Asterisk
-	ID          field.Int64
-	Origin      field.String
-	Description field.String
-	Status      field.Int
-	CreatedAt   field.Time
-	UpdatedAt   field.Time
-	DeletedAt   field.Field
+	ID          field.Int64  // 跨域白名单ID，主键
+	Origin      field.String // 跨域白名单
+	Description field.String // 跨域白名单描述
+	Status      field.Int    // 状态
+	CreatedAt   field.Time   // 创建时间
+	UpdatedAt   field.Time   // 更新时间
+	DeletedAt   field.Field  // 软删除标记，空值表示未删除
 
 	fieldMap map[string]field.Expr
 }

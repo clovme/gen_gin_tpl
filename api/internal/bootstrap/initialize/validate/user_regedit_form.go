@@ -3,8 +3,6 @@ package validate
 import (
 	"gen_gin_tpl/internal/schema/dto"
 	"gen_gin_tpl/pkg/cfg"
-	"gen_gin_tpl/pkg/constants"
-	"gen_gin_tpl/pkg/session"
 	"gen_gin_tpl/pkg/utils/email"
 	"gen_gin_tpl/pkg/variable"
 	"github.com/go-playground/validator/v10"
@@ -22,10 +20,8 @@ func RegeditCaptchaValid(fl validator.FieldLevel) bool {
 		return false
 	}
 
-	captchaId := session.GetCaptchaID(_form.Context, constants.CaptchaSuffix)
-
 	// 校验验证码是否匹配
-	return variable.CaptchaStore.Verify(captchaId, value, true)
+	return variable.CaptchaStore.Verify(_form.CaptchaID, value, true)
 }
 
 // RegeditEmailCodeValid 邮箱验证码校验器
@@ -39,8 +35,6 @@ func RegeditEmailCodeValid(fl validator.FieldLevel) bool {
 		return false
 	}
 
-	emailId := email.GetEmailId(_form.Context, _form.Email)
-
 	// 校验验证码是否匹配
-	return email.IsEmailCodeValue(emailId, value)
+	return email.IsEmailValue(_form.EmailID, value)
 }

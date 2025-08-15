@@ -3,10 +3,8 @@ package captcha
 import (
 	"encoding/base64"
 	"fmt"
-	"gen_gin_tpl/pkg/constants"
-	"gen_gin_tpl/pkg/session"
+	"gen_gin_tpl/internal/core"
 	"gen_gin_tpl/pkg/utils/array"
-	"github.com/gin-gonic/gin"
 	"github.com/mojocn/base64Captcha"
 	"strings"
 )
@@ -31,7 +29,7 @@ func base64DecodeImage(b64Str string) ([]byte, error) {
 //   - b64s   验证码图片 Base64 字符串
 //   - answer 验证码答案
 //   - err    错误信息
-func NewGenerate(c *gin.Context) (imageBytes []byte, err error) {
+func NewGenerate(s core.Session) (imageBytes []byte, err error) {
 	captcha := array.RandomArray[*base64Captcha.Captcha](captchaList)
 
 	_, content, answer := captcha.Driver.GenerateIdQuestionAnswer()
@@ -40,9 +38,7 @@ func NewGenerate(c *gin.Context) (imageBytes []byte, err error) {
 		return nil, err
 	}
 
-	id := session.GetCaptchaID(c, constants.CaptchaSuffix)
-
-	if err = captcha.Store.Set(id, answer); err != nil {
+	if err = captcha.Store.Set(s.GetImageCaptchaID(), answer); err != nil {
 		return nil, err
 	}
 	imageBytes, err = base64DecodeImage(item.EncodeB64string())

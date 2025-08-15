@@ -11,6 +11,11 @@ type ApiPublicRepository struct {
 	Q  *query.Query
 }
 
+// GetAllEnums 获取所有枚举
+//
+// 返回值:
+//   - []*publicVO.ApiEnumsVO: 枚举列表
+//   - error: 错误信息
 func (r *ApiPublicRepository) GetAllEnums() ([]*publicVO.ApiEnumsVO, error) {
 	var results []*publicVO.ApiEnumsVO
 	err := r.Q.Enums.Scan(&results)

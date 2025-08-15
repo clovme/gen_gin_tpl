@@ -16,31 +16,31 @@ func (d *InitData) Enums() {
 	var modelList []models.Enums
 
 	for i, enum := range role.Values() {
-		modelList = append(modelList, models.Enums{Category: role.Name, Key: enum.Key(), Name: enum.Name(), Value: enum.Enum(), ValueT: dtype.Int.Enum(), Sort: i + 1, Description: enum.Desc()})
+		modelList = append(modelList, models.Enums{Category: role.Name, Key: enum.Key(), Name: enum.Name(), Value: enum.Int(), ValueT: dtype.Int.Int(), Sort: i + 1, Description: enum.Desc()})
 	}
 
 	for i, enum := range gender.Values() {
-		modelList = append(modelList, models.Enums{Category: gender.Name, Key: enum.Key(), Name: enum.Name(), Value: enum.Enum(), ValueT: dtype.Int.Enum(), Sort: i + 1, Description: enum.Desc()})
+		modelList = append(modelList, models.Enums{Category: gender.Name, Key: enum.Key(), Name: enum.Name(), Value: enum.Int(), ValueT: dtype.Int.Int(), Sort: i + 1, Description: enum.Desc()})
 	}
 
 	for i, enum := range code.Values() {
-		modelList = append(modelList, models.Enums{Category: code.Name, Key: enum.Key(), Name: enum.Name(), Value: enum.Enum(), ValueT: dtype.Int.Enum(), Sort: i + 1, Description: enum.Desc()})
+		modelList = append(modelList, models.Enums{Category: code.Name, Key: enum.Key(), Name: enum.Name(), Value: enum.Int(), ValueT: dtype.Int.Int(), Sort: i + 1, Description: enum.Desc()})
 	}
 
 	for i, enum := range status.Values() {
-		modelList = append(modelList, models.Enums{Category: status.Name, Key: enum.Key(), Name: enum.Name(), Value: enum.Enum(), ValueT: dtype.Int.Enum(), Sort: i + 1, Description: enum.Desc()})
+		modelList = append(modelList, models.Enums{Category: status.Name, Key: enum.Key(), Name: enum.Name(), Value: enum.Int(), ValueT: dtype.Int.Int(), Sort: i + 1, Description: enum.Desc()})
 	}
 
 	for i, enum := range perm.Values() {
-		modelList = append(modelList, models.Enums{Category: perm.Name, Key: enum.Key(), Name: enum.Name(), Value: enum.Enum(), ValueT: dtype.Int.Enum(), Sort: i + 1, Description: enum.Desc()})
+		modelList = append(modelList, models.Enums{Category: perm.Name, Key: enum.Key(), Name: enum.Name(), Value: enum.Int(), ValueT: dtype.Int.Int(), Sort: i + 1, Description: enum.Desc()})
 	}
 
 	for i, enum := range dtype.Values() {
-		modelList = append(modelList, models.Enums{Category: dtype.Name, Key: enum.Key(), Name: enum.Name(), Value: enum.Enum(), ValueT: dtype.Int.Enum(), Sort: i + 1, Description: enum.Desc()})
+		modelList = append(modelList, models.Enums{Category: dtype.Name, Key: enum.Key(), Name: enum.Name(), Value: enum.Int(), ValueT: dtype.Int.Int(), Sort: i + 1, Description: enum.Desc()})
 	}
 
 	for i, enum := range boolean.Values() {
-		modelList = append(modelList, models.Enums{Category: boolean.Name, Key: enum.Key(), Name: enum.Name(), Value: enum.Enum(), ValueT: dtype.Int.Enum(), Sort: i + 1, Description: enum.Desc()})
+		modelList = append(modelList, models.Enums{Category: boolean.Name, Key: enum.Key(), Name: enum.Name(), Value: enum.Int(), ValueT: dtype.Int.Int(), Sort: i + 1, Description: enum.Desc()})
 	}
 
 	newModelList := insertIfNotExist[models.Enums](modelList, func(model models.Enums) (*models.Enums, error) {

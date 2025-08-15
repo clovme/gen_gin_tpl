@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 // IsDirExist 判断文件夹是否存在
@@ -43,20 +42,20 @@ func IsFileExist(filePath string) bool {
 // 返回值：
 //   - outPath 输出路径
 //   - err 错误信息
-func GetFileAbsPath(inPath, filename string) (outPath string, err error) {
+func GetFileAbsPath(inPath string, filename ...string) (outPath string, err error) {
 	if !filepath.IsAbs(inPath) {
 		ex, err_ := os.Executable()
 		if err_ != nil {
 			err = fmt.Errorf("获取可执行文件路径失败: %w", err_)
 		} else {
-			inPath = strings.ReplaceAll(filepath.Join(filepath.Dir(ex), inPath), "\\", "/")
+			inPath = filepath.ToSlash(filepath.Join(filepath.Dir(ex), inPath))
 		}
 	}
 
-	if strings.TrimSpace(filename) == "" {
+	if len(filename) == 0 {
 		outPath = inPath
 	} else {
-		outPath = filepath.Join(inPath, filename)
+		outPath = filepath.ToSlash(filepath.Join(inPath, filepath.Join(filename...)))
 	}
 	return
 }

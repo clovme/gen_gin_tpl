@@ -11,7 +11,6 @@ const (
 	PrivatePEM         = "private_pem"           // 私钥, 用于加密解密
 	WebTitle           = "web_title"             // 站点标题标志
 	Countdown          = "countdown"             // 倒计时标记
-	ClientID           = "client_id"             // 客户端ID
-	CaptchaSuffix      = "images_captcha_suffix" // 图片验证码后缀
-	UserSessionID      = "user_session_id"       // 用户会话ID
+	ContextUserInfo    = "context_user_info"     // 用户信息
+	IsContextLogin     = "is_context_login"      // 用户登录状态标识
 )

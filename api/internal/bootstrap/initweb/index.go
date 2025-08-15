@@ -31,7 +31,7 @@ func getRandomPort() int {
 
 // StartInitializeWeb 启动初始化服务
 func StartInitializeWeb() {
-	exePath, err := file.GetFileAbsPath(".", "")
+	exePath, err := file.GetFileAbsPath(".")
 
 	if err != nil {
 		fmt.Printf("获取程序所在路径失败: %v\n", err)
@@ -63,11 +63,11 @@ func StartInitializeWeb() {
 
 	port := network.GetPort(getRandomPort())
 	server = &http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
+		Addr:    fmt.Sprintf("%s:%d", network.GetLanIP(), port),
 		Handler: engine,
 	}
 
-	fmt.Printf("初始化服务启动完成，访问 http://%s:%d 进行初始化配置, 程序所在路径: %s\n", network.GetLanIP(), port, exePath)
+	fmt.Printf("初始化服务启动完成，访问 http://%s 进行初始化配置, 程序所在路径: %s\n", server.Addr, exePath)
 
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		fmt.Printf("初始化服务异常退出: %v\n", err)

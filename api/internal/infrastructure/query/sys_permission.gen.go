@@ -39,7 +39,7 @@ func newPermission(db *gorm.DB, opts ...gen.DOOption) permission {
 	_permission.Description = field.NewString(tableName, "description")
 	_permission.CreatedAt = field.NewTime(tableName, "created_at")
 	_permission.UpdatedAt = field.NewTime(tableName, "updated_at")
-	_permission.DeletedAt = field.NewTime(tableName, "deleted_at")
+	_permission.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_permission.fillFieldMap()
 
@@ -50,19 +50,19 @@ type permission struct {
 	permissionDo
 
 	ALL         field.Asterisk
-	ID          field.Int64
-	Name        field.String
-	Code        field.String
-	PID         field.Int64
-	Type        field.Int
-	Uri         field.String
-	Method      field.String
-	Sort        field.Int
-	Status      field.Int
-	Description field.String
-	CreatedAt   field.Time
-	UpdatedAt   field.Time
-	DeletedAt   field.Time
+	ID          field.Int64  // 权限ID，主键
+	Name        field.String // 权限名称，必填，唯一
+	Code        field.String // 权限标识（唯一英文编码，建议全小写下划线）
+	PID         field.Int64  // 父级权限ID，0表示顶级节点
+	Type        field.Int    // 权限类型：menu（菜单）/ button（按钮）/ api（接口）
+	Uri         field.String // 路由路径或接口地址，菜单或接口必填
+	Method      field.String // HTTP请求方式（GET/POST/PUT/DELETE），仅api类型使用
+	Sort        field.Int    // 排序值，值越大越靠前，默认0
+	Status      field.Int    // 状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)
+	Description field.String // 权限描述，便于备注说明
+	CreatedAt   field.Time   // 创建时间
+	UpdatedAt   field.Time   // 更新时间
+	DeletedAt   field.Field  // 软删除标记，空值表示未删除
 
 	fieldMap map[string]field.Expr
 }
@@ -91,7 +91,7 @@ func (p *permission) updateTableName(table string) *permission {
 	p.Description = field.NewString(table, "description")
 	p.CreatedAt = field.NewTime(table, "created_at")
 	p.UpdatedAt = field.NewTime(table, "updated_at")
-	p.DeletedAt = field.NewTime(table, "deleted_at")
+	p.DeletedAt = field.NewField(table, "deleted_at")
 
 	p.fillFieldMap()
 

@@ -2,18 +2,17 @@ package dto
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
 type LoginDTO struct {
-	Context  *gin.Context `json:"-"`
-	Username string       `json:"username" binding:"required"`
-	Password string       `json:"password" binding:"required"`
-	Captcha  string       `json:"captcha" binding:"required,loginCaptchaValid"`
+	CaptchaID string `json:"-"`
+	Username  string `json:"username" binding:"required"`
+	Password  string `json:"password" binding:"required"`
+	Captcha   string `json:"captcha" binding:"required,loginCaptchaValid"`
 }
 
-func (l LoginDTO) TranslateError(err error) map[string]string {
+func (r LoginDTO) TranslateError(err error) map[string]string {
 	result := make(map[string]string)
 
 	// 判断是不是验证错误

@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	WebTitle             = "暗香浮动月黄昏" // 站点标题名称
+	WebTitle             = "知识库" // 站点标题名称
 	ConfigPath           string
 	IsEnableEncryptedKey bool
 	IsInitialized        atomic.Bool

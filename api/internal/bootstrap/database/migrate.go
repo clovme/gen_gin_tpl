@@ -5,17 +5,56 @@
 package database
 
 import (
+	"errors"
+	"fmt"
 	"gen_gin_tpl/internal/bootstrap/database/initdata"
+	"gen_gin_tpl/internal/core"
 	"gen_gin_tpl/internal/models/auth"
 	"gen_gin_tpl/internal/models"
 	"gen_gin_tpl/internal/infrastructure/query"
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"reflect"
 )
 
-func AutoMigrate(db *gorm.DB, dbq *query.Query, router gin.RoutesInfo) error {
-	err := db.AutoMigrate(
+// autoMigrateWithComments 数据库迁移
+// 自动迁移数据库表结构，支持添加表注释
+//
+// 参数:
+//   - db: *gorm.DB 数据库连接
+//   - tables: []interface{} 表结构体指针和表注释
+//
+// 返回值:
+//   - bool: 迁移是否成功，true表示有错误(有失败)，false表示无错误(全部成功)
+//
+// 注意:
+//   - 该函数会自动迁移数据库表结构，支持添加表注释
+//   - 迁移失败时，会记录错误日志
+func autoMigrateWithComments(db *gorm.DB, tables []interface{}) error {
+	for _, table := range tables {
+		t := reflect.TypeOf(table)
+		comment := t.Name()
+		if method, ok := t.MethodByName("TableComment"); ok {
+			comment = method.Func.Call([]reflect.Value{reflect.ValueOf(table)})[0].String()
+		}
+		if err := db.Set("gorm:table_options", fmt.Sprintf("COMMENT='%s'", comment)).AutoMigrate(table); err != nil {
+			return errors.New(fmt.Sprintf("[(%s)%s]数据库迁移失败: %s，错误信息:%s", t.Name(), comment, t.PkgPath(), err.Error()))
+		}
+	}
+	return nil
+}
+
+// AutoMigrate 数据库迁移
+// 自动迁移数据库表结构，支持添加表注释
+//
+// 参数:
+//   - db: *gorm.DB 数据库连接
+//   - dbq: *query.Query 查询对象
+//   - router: []core.RoutesInfo 路由信息
+//
+// 返回值:
+//   - error: 迁移错误
+func AutoMigrate(db *gorm.DB, dbq *query.Query, router []core.RoutesInfo) error {
+	err := autoMigrateWithComments(db, []interface{}{
 		&auth.Permission{},
 		&auth.Role{},
 		&auth.RoleGroup{},
@@ -26,7 +65,7 @@ func AutoMigrate(db *gorm.DB, dbq *query.Query, router gin.RoutesInfo) error {
 		&models.Enums{},
 		&models.Token{},
 		&models.User{},
-	)
+	})
 
 	if err != nil {
 		return err

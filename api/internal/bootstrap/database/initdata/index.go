@@ -2,13 +2,13 @@ package initdata
 
 import (
 	"errors"
+	"gen_gin_tpl/internal/core"
 	"gen_gin_tpl/internal/infrastructure/query"
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 type InitData struct {
-	Router gin.RoutesInfo
+	Router []core.RoutesInfo
 	Q      *query.Query
 }
 

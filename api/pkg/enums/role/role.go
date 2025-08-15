@@ -59,8 +59,8 @@ func (c Role) Desc() string {
 	return "Custom"
 }
 
-// Enum 获取枚举值
-func (c Role) Enum() int {
+// Int 获取枚举值
+func (c Role) Int() int {
 	return int(c)
 }
 

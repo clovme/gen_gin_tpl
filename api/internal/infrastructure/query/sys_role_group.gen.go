@@ -33,6 +33,7 @@ func newRoleGroup(db *gorm.DB, opts ...gen.DOOption) roleGroup {
 	_roleGroup.Status = field.NewInt(tableName, "status")
 	_roleGroup.CreatedAt = field.NewTime(tableName, "created_at")
 	_roleGroup.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_roleGroup.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_roleGroup.fillFieldMap()
 
@@ -43,12 +44,13 @@ type roleGroup struct {
 	roleGroupDo
 
 	ALL         field.Asterisk
-	ID          field.Int64
-	Name        field.String
-	Description field.String
-	Status      field.Int
-	CreatedAt   field.Time
-	UpdatedAt   field.Time
+	ID          field.Int64  // 角色组ID，主键
+	Name        field.String // 角色组名称
+	Description field.String // 角色组说明
+	Status      field.Int    // 状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)
+	CreatedAt   field.Time   // 创建时间
+	UpdatedAt   field.Time   // 更新时间
+	DeletedAt   field.Field  // 软删除标记，空值表示未删除
 
 	fieldMap map[string]field.Expr
 }
@@ -71,6 +73,7 @@ func (r *roleGroup) updateTableName(table string) *roleGroup {
 	r.Status = field.NewInt(table, "status")
 	r.CreatedAt = field.NewTime(table, "created_at")
 	r.UpdatedAt = field.NewTime(table, "updated_at")
+	r.DeletedAt = field.NewField(table, "deleted_at")
 
 	r.fillFieldMap()
 
@@ -87,13 +90,14 @@ func (r *roleGroup) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (r *roleGroup) fillFieldMap() {
-	r.fieldMap = make(map[string]field.Expr, 6)
+	r.fieldMap = make(map[string]field.Expr, 7)
 	r.fieldMap["id"] = r.ID
 	r.fieldMap["name"] = r.Name
 	r.fieldMap["description"] = r.Description
 	r.fieldMap["status"] = r.Status
 	r.fieldMap["created_at"] = r.CreatedAt
 	r.fieldMap["updated_at"] = r.UpdatedAt
+	r.fieldMap["deleted_at"] = r.DeletedAt
 }
 
 func (r roleGroup) clone(db *gorm.DB) roleGroup {

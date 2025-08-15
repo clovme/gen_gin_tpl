@@ -6,31 +6,34 @@ package routers
 
 import (
 	"gen_gin_tpl/internal/bootstrap"
-	"github.com/gin-gonic/gin"
+	"gen_gin_tpl/internal/core"
 	"gorm.io/gorm"
 )
 
 type routeGroup struct {
-	noAuthView *gin.RouterGroup
-	public *gin.RouterGroup
-	publicView *gin.RouterGroup
+	adminView *core.RouterGroup
+	noAuthView *core.RouterGroup
+	public *core.RouterGroup
+	publicView *core.RouterGroup
 }
 
 func (r *routeGroup) register(db *gorm.DB) {
 	// 初始化仓库和服务
 	ctx := bootstrap.NewAppContext(db)
 
-	r.noAuthView.GET("/login.html", ctx.WebViewsHandler.ViewsLoginHandler)
-	r.noAuthView.POST("/login.html", ctx.WebViewsHandler.PostViewsLoginHandler)
-	r.noAuthView.GET("/regedit.html", ctx.WebViewsHandler.ViewsRegeditHandler)
-	r.noAuthView.POST("/regedit.html", ctx.WebViewsHandler.PostViewsRegeditHandler)
+	r.adminView.GET("/admin.html", ctx.WebViewsHandler.GetViewsAdminHandler, "web", "后台首页")
 
-	r.public.GET("/public/key", ctx.ApiPublicHandler.GetPublicKey)
-	r.public.GET("/public/enums", ctx.ApiPublicHandler.GetEnumsList)
-	r.public.GET("/public/ping", ctx.ApiPublicHandler.GetPing)
-	r.public.GET("/public/time", ctx.ApiPublicHandler.GetServerTime)
-	r.public.POST("/public/email/code", ctx.ApiPublicHandler.PostSendEmailCaptcha)
+	r.noAuthView.GET("/login.html", ctx.WebViewsHandler.GetViewsLoginHandler, "web", "登录页面")
+	r.noAuthView.POST("/login.html", ctx.WebViewsHandler.PostViewsLoginHandler, "api", "登录处理接口")
+	r.noAuthView.GET("/regedit.html", ctx.WebViewsHandler.GetViewsRegeditHandler, "web", "注册页面")
+	r.noAuthView.POST("/regedit.html", ctx.WebViewsHandler.PostViewsRegeditHandler, "api", "注册处理")
 
-	r.publicView.GET("/public/captcha.png", ctx.WebViewsHandler.GetImagesCaptcha)
-	r.publicView.GET("/", ctx.WebViewsHandler.ViewsIndexHandler)
+	r.public.GET("/public/key", ctx.ApiPublicHandler.GetPublicKey, "api", "公钥")
+	r.public.GET("/public/enums", ctx.ApiPublicHandler.GetEnumsList, "api", "枚举列表")
+	r.public.GET("/public/ping", ctx.ApiPublicHandler.GetPing, "api", "心跳")
+	r.public.GET("/public/time", ctx.ApiPublicHandler.GetServerTime, "api", "服务器时间")
+	r.public.POST("/public/email/code", ctx.ApiPublicHandler.PostSendEmailCaptcha, "api", "发送邮箱验证码")
+
+	r.publicView.GET("/public/captcha.png", ctx.WebViewsHandler.GetImagesCaptcha, "web", "生成验证码")
+	r.publicView.GET("/", ctx.WebViewsHandler.GetViewsIndexHandler, "web", "首页")
 }
