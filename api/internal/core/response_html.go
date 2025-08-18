@@ -30,10 +30,10 @@ func (r *Context) HTML(name string, title string, data any) {
 	r.Context.HTML(http.StatusOK, name, viewData{
 		Data:          data,
 		PageTitle:     title,
-		WebTitle:      variable.WebTitle,
+		WebTitle:      r.Config.GetWebTitle(),
 		IsLogin:       r.IsLogin,
 		IsEnableEmail: variable.IsEnableEmail.Load(),
 		ClientID:      r.Session.BrowserClientID(),
-		UserInfo:      getUserInfo(r),
+		UserInfo:      r.UserInfo,
 	})
 }

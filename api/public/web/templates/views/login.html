@@ -28,21 +28,17 @@
 
         <ul class="navbar-nav d-flex mb-lg-0">
             {{- if .IsLogin }}
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">个人中心</a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">个人中心</a></li>
-                    <li><a class="dropdown-item" href="#">消息</a></li>
-                    <li><a class="dropdown-item" href="#">浏览历史</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">注销用户</a></li>
-                </ul>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="/me.html">个人中心</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" aria-current="page" href="#">写作</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" aria-current="page" href="/admin.html">系统管理</a>
+            </li>
+            <li class="nav-item">
+                <button id="logoutBtn" type="button" class="btn btn-link nav-link" aria-current="page">注销登录</button>
             </li>
             {{- else }}
             <li class="nav-item">
@@ -87,11 +83,6 @@
     </div>
 </div>
 
-<script type="application/javascript">
-    eventListener.addLoadEventListener(() => {
-        eventListener.globalOnSwitchCaptcha('.verification-img', '#floatingCaptcha')
-        eventListener.userLoginForm()
-    })
-</script>
+<script type="application/javascript" src="/assets/js/login.js?_t={{ timeStamp }}"></script>
 </body>
 </html>

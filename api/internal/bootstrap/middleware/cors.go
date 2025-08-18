@@ -22,7 +22,7 @@ func CorsMiddleware() gin.HandlerFunc {
 			return
 		}
 		// 从请求头中获取请求的源地址
-		origin := c.Request.Header.Get("Origin")
+		origin := c.GetHeader("Origin")
 
 		// 如果请求源地址被允许，则设置相应的 CORS 响应头
 		// 设置允许访问的源地址为请求的源地址

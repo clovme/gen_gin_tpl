@@ -33,7 +33,6 @@ func newCorsWhitelist(db *gorm.DB, opts ...gen.DOOption) corsWhitelist {
 	_corsWhitelist.Status = field.NewInt(tableName, "status")
 	_corsWhitelist.CreatedAt = field.NewTime(tableName, "created_at")
 	_corsWhitelist.UpdatedAt = field.NewTime(tableName, "updated_at")
-	_corsWhitelist.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_corsWhitelist.fillFieldMap()
 
@@ -50,7 +49,6 @@ type corsWhitelist struct {
 	Status      field.Int    // 状态
 	CreatedAt   field.Time   // 创建时间
 	UpdatedAt   field.Time   // 更新时间
-	DeletedAt   field.Field  // 软删除标记，空值表示未删除
 
 	fieldMap map[string]field.Expr
 }
@@ -73,7 +71,6 @@ func (c *corsWhitelist) updateTableName(table string) *corsWhitelist {
 	c.Status = field.NewInt(table, "status")
 	c.CreatedAt = field.NewTime(table, "created_at")
 	c.UpdatedAt = field.NewTime(table, "updated_at")
-	c.DeletedAt = field.NewField(table, "deleted_at")
 
 	c.fillFieldMap()
 
@@ -90,14 +87,13 @@ func (c *corsWhitelist) GetFieldByName(fieldName string) (field.OrderExpr, bool)
 }
 
 func (c *corsWhitelist) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 7)
+	c.fieldMap = make(map[string]field.Expr, 6)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["origin"] = c.Origin
 	c.fieldMap["description"] = c.Description
 	c.fieldMap["status"] = c.Status
 	c.fieldMap["created_at"] = c.CreatedAt
 	c.fieldMap["updated_at"] = c.UpdatedAt
-	c.fieldMap["deleted_at"] = c.DeletedAt
 }
 
 func (c corsWhitelist) clone(db *gorm.DB) corsWhitelist {

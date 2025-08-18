@@ -4,13 +4,16 @@
 package constants
 
 const (
-	ContextIsEncrypted = "is_encrypted_response" // 上下文是否加密的标识
-	HeaderEncrypted    = "X-Encrypted"           // 加密标识, 用于标识请求是否加密
-	ProjectName        = "gen_gin_tpl"           // 项目名称
-	PublicPEM          = "public_pem"            // 公钥, 用于加密解密
-	PrivatePEM         = "private_pem"           // 私钥, 用于加密解密
-	WebTitle           = "web_title"             // 站点标题标志
-	Countdown          = "countdown"             // 倒计时标记
-	ContextUserInfo    = "context_user_info"     // 用户信息
-	IsContextLogin     = "is_context_login"      // 用户登录状态标识
+	ProjectName     = "gen_gin_tpl" // 项目名称
+	HeaderEncrypted = "X-Encrypted" // 加密标识, 用于标识请求是否加密
+
+	WebTitle           = "WEB_TITLE"             // 站点标题标志
+	PublicPEM          = "PUBLIC_PEM"            // 公钥, 用于加密解密
+	Countdown          = "COUNTDOWN"             // 倒计时标记
+	PrivatePEM         = "PRIVATE_PEM"           // 私钥, 用于加密解密
+	ContextIsEncrypted = "IS_ENCRYPTED_RESPONSE" // 上下文是否加密的标识
+
+	IsContextAjax   = "IS_CONTEXT_AJAX"   // Ajax 请求标识
+	IsContextLogin  = "IS_CONTEXT_LOGIN"  // 用户登录状态标识
+	ContextUserInfo = "CONTEXT_USER_INFO" // 用户信息
 )

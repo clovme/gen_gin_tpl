@@ -37,7 +37,7 @@ func init() {
 				DbName: fmt.Sprintf("%s.db", constants.ProjectName),
 			},
 			MySQL: MySQL{
-				Host:     network.GetLanIP(),
+				Host:     "127.0.0.1",
 				Port:     3306,
 				Username: "root",
 				Password: "",
@@ -89,10 +89,11 @@ func init() {
 				},
 			},
 			Other: Other{
-				IsEmail:   true,
-				DbType:    constants.Redis,
-				CacheType: constants.Memory,
-				DataPath:  "data",
+				IsEmail:      true,
+				DbType:       constants.Redis,
+				IsInitialize: false,
+				CacheType:    constants.Memory,
+				DataPath:     "data",
 			},
 		}
 

@@ -1,4 +1,4 @@
-package initialize
+package boot
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package pwd
+package crypto
 
 import (
 	"crypto/md5"

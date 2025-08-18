@@ -37,7 +37,6 @@ func newRole(db *gorm.DB, opts ...gen.DOOption) role {
 	_role.RoleGroupID = field.NewInt64(tableName, "role_group_id")
 	_role.CreatedAt = field.NewTime(tableName, "created_at")
 	_role.UpdatedAt = field.NewTime(tableName, "updated_at")
-	_role.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_role.fillFieldMap()
 
@@ -58,7 +57,6 @@ type role struct {
 	RoleGroupID field.Int64  // 角色组ID
 	CreatedAt   field.Time   // 创建时间
 	UpdatedAt   field.Time   // 更新时间
-	DeletedAt   field.Field  // 软删除标记，空值表示未删除*
 
 	fieldMap map[string]field.Expr
 }
@@ -85,7 +83,6 @@ func (r *role) updateTableName(table string) *role {
 	r.RoleGroupID = field.NewInt64(table, "role_group_id")
 	r.CreatedAt = field.NewTime(table, "created_at")
 	r.UpdatedAt = field.NewTime(table, "updated_at")
-	r.DeletedAt = field.NewField(table, "deleted_at")
 
 	r.fillFieldMap()
 
@@ -102,7 +99,7 @@ func (r *role) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (r *role) fillFieldMap() {
-	r.fieldMap = make(map[string]field.Expr, 11)
+	r.fieldMap = make(map[string]field.Expr, 10)
 	r.fieldMap["id"] = r.ID
 	r.fieldMap["name"] = r.Name
 	r.fieldMap["type"] = r.Type
@@ -113,7 +110,6 @@ func (r *role) fillFieldMap() {
 	r.fieldMap["role_group_id"] = r.RoleGroupID
 	r.fieldMap["created_at"] = r.CreatedAt
 	r.fieldMap["updated_at"] = r.UpdatedAt
-	r.fieldMap["deleted_at"] = r.DeletedAt
 }
 
 func (r role) clone(db *gorm.DB) role {

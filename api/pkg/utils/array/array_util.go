@@ -29,7 +29,7 @@ func RandomArray[T comparable](arr []T) T {
 //   - value: 指定元素
 //
 // 返回值：
-//   - bool: 是否包含指定元素
+//   - bool: 是否包含指定元素，true表示包含，false表示不包含
 func IsArrayContains[T comparable](arr []T, value T) bool {
 	for _, v := range arr {
 		if v == value {
@@ -37,5 +37,4 @@ func IsArrayContains[T comparable](arr []T, value T) bool {
 		}
 	}
 	return false
-
 }

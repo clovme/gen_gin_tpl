@@ -15,7 +15,7 @@ type CorsWhitelist struct {
 	Status      status.Status  `gorm:"type:int;default:1;comment:状态"`
 	CreatedAt   *time.Time     `gorm:"autoCreateTime:nano;comment:创建时间"`
 	UpdatedAt   *time.Time     `gorm:"autoUpdateTime:nano;comment:更新时间"`
-	DeletedAt   gorm.DeletedAt `gorm:"comment:软删除标记，空值表示未删除"`
+	DeletedAt   gorm.DeletedAt `gorm:"embedded;comment:软删除标记，空值表示未删除"`
 }
 
 func (r *CorsWhitelist) BeforeCreate(tx *gorm.DB) (err error) {

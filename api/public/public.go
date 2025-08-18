@@ -17,10 +17,4 @@ var StaticFS embed.FS
 var InitWebFS embed.FS
 
 //go:embed favicon.ico
-var Favicon embed.FS
-
-//go:embed rsa/public.pem
-var PublicPEM []byte
-
-//go:embed rsa/private.pem
-var PrivatePEM []byte
+var Favicon []byte

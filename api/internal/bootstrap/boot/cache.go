@@ -1,4 +1,4 @@
-package initialize
+package boot
 
 import (
 	"gen_gin_tpl/pkg/cache"

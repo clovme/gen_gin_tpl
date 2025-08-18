@@ -1,13 +1,23 @@
 package core
 
 import (
+	"fmt"
+	"gen_gin_tpl/pkg/cfg"
+	"gen_gin_tpl/pkg/logger/log"
+	"gen_gin_tpl/pkg/utils/cert"
+	"gen_gin_tpl/pkg/utils/file"
+	"gen_gin_tpl/pkg/utils/network"
+	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"strings"
+	"sort"
 )
 
 // Engine 自定义gin.Engine
 type Engine struct {
-	*gin.Engine
+	Engine *gin.Engine
+	RouterGroup
 }
 
 // Use 注册中间件
@@ -48,33 +58,102 @@ func (engine *Engine) NoRoute(handler HandlerFunc) {
 // 说明:
 //   - 注册路由组，用于组织和管理相关的路由。
 func (engine *Engine) Group(relativePath string, handlers ...HandlerFunc) *RouterGroup {
-	handlerList := make([]gin.HandlerFunc, 0)
-	for _, h := range handlers {
-		handlerList = append(handlerList, wrapHandler(h))
-	}
-	return &RouterGroup{
-		RouterGroup: engine.Engine.Group(relativePath, handlerList...),
-	}
+	return groupFunc(engine.RouterGroup, relativePath, handlers...)
 }
 
-func (engine *Engine) Routes() (routes []RoutesInfo) {
-	rInfo := make([]RoutesInfo, 0)
-	for _, route := range engine.Engine.Routes() {
-		if strings.HasSuffix(route.Path, "*filepath") {
-			continue
-		}
-		for _, info := range routesInfo {
-			if route.Method == info.Method && strings.HasSuffix(route.Path, info.Path) {
-				rInfo = append(rInfo, RoutesInfo{
-					Method: route.Method,
-					Path:   route.Path,
-					Name:   info.Name,
-					Type:   info.Type,
-				})
-			}
+// Routes 获取所有路由信息
+//
+// 返回值:
+//   - []RoutesInfo: 路由信息列表
+//
+// 说明:
+//   - 获取所有注册的路由信息，包括路由路径、请求方法、路由名称、路由类型和路由描述。
+func (engine *Engine) Routes() []RoutesInfo {
+	engine.checkDuplicateRoutes()
+	// 预设方法顺序
+	methodSort := []string{"GET", "POST", "PUT", "DELETE"}
+	methodSet := make(map[string]struct{}, len(methodSort))
+	for _, m := range methodSort {
+		methodSet[m] = struct{}{}
+	}
+
+	// 分类存储
+	methodRoutes := make(map[string][]RoutesInfo)
+
+	// 收集所有 key 并排序
+	keys := make([]string, 0, len(routesInfo))
+	for k := range routesInfo {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys) // 字典序
+
+	// 遍历 routesInfo 分类到 methodRoutes，同时动态扩展 methodSort
+	for _, k := range keys {
+		info := routesInfo[k]
+		methodRoutes[info.Method] = append(methodRoutes[info.Method], info)
+		if _, ok := methodSet[info.Method]; !ok {
+			methodSort = append(methodSort, info.Method)
+			methodSet[info.Method] = struct{}{}
 		}
 	}
-	return rInfo
+
+	// 拼接最终结果
+	result := make([]RoutesInfo, 0, len(routesInfo))
+	for _, m := range methodSort {
+		result = append(result, methodRoutes[m]...)
+	}
+
+	return result
+}
+
+// RunTLS 启动HTTPS服务
+//
+// 参数:
+//   - host: 主机名
+//   - port: 端口号
+//   - dataPath: 证书数据路径
+//
+// 返回值:
+//   - error: 错误信息
+func (engine *Engine) RunTLS(host string, port int, dataPath string) error {
+	engine.checkDuplicateRoutes()
+
+	path, err := file.GetFileAbsPath(dataPath)
+	if err != nil {
+		return err
+	}
+	crtPath, keyPath := cert.GetCertificatePath(path)
+
+	ip := cfg.CWeb.Host
+	if ip == "0.0.0.0" {
+		ip = network.GetLocalIP(cfg.CWeb.Host)
+	}
+
+	for i, route := range engine.Routes() {
+		method := fmt.Sprintf("[%s]", route.Method)
+		if !file.IsFileExist(crtPath) || !file.IsFileExist(keyPath) {
+			log.Info().Msgf("%03d %-6s http://%s:%d%-30s%-10s%-15s%s", i+1, method, ip, cfg.CWeb.Port, route.Path, "-->", route.Name, route.Description)
+		} else {
+			log.Info().Msgf("%03d %-6s https://%s:%d%-30s%-10s%-15s%s", i+1, method, ip, cfg.CWeb.Port, route.Path, "-->", route.Name, route.Description)
+		}
+	}
+
+	if !file.IsFileExist(crtPath) || !file.IsFileExist(keyPath) {
+		return engine.Engine.Run(fmt.Sprintf("%s:%d", host, port))
+	}
+	return engine.Engine.RunTLS(fmt.Sprintf("%s:%d", host, port), crtPath, keyPath)
+}
+
+func (engine *Engine) checkDuplicateRoutes() {
+	routesName := make(map[string]RoutesInfo, len(routesInfo))
+
+	for _, route := range routesInfo {
+		if _, ok := routesName[route.Name]; !ok {
+			routesName[route.Name] = route
+		} else {
+			panic(fmt.Sprintf("路由名称重复: %s\n   %+v\n   %+v\n", route.Name, route, routesName[route.Name]))
+		}
+	}
 }
 
 // New 创建自定义gin.Engine
@@ -88,7 +167,28 @@ func (engine *Engine) Routes() (routes []RoutesInfo) {
 // 说明:
 //   - 创建自定义gin.Engine对象，用于自定义路由和中间件。
 func New(opts ...gin.OptionFunc) *Engine {
+	sessionStore := func() cookie.Store {
+		store := cookie.NewStore([]byte("api/internal/core/session:xxx:vvv:rrr"), []byte("apxi/intcernal/cvore/sessbion:xnxx:vvnv:rmrr"))
+		store.Options(sessions.Options{
+			Path:     "/",
+			MaxAge:   0, // 3600 * 24 * 7, // 有效期 7 天
+			HttpOnly: true,
+			Secure:   false, // 本地调试 http 必须 false
+		})
+		return store
+	}()
+
+	// 创建 gin web 实例
+	engine := gin.New(opts...)
+	// 注册全局 gzip
+	engine.Use(gzip.Gzip(gzip.DefaultCompression))
+	// 注册 session 中间件
+	engine.Use(sessions.Sessions("session", sessionStore))
+
 	return &Engine{
-		Engine: gin.New(opts...),
+		Engine: engine,
+		RouterGroup: RouterGroup{
+			RouterGroup: &engine.RouterGroup,
+		},
 	}
 }

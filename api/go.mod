@@ -4,6 +4,8 @@ go 1.24.4
 
 require (
 	github.com/dgraph-io/ristretto v0.2.0
+	github.com/fatih/structs v1.1.0
+	github.com/gin-contrib/gzip v1.2.3
 	github.com/gin-contrib/sessions v1.0.4
 	github.com/gin-gonic/gin v1.10.1
 	github.com/go-playground/validator/v10 v10.27.0

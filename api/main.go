@@ -1,17 +1,14 @@
 package main
 
 import (
-	"fmt"
-	"gen_gin_tpl/internal/bootstrap/initialize"
+	"gen_gin_tpl/internal/bootstrap/boot"
 	"gen_gin_tpl/internal/bootstrap/initweb"
 	"gen_gin_tpl/pkg/cfg"
-	"gen_gin_tpl/pkg/crypto"
 	"gen_gin_tpl/pkg/logger/log"
 	"gen_gin_tpl/pkg/utils"
+	"gen_gin_tpl/pkg/utils/cert"
 	"gen_gin_tpl/pkg/utils/file"
-	"gen_gin_tpl/pkg/utils/network"
 	"gen_gin_tpl/pkg/variable"
-	"gen_gin_tpl/public"
 	"io"
 	"time"
 
@@ -21,35 +18,25 @@ import (
 
 func init() {
 	time.Local = time.UTC
-	gin.SetMode(cfg.CWeb.Mode)
-
-	//u_file.RemoveAllData(variable.ConfigPath, true)
-	//u_file.RemoveAllData(cfg.COther.DataPath, false)
-	//u_file.RemoveAllData(cfg.CLogger.LogPath, false)
-
-	//cfg.SaveToIni()
 
 	variable.IsEnableEmail.Store(cfg.COther.IsEmail)
 	variable.IsInitialized.Store(file.IsFileExist(variable.ConfigPath))
 	variable.CaptchaStore = base64Captcha.NewMemoryStore(base64Captcha.GCLimitNumber, 2*time.Minute)
 
 	utils.InitSnowflake(1)
-	if err := crypto.ParseRsaKeys(public.PublicPEM, public.PrivatePEM); err != nil {
-		fmt.Println("密钥初始化失败：", err)
-		return
-	}
+	// 生成Rsa密钥
+	cert.InitRSAVariable()
 }
 
 func main() {
 	exePath, err := file.GetFileAbsPath(".")
-
 	if err != nil {
 		log.Error().Err(err).Msg("获取程序所在路径失败")
 		return
 	}
 	// 初始化配置文件
 	if !variable.IsInitialized.Load() {
-		gin.SetMode(gin.DebugMode)
+		gin.SetMode(gin.ReleaseMode)
 		go initweb.StartInitializeWeb()
 		go initweb.StopInitializeWeb()
 		for {
@@ -63,18 +50,10 @@ func main() {
 
 	// 禁用 Gin 框架的日志输出
 	gin.DefaultWriter = io.Discard
-	engine := initialize.Initialization()
-	ip := cfg.CWeb.Host
-	if ip == "0.0.0.0" {
-		ip = network.GetLocalIP(cfg.CWeb.Host)
-	}
-	for i, route := range engine.Routes() {
-		method := fmt.Sprintf("[%s]", route.Method)
-		log.Info().Msgf("%03d %-6s http://%s:%d%-30s%-10s%s", i+1, method, ip, cfg.CWeb.Port, route.Path, "-->", route.Name)
-	}
+	engine := boot.Initialization()
 
 	log.Info().Msgf("程序所在路径 %s", exePath)
-	if err := engine.Run(fmt.Sprintf("%s:%d", cfg.CWeb.Host, cfg.CWeb.Port)); err != nil {
+	if err := engine.RunTLS(cfg.CWeb.Host, cfg.CWeb.Port, cfg.COther.DataPath); err != nil {
 		log.Error().Err(err).Msg("服务启动失败")
 	}
 }

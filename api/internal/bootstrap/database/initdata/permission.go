@@ -3,9 +3,9 @@ package initdata
 import (
 	"fmt"
 	modelAuth "gen_gin_tpl/internal/models/auth"
+	"gen_gin_tpl/pkg/crypto"
 	"gen_gin_tpl/pkg/enums/perm"
 	"gen_gin_tpl/pkg/logger/log"
-	"gen_gin_tpl/pkg/pwd"
 	"strings"
 )
 
@@ -17,8 +17,9 @@ func (d *InitData) Permission() {
 		if strings.HasSuffix(route.Path, "*filepath") {
 			continue
 		}
-		temp := strings.ToLower(pwd.Encryption(fmt.Sprintf("%s-%s", route.Method, route.Path)))
-		modelList = append(modelList, modelAuth.Permission{Name: route.Name, Code: temp, PID: 0, Type: perm.Code(route.Type), Uri: route.Path, Method: route.Method, Sort: i + 1, Description: route.Name})
+		tempCode := fmt.Sprintf("%s-%s-%s-%s-%s", route.Method, route.Path, route.Name, route.Type, route.Description)
+		tempCode = strings.ToLower(crypto.Encryption(tempCode))
+		modelList = append(modelList, modelAuth.Permission{Name: route.Name, Code: tempCode, PID: 0, Type: perm.Code(route.Type), Uri: route.Path, Method: route.Method, Sort: i + 1, Description: route.Description})
 	}
 
 	newModelList := insertIfNotExist[modelAuth.Permission](modelList, func(model modelAuth.Permission) (*modelAuth.Permission, error) {

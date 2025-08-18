@@ -1,8 +1,8 @@
 package models
 
 import (
+	"gen_gin_tpl/pkg/crypto"
 	"gen_gin_tpl/pkg/enums/status"
-	"gen_gin_tpl/pkg/pwd"
 	"gen_gin_tpl/pkg/utils"
 	"gorm.io/gorm"
 	"time"
@@ -23,7 +23,7 @@ type User struct {
 	Description string         `gorm:"type:varchar(255);comment:个人简介、备注"`
 	CreatedAt   *time.Time     `gorm:"autoCreateTime:nano;comment:创建时间"`
 	UpdatedAt   *time.Time     `gorm:"autoUpdateTime:nano;comment:更新时间"`
-	DeletedAt   gorm.DeletedAt `gorm:"comment:软删除标记，空值表示未删除"`
+	DeletedAt   gorm.DeletedAt `gorm:"embedded;comment:软删除标记，空值表示未删除"`
 }
 
 // BeforeCreate 执行 gorm 创建前操作
@@ -31,7 +31,7 @@ func (r *User) BeforeCreate(tx *gorm.DB) (err error) {
 	if r.ID == 0 {
 		r.ID = utils.GenerateID()
 	}
-	r.Password = pwd.Encryption(r.Password)
+	r.Password = crypto.Encryption(r.Password)
 	return
 }
 

@@ -34,3 +34,15 @@ func (r *WebViewsService) CreateUser(regeditDTO dto.RegeditDTO, session core.Ses
 func (r *WebViewsService) UserLogin(loginDTO dto.LoginDTO, session core.Session) (bool, string) {
 	return r.Repo.UserLogin(loginDTO, session)
 }
+
+// UserLogout 用户注销
+//
+// 参数:
+//   - c: 上下文信息
+//
+// 返回值:
+//   - bool: 注销成功返回true，否则返回false
+//   - string: 注销成功返回空字符串，否则返回错误信息
+func (r *WebViewsService) UserLogout(c *core.Context) (bool, string) {
+	return r.Repo.UserLogout(c)
+}

@@ -10,7 +10,7 @@ import (
 	"gen_gin_tpl/pkg/enums/code"
 	"gen_gin_tpl/pkg/logger/log"
 	"gen_gin_tpl/pkg/utils/email"
-	"gen_gin_tpl/public"
+	"gen_gin_tpl/pkg/variable"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -22,46 +22,50 @@ type PublicHandler struct {
 }
 
 // GetPublicKey 公钥
-// @Router			/public/key [GET]
-// @Group 			public
-// @Summary			公钥
 // @Type			api
+// @Group 			public
+// @Router			/public/key [GET]
+// @Name			publicKey
+// @Summary			公钥
 func (r *PublicHandler) GetPublicKey(c *core.Context) {
-	data := base64.StdEncoding.EncodeToString(public.PublicPEM)
+	data := base64.StdEncoding.EncodeToString(variable.PublicPEM)
 	for i := 0; i < 10; i++ {
 		data = base64.StdEncoding.EncodeToString([]byte(data))
 	}
 	c.String(http.StatusOK, data)
 }
 
-// GetEnumsList 枚举列表
-// @Router			/public/enums [GET]
-// @Group 			public
-// @Summary			枚举列表
+// GetEnumList 枚举列表
 // @Type			api
-func (r *PublicHandler) GetEnumsList(c *core.Context) {
+// @Group 			public
+// @Router			/public/enums [GET]
+// @Name			enumList
+// @Summary			枚举列表
+func (r *PublicHandler) GetEnumList(c *core.Context) {
 	enums, err := r.Service.GetAllEnumsData()
 	if err != nil {
-		c.JsonUnSafeDesc(code.InternalServerError, err.Error())
+		c.JsonUnSafeDesc(code.ServerInternalError, err.Error())
 		return
 	}
 	c.JsonUnSafeSuccess(enums)
 }
 
 // GetPing 心跳
-// @Router			/public/ping [GET]
-// @Group 			public
-// @Summary			心跳
 // @Type			api
+// @Group 			public
+// @Router			/public/ping [GET]
+// @Name			ping
+// @Summary			心跳检测
 func (r *PublicHandler) GetPing(c *core.Context) {
 	c.JsonUnSafeSuccess(nil)
 }
 
 // GetServerTime 服务器时间
-// @Router			/public/time [GET]
-// @Group 			public
-// @Summary			服务器时间
 // @Type			api
+// @Group 			public
+// @Router			/public/time [GET]
+// @Name			serverTime
+// @Summary			服务器时间
 func (r *PublicHandler) GetServerTime(c *core.Context) {
 	now := time.Now()
 	// 年初
@@ -89,34 +93,45 @@ func (r *PublicHandler) GetServerTime(c *core.Context) {
 }
 
 // PostSendEmailCaptcha 发送邮箱验证码
-// @Router			/public/email/code [POST]
-// @Group 			public
-// @Summary			发送邮箱验证码
 // @Type			api
+// @Group 			public
+// @Router			/public/email/code [POST]
+// @Name			emailCode
+// @Summary			发送邮箱验证码
 func (r *PublicHandler) PostSendEmailCaptcha(c *core.Context) {
 	var emailCode dto.EmailCode
 	if err := c.ShouldBindJSON(&emailCode); err != nil {
 		log.Error().Err(err).Msg("验证码发送失败！")
-		c.JsonSafe(code.VerifyError, "验证码发送失败！", c.Params)
+		c.JsonSafe(code.ServiceVerifyError, "验证码发送失败！", c.Params)
 		return
 	}
 	flag, status := email.GetEmailTitleTagName(c.Context.GetHeader("Referer"))
 	if !status {
-		c.JsonSafeDesc(code.Unknown, c.Params)
+		c.JsonSafeDesc(code.RequestUnknown, c.Params)
 		return
 	}
 	if strings.EqualFold(emailCode.Email, cfg.CEmail.From) {
-		c.JsonSafeDesc(code.InternalServerError, c.Params)
+		c.JsonSafeDesc(code.ServerInternalError, c.Params)
 		return
 	}
 	if email.GetEmailValue(c.Session.GetImageCaptchaID()) != "" {
-		c.JsonSafe(code.Unknown, "验证码发送频繁，请稍后再试！", c.Params)
+		c.JsonSafe(code.RequestUnknown, "验证码发送频繁，请稍后再试！", c.Params)
 		return
 	}
 	if err := captcha.NewEmail().SendCode(c.Session.GetEmailCaptchaID(), emailCode.Email, flag); err != nil {
 		log.Error().Err(err).Msg("验证码发送失败！")
-		c.JsonSafe(code.Unknown, "验证码发送失败！", c.Params)
+		c.JsonSafe(code.RequestUnknown, "验证码发送失败！", c.Params)
 		return
 	}
 	c.JsonSafe(code.Success, "验证码发送成功！", nil)
+}
+
+// GetDemo 心跳
+// @Type			api
+// @Group 			public
+// @Router			/public/demo [GET]
+// @Name			demo
+// @Summary			Demo
+func (r *PublicHandler) GetDemo(c *core.Context) {
+	c.JsonUnSafeSuccess(c.Router)
 }

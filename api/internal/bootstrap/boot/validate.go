@@ -1,7 +1,7 @@
-package initialize
+package boot
 
 import (
-	"gen_gin_tpl/internal/bootstrap/initialize/validate"
+	"gen_gin_tpl/internal/bootstrap/boot/validate"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 )

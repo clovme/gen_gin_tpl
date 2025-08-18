@@ -39,7 +39,6 @@ func newPermission(db *gorm.DB, opts ...gen.DOOption) permission {
 	_permission.Description = field.NewString(tableName, "description")
 	_permission.CreatedAt = field.NewTime(tableName, "created_at")
 	_permission.UpdatedAt = field.NewTime(tableName, "updated_at")
-	_permission.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_permission.fillFieldMap()
 
@@ -62,7 +61,6 @@ type permission struct {
 	Description field.String // 权限描述，便于备注说明
 	CreatedAt   field.Time   // 创建时间
 	UpdatedAt   field.Time   // 更新时间
-	DeletedAt   field.Field  // 软删除标记，空值表示未删除
 
 	fieldMap map[string]field.Expr
 }
@@ -91,7 +89,6 @@ func (p *permission) updateTableName(table string) *permission {
 	p.Description = field.NewString(table, "description")
 	p.CreatedAt = field.NewTime(table, "created_at")
 	p.UpdatedAt = field.NewTime(table, "updated_at")
-	p.DeletedAt = field.NewField(table, "deleted_at")
 
 	p.fillFieldMap()
 
@@ -108,7 +105,7 @@ func (p *permission) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (p *permission) fillFieldMap() {
-	p.fieldMap = make(map[string]field.Expr, 13)
+	p.fieldMap = make(map[string]field.Expr, 12)
 	p.fieldMap["id"] = p.ID
 	p.fieldMap["name"] = p.Name
 	p.fieldMap["code"] = p.Code
@@ -121,7 +118,6 @@ func (p *permission) fillFieldMap() {
 	p.fieldMap["description"] = p.Description
 	p.fieldMap["created_at"] = p.CreatedAt
 	p.fieldMap["updated_at"] = p.UpdatedAt
-	p.fieldMap["deleted_at"] = p.DeletedAt
 }
 
 func (p permission) clone(db *gorm.DB) permission {

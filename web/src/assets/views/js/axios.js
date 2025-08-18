@@ -4394,9 +4394,10 @@
     // 请求拦截器
     function request$default(config) {
         config.use(config => {
-            const token = localStorage.getItem(`${clientId}-token`)
+            console.log(config)
+            const token = localStorage.getItem('TOKEN')
             if (token) {
-                config.headers['Authorization'] = `Basic ${token}`;
+                config.headers['TOKEN'] = token;
             }
             if (!config.url.includes('_t=')) {
                 const ridUri = config.url.includes('?') ? `&_t=${Date.now()}` : `?_t=${Date.now()}`

@@ -32,7 +32,6 @@ func newRolePermission(db *gorm.DB, opts ...gen.DOOption) rolePermission {
 	_rolePermission.PermissionID = field.NewInt64(tableName, "permission_id")
 	_rolePermission.CreatedAt = field.NewTime(tableName, "created_at")
 	_rolePermission.Status = field.NewInt(tableName, "status")
-	_rolePermission.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_rolePermission.fillFieldMap()
 
@@ -48,7 +47,6 @@ type rolePermission struct {
 	PermissionID field.Int64 // 权限ID
 	CreatedAt    field.Time  // 创建时间
 	Status       field.Int   // 状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)
-	DeletedAt    field.Field // 软删除标记，空值表示未删除
 
 	fieldMap map[string]field.Expr
 }
@@ -70,7 +68,6 @@ func (r *rolePermission) updateTableName(table string) *rolePermission {
 	r.PermissionID = field.NewInt64(table, "permission_id")
 	r.CreatedAt = field.NewTime(table, "created_at")
 	r.Status = field.NewInt(table, "status")
-	r.DeletedAt = field.NewField(table, "deleted_at")
 
 	r.fillFieldMap()
 
@@ -87,13 +84,12 @@ func (r *rolePermission) GetFieldByName(fieldName string) (field.OrderExpr, bool
 }
 
 func (r *rolePermission) fillFieldMap() {
-	r.fieldMap = make(map[string]field.Expr, 6)
+	r.fieldMap = make(map[string]field.Expr, 5)
 	r.fieldMap["id"] = r.ID
 	r.fieldMap["role_id"] = r.RoleID
 	r.fieldMap["permission_id"] = r.PermissionID
 	r.fieldMap["created_at"] = r.CreatedAt
 	r.fieldMap["status"] = r.Status
-	r.fieldMap["deleted_at"] = r.DeletedAt
 }
 
 func (r rolePermission) clone(db *gorm.DB) rolePermission {

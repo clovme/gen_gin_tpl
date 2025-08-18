@@ -1,8 +1,8 @@
 package initweb
 
 import (
+	"gen_gin_tpl/internal/core"
 	"gen_gin_tpl/pkg/logger"
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"net/http"
 )
@@ -20,7 +20,7 @@ var upgrader = websocket.Upgrader{
 //
 // 返回值：
 //   - 无
-func LogWebSocketHandler(c *gin.Context) {
+func LogWebSocketHandler(c *core.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		return

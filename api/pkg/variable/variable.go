@@ -6,10 +6,12 @@ import (
 )
 
 var (
-	WebTitle             = "知识库" // 站点标题名称
-	ConfigPath           string
-	IsEnableEncryptedKey bool
-	IsInitialized        atomic.Bool
-	CaptchaStore         = base64Captcha.DefaultMemStore
-	IsEnableEmail        atomic.Bool
+	PublicPEM  []byte
+	PrivatePEM []byte
+	WebTitle   = "知识库"
+
+	ConfigPath    string
+	CaptchaStore  = base64Captcha.DefaultMemStore
+	IsInitialized atomic.Bool
+	IsEnableEmail atomic.Bool
 )

@@ -31,12 +31,12 @@ func newConfig(db *gorm.DB, opts ...gen.DOOption) config {
 	_config.Name = field.NewString(tableName, "name")
 	_config.Value = field.NewString(tableName, "value")
 	_config.Default = field.NewString(tableName, "default")
+	_config.ValueT = field.NewInt(tableName, "value_t")
 	_config.Show = field.NewInt(tableName, "show")
 	_config.Status = field.NewInt(tableName, "status")
 	_config.Description = field.NewString(tableName, "description")
 	_config.CreatedAt = field.NewTime(tableName, "created_at")
 	_config.UpdatedAt = field.NewTime(tableName, "updated_at")
-	_config.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_config.fillFieldMap()
 
@@ -51,12 +51,12 @@ type config struct {
 	Name        field.String // 配置项名称
 	Value       field.String // 当前配置值
 	Default     field.String // 默认配置值
+	ValueT      field.Int    // 值类型
 	Show        field.Int    // 是否启用
 	Status      field.Int    // 状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)
 	Description field.String // 配置项说明
 	CreatedAt   field.Time   // 创建时间
 	UpdatedAt   field.Time   // 更新时间
-	DeletedAt   field.Field  // 软删除标记，空值表示未删除
 
 	fieldMap map[string]field.Expr
 }
@@ -77,12 +77,12 @@ func (c *config) updateTableName(table string) *config {
 	c.Name = field.NewString(table, "name")
 	c.Value = field.NewString(table, "value")
 	c.Default = field.NewString(table, "default")
+	c.ValueT = field.NewInt(table, "value_t")
 	c.Show = field.NewInt(table, "show")
 	c.Status = field.NewInt(table, "status")
 	c.Description = field.NewString(table, "description")
 	c.CreatedAt = field.NewTime(table, "created_at")
 	c.UpdatedAt = field.NewTime(table, "updated_at")
-	c.DeletedAt = field.NewField(table, "deleted_at")
 
 	c.fillFieldMap()
 
@@ -104,12 +104,12 @@ func (c *config) fillFieldMap() {
 	c.fieldMap["name"] = c.Name
 	c.fieldMap["value"] = c.Value
 	c.fieldMap["default"] = c.Default
+	c.fieldMap["value_t"] = c.ValueT
 	c.fieldMap["show"] = c.Show
 	c.fieldMap["status"] = c.Status
 	c.fieldMap["description"] = c.Description
 	c.fieldMap["created_at"] = c.CreatedAt
 	c.fieldMap["updated_at"] = c.UpdatedAt
-	c.fieldMap["deleted_at"] = c.DeletedAt
 }
 
 func (c config) clone(db *gorm.DB) config {

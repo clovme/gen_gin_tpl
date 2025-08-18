@@ -39,9 +39,7 @@ func GetLanIP() string {
 //   - string 本地IP地址
 func GetLocalIP(ip string) string {
 	ipv4Regex := regexp.MustCompile(`^((25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)$`)
-	if ip == "0.0.0.0" {
-		ip = "127.0.0.1"
-	} else if !ipv4Regex.MatchString(ip) {
+	if !ipv4Regex.MatchString(ip) {
 		ip = "127.0.0.1"
 	}
 	return ip

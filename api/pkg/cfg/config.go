@@ -54,10 +54,11 @@ type Captcha struct {
 }
 
 type Other struct {
-	IsEmail   bool   `ini:"is_email" json:"is_email" comment:"是否启用邮箱"`
-	DbType    string `ini:"db_type" json:"db_type" comment:"所使用的数据库类型，支持 SQLite 或 MySQL"`
-	CacheType string `ini:"cache_type" json:"cache_type" comment:"所使用的数据库类型，支持 Memory 或 Redis"`
-	DataPath  string `ini:"data_path" json:"data_path" comment:"数据存储路径"`
+	IsEmail      bool   `ini:"is_email" json:"is_email" comment:"是否启用邮箱"`
+	DbType       string `ini:"db_type" json:"db_type" comment:"所使用的数据库类型，支持 SQLite 或 MySQL"`
+	IsInitialize bool   `ini:"is_initialize" json:"is_initialize" comment:"是否初始化，false 表示未初始化，true 表示已初始化"`
+	CacheType    string `ini:"cache_type" json:"cache_type" comment:"所使用的数据库类型，支持 Memory 或 Redis"`
+	DataPath     string `ini:"data_path" json:"data_path" comment:"数据存储路径"`
 }
 
 type Config struct {

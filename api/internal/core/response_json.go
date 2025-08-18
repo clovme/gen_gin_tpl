@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gen_gin_tpl/pkg/constants"
 	"gen_gin_tpl/pkg/enums/code"
-	"gen_gin_tpl/pkg/variable"
 	"net/http"
 )
 
@@ -17,8 +16,8 @@ type response struct {
 
 // setResponse 设置响应头
 func (r *Context) setHeaderEncryptedResponse(isEnableEncrypted bool) {
-	r.isContextEncrypted = isEnableEncrypted
-	if !isEnableEncrypted || !variable.IsEnableEncryptedKey {
+	r.IsContextEncrypted = isEnableEncrypted
+	if !isEnableEncrypted || !r.Config.IsContextIsEncrypted() {
 		r.Context.Header(constants.HeaderEncrypted, "no")
 	} else {
 		r.Context.Header(constants.HeaderEncrypted, "safe")

@@ -1,0 +1,12 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+
+  .login-container {
+    --login-container-padding-height: 80px;
+    min-width: var(--container-width);
+    padding: var(--login-container-padding-height) 20px;
+  }
+}

@@ -3,7 +3,6 @@ package captcha
 import (
 	"encoding/base64"
 	"fmt"
-	"gen_gin_tpl/internal/core"
 	"gen_gin_tpl/pkg/utils/array"
 	"github.com/mojocn/base64Captcha"
 	"strings"
@@ -22,14 +21,14 @@ func base64DecodeImage(b64Str string) ([]byte, error) {
 // NewGenerate 生成图形验证码。
 //
 // 参数：
-//   - 无
+//   - captchaID 验证码 ID
 //
 // 返回值：
 //   - id     验证码 ID
 //   - b64s   验证码图片 Base64 字符串
 //   - answer 验证码答案
 //   - err    错误信息
-func NewGenerate(s core.Session) (imageBytes []byte, err error) {
+func NewGenerate(captchaID string) (imageBytes []byte, err error) {
 	captcha := array.RandomArray[*base64Captcha.Captcha](captchaList)
 
 	_, content, answer := captcha.Driver.GenerateIdQuestionAnswer()
@@ -38,7 +37,7 @@ func NewGenerate(s core.Session) (imageBytes []byte, err error) {
 		return nil, err
 	}
 
-	if err = captcha.Store.Set(s.GetImageCaptchaID(), answer); err != nil {
+	if err = captcha.Store.Set(captchaID, answer); err != nil {
 		return nil, err
 	}
 	imageBytes, err = base64DecodeImage(item.EncodeB64string())

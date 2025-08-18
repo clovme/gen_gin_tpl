@@ -3,15 +3,9 @@ package middleware
 import (
 	"bytes"
 	"crypto/rand"
-	"gen_gin_tpl/pkg/constants"
-	"gen_gin_tpl/pkg/crypto"
-	httpLog "gen_gin_tpl/pkg/logger/http"
-	"gen_gin_tpl/pkg/variable"
+	"gen_gin_tpl/internal/libs"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type bodyWriter struct {
@@ -40,7 +34,7 @@ func EncryptResponse() gin.HandlerFunc {
 		c.Next()
 
 		// 那些请求直接返原路返回
-		if !c.GetBool(constants.ContextIsEncrypted) || !variable.IsEnableEncryptedKey {
+		if !libs.WebConfig.IsContextIsEncrypted() {
 			// 不加密，直接返回原始
 			_, _ = origin.Write(buf.Bytes())
 			return
@@ -54,46 +48,46 @@ func EncryptResponse() gin.HandlerFunc {
 			return
 		}
 
-		// AES 加密正文
-		encrypted, err := crypto.AesEncrypt(buf.Bytes(), aesKey)
-		if err != nil {
-			httpLog.Error(c).Err(err).Msg("AES 加密失败")
-			// 加密失败，返回错误信息
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "服务器异常"})
-			return
-		}
-
-		// RSA 加密 AES 密钥
-		encKey, err := crypto.RsaEncryptKey(aesKey, crypto.PublicKey)
-		if err != nil {
-			httpLog.Error(c).Err(err).Msg("RSA 加密失败")
-			// 加密失败，返回错误信息
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "服务器异常"})
-			return
-		}
-
-		// 签名
-		timestamp := time.Now().Unix()
-		signContent := strings.TrimSpace(encrypted) + "|" + strconv.FormatInt(timestamp, 10)
-
-		signature, err := crypto.SignWithPrivateKey([]byte(signContent))
-		if err != nil {
-			httpLog.Error(c).Err(err).Msg("签名失败")
-			// 加密失败，返回错误信息
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "签名失败"})
-			return
-		}
-
-		// 写入Header
-		c.Header("X-Timestamp", strconv.FormatInt(timestamp, 10))
-		c.Header("X-Signature", signature)
-		c.Header("X-Encipher", encKey)
-		c.Header("Content-Type", "text/plain; charset=utf-8")
-
-		if !writer.Written() {
-			origin.WriteHeader(http.StatusOK)
-		}
-
-		_, _ = origin.Write([]byte(encrypted))
+		//// AES 加密正文
+		//encrypted, err := crypto.AesEncrypt(buf.Bytes(), aesKey)
+		//if err != nil {
+		//	httpLog.Error(c).Err(err).Msg("AES 加密失败")
+		//	// 加密失败，返回错误信息
+		//	c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "服务器异常"})
+		//	return
+		//}
+		//
+		//// RSA 加密 AES 密钥
+		//encKey, err := crypto.RsaEncryptKey(aesKey, crypto.PublicKey)
+		//if err != nil {
+		//	httpLog.Error(c).Err(err).Msg("RSA 加密失败")
+		//	// 加密失败，返回错误信息
+		//	c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "服务器异常"})
+		//	return
+		//}
+		//
+		//// 签名
+		//timestamp := time.Now().Unix()
+		//signContent := strings.TrimSpace(encrypted) + "|" + strconv.FormatInt(timestamp, 10)
+		//
+		//signature, err := crypto.SignWithPrivateKey([]byte(signContent))
+		//if err != nil {
+		//	httpLog.Error(c).Err(err).Msg("签名失败")
+		//	// 加密失败，返回错误信息
+		//	c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "签名失败"})
+		//	return
+		//}
+		//
+		//// 写入Header
+		//c.Header("X-Timestamp", strconv.FormatInt(timestamp, 10))
+		//c.Header("X-Signature", signature)
+		//c.Header("X-Encipher", encKey)
+		//c.Header("Content-Type", "text/plain; charset=utf-8")
+		//
+		//if !writer.Written() {
+		//	origin.WriteHeader(http.StatusOK)
+		//}
+		//
+		//_, _ = origin.Write([]byte(encrypted))
 	}
 }

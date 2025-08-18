@@ -34,7 +34,6 @@ func newUserRole(db *gorm.DB, opts ...gen.DOOption) userRole {
 	_userRole.Status = field.NewInt(tableName, "status")
 	_userRole.Description = field.NewString(tableName, "description")
 	_userRole.CreatedAt = field.NewTime(tableName, "created_at")
-	_userRole.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_userRole.fillFieldMap()
 
@@ -52,7 +51,6 @@ type userRole struct {
 	Status      field.Int    // 状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)
 	Description field.String // 角色描述
 	CreatedAt   field.Time   // 创建时间
-	DeletedAt   field.Field  // 软删除标记，空值表示未删除
 
 	fieldMap map[string]field.Expr
 }
@@ -76,7 +74,6 @@ func (u *userRole) updateTableName(table string) *userRole {
 	u.Status = field.NewInt(table, "status")
 	u.Description = field.NewString(table, "description")
 	u.CreatedAt = field.NewTime(table, "created_at")
-	u.DeletedAt = field.NewField(table, "deleted_at")
 
 	u.fillFieldMap()
 
@@ -93,7 +90,7 @@ func (u *userRole) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *userRole) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 8)
+	u.fieldMap = make(map[string]field.Expr, 7)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["user_id"] = u.UserID
 	u.fieldMap["role_id"] = u.RoleID
@@ -101,7 +98,6 @@ func (u *userRole) fillFieldMap() {
 	u.fieldMap["status"] = u.Status
 	u.fieldMap["description"] = u.Description
 	u.fieldMap["created_at"] = u.CreatedAt
-	u.fieldMap["deleted_at"] = u.DeletedAt
 }
 
 func (u userRole) clone(db *gorm.DB) userRole {

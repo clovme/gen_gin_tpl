@@ -16,7 +16,7 @@ type UserRole struct {
 	Status      status.Status  `gorm:"type:int;default:1;comment:状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)"`
 	Description string         `gorm:"type:varchar(255);comment:角色描述"`
 	CreatedAt   *time.Time     `gorm:"autoCreateTime:nano;comment:创建时间"`
-	DeletedAt   gorm.DeletedAt `gorm:"comment:软删除标记，空值表示未删除"`
+	DeletedAt   gorm.DeletedAt `gorm:"embedded;comment:软删除标记，空值表示未删除"`
 }
 
 func (r *UserRole) BeforeCreate(tx *gorm.DB) (err error) {

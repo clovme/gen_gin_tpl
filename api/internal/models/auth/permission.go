@@ -22,7 +22,7 @@ type Permission struct {
 	Description string         `gorm:"type:varchar(255);comment:权限描述，便于备注说明"`
 	CreatedAt   *time.Time     `gorm:"autoCreateTime:nano;comment:创建时间"`
 	UpdatedAt   *time.Time     `gorm:"autoUpdateTime:nano;comment:更新时间"`
-	DeletedAt   gorm.DeletedAt `gorm:"comment:软删除标记，空值表示未删除"`
+	DeletedAt   gorm.DeletedAt `gorm:"embedded;comment:软删除标记，空值表示未删除"`
 }
 
 func (r *Permission) BeforeCreate(tx *gorm.DB) (err error) {

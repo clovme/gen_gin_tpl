@@ -10,10 +10,10 @@ type Perm int
 const Name = "permission"
 
 const (
-	Api Perm = iota + 1
+	Unknown Perm = iota
+	Api
 	Page
 	Menu
-	Unknown
 )
 
 var (

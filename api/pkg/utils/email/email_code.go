@@ -46,12 +46,12 @@ func IsEmailValue(emailId string, code string) bool {
 //   - bool: 是否成功
 func GetEmailTitleTagName(referer string) (flag string, status bool) {
 	if referer == "" {
-		return code.Unknown.Desc(), false
+		return code.RequestUnknown.Desc(), false
 	}
 
 	s := strings.Split(referer, "?")
 	if strings.HasSuffix(s[0], "/regedit.html") {
 		return "用户注册验证码", true
 	}
-	return code.Unknown.Desc(), false
+	return code.RequestUnknown.Desc(), false
 }
