@@ -1,15 +1,16 @@
 package libs
 
 import (
-	"encoding/json"
 	"fmt"
+	"gen_gin_tpl/internal/infrastructure/query"
 	"gen_gin_tpl/internal/models"
+	"gen_gin_tpl/pkg/constants"
 	"gen_gin_tpl/pkg/enums/boolean"
-	"gen_gin_tpl/pkg/logger/log"
+	"gen_gin_tpl/pkg/enums/dtype"
 	"gen_gin_tpl/pkg/variable"
-	"os"
 	"reflect"
 	"strconv"
+	"sync"
 )
 
 type Config struct {
@@ -21,74 +22,35 @@ type Config struct {
 }
 
 var (
+	ones      sync.Once
 	WebConfig *Config
 )
 
-func init() {
-	WebConfig = &Config{}
+func InitializeWebConfig() {
+	ones.Do(func() {
+		WebConfig = &Config{
+			ContextIsEncrypted: &models.Config{Name: constants.ContextIsEncrypted, Value: boolean.False.Key(), Default: boolean.False.Key(), ValueT: dtype.Bool, Show: boolean.True, Description: "是否开启加密模式"},
+			WebTitle:           &models.Config{Name: constants.WebTitle, Value: variable.WebTitle, Default: variable.WebTitle, ValueT: dtype.String, Show: boolean.True, Description: "站点标题"},
+			PublicPEM:          &models.Config{Name: constants.PublicPEM, Value: string(variable.PublicPEM), Default: string(variable.PublicPEM), ValueT: dtype.String, Show: boolean.True, Description: "加密公钥"},
+			PrivatePEM:         &models.Config{Name: constants.PrivatePEM, Value: string(variable.PrivatePEM), Default: string(variable.PrivatePEM), ValueT: dtype.String, Show: boolean.True, Description: "加密私钥"},
+			Countdown:          &models.Config{Name: constants.Countdown, Value: "60", Default: "60", ValueT: dtype.Int, Show: boolean.True, Description: "统一倒计时时间，单位秒"},
+		}
+	})
 }
 
-func toListMap(v []*models.Config) ([]map[string]any, error) {
-	var result []map[string]any
-	data, err := json.Marshal(v)
+func (r *Config) Update() {
+	configs, err := query.Config.Find()
 	if err != nil {
-		return nil, err
+		return
 	}
-	err = json.Unmarshal(data, &result)
-	return result, err
-}
-
-// UpdateWebConfig 初始化Web配置
-// 参数：
-//   - configList: 配置列表
-//
-// 返回值：
-//   - 无
-//
-// 说明：
-//   - 初始化Web配置，将配置列表转换为JSON格式，并设置到变量中
-func UpdateWebConfig(configList []*models.Config) {
-	toJSON, err := toListMap(configList)
-	if err != nil {
-		log.Error().Err(err).Msg("Web 配置初始化失败")
-		os.Exit(-1)
-	}
-	WebConfig.update(toJSON)
-}
-
-func (r *Config) update(configList []map[string]any) {
 	v := reflect.ValueOf(r).Elem() // Config struct
 	t := v.Type()
 
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
 		jsonTag := field.Tag.Get("json")
-		for _, cfg := range configList {
-			if name, ok := cfg["Name"].(string); ok && name == jsonTag {
-				// 创建 ModelConfig 指针
-				model := &models.Config{}
-				// 遍历 map 设置 ModelConfig 字段
-				modelV := reflect.ValueOf(model).Elem()
-				for k, val := range cfg {
-					f := modelV.FieldByName(k)
-					if f.IsValid() && f.CanSet() {
-						fv := reflect.ValueOf(val)
-						if !fv.IsValid() {
-							continue // 值是 nil，跳过
-						}
-
-						// 如果目标字段是指针且 fv 类型可赋值给 Elem
-						if f.Kind() == reflect.Ptr {
-							if fv.Type().AssignableTo(f.Type().Elem()) {
-								ptr := reflect.New(f.Type().Elem())
-								ptr.Elem().Set(fv)
-								f.Set(ptr)
-							}
-						} else if fv.Type().AssignableTo(f.Type()) {
-							f.Set(fv)
-						}
-					}
-				}
+		for _, model := range configs {
+			if model.Name == jsonTag {
 				v.Field(i).Set(reflect.ValueOf(model))
 			}
 		}
@@ -144,7 +106,7 @@ func (r *Config) GetCountdown() int {
 	return n
 }
 
-func (r *Config) GetConfigList() []models.Config {
+func (r *Config) GetModelList() []models.Config {
 	var mc []models.Config
 	v := reflect.ValueOf(r).Elem()
 

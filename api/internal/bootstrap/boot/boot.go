@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"gen_gin_tpl/internal/bootstrap/routers"
 	"gen_gin_tpl/internal/core"
-	"gen_gin_tpl/internal/infrastructure/query"
+	"gen_gin_tpl/internal/libs"
 	"gen_gin_tpl/pkg/captcha"
 	"gen_gin_tpl/pkg/cfg"
 	"gen_gin_tpl/pkg/utils/cert"
@@ -59,12 +59,16 @@ func Initialization() *core.Engine {
 		engine := routers.Initialization(db, static)
 		// 数据库自动迁移
 		databaseAutoMigrate(db, engine)
+		// 初始化系统配置
+		libs.WebConfig.Update()
+		// 初始化标志
 		cfg.COther.IsInitialize = true
 		// 保存配置
 		cfg.SaveToIni()
+		return engine
 	}
 	// 初始化系统配置
-	initializationSystemConfig(query.Q)
+	libs.WebConfig.Update()
 	// 初始化路由
 	return routers.Initialization(db, static)
 }

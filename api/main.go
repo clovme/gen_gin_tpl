@@ -3,6 +3,7 @@ package main
 import (
 	"gen_gin_tpl/internal/bootstrap/boot"
 	"gen_gin_tpl/internal/bootstrap/initweb"
+	"gen_gin_tpl/internal/libs"
 	"gen_gin_tpl/pkg/cfg"
 	"gen_gin_tpl/pkg/logger/log"
 	"gen_gin_tpl/pkg/utils"
@@ -26,14 +27,11 @@ func init() {
 	utils.InitSnowflake(1)
 	// 生成Rsa密钥
 	cert.InitRSAVariable()
+	// 初始化系统配置
+	libs.InitializeWebConfig()
 }
 
 func main() {
-	exePath, err := file.GetFileAbsPath(".")
-	if err != nil {
-		log.Error().Err(err).Msg("获取程序所在路径失败")
-		return
-	}
 	// 初始化配置文件
 	if !variable.IsInitialized.Load() {
 		gin.SetMode(gin.ReleaseMode)
@@ -52,7 +50,6 @@ func main() {
 	gin.DefaultWriter = io.Discard
 	engine := boot.Initialization()
 
-	log.Info().Msgf("程序所在路径 %s", exePath)
 	if err := engine.RunTLS(cfg.CWeb.Host, cfg.CWeb.Port, cfg.COther.DataPath); err != nil {
 		log.Error().Err(err).Msg("服务启动失败")
 	}

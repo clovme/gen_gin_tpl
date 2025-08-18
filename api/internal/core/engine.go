@@ -7,10 +7,12 @@ import (
 	"gen_gin_tpl/pkg/utils/cert"
 	"gen_gin_tpl/pkg/utils/file"
 	"gen_gin_tpl/pkg/utils/network"
+	"gen_gin_tpl/pkg/variable"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"path/filepath"
 	"sort"
 )
 
@@ -137,6 +139,7 @@ func (engine *Engine) RunTLS(host string, port int, dataPath string) error {
 			log.Info().Msgf("%03d %-6s https://%s:%d%-30s%-10s%-15s%s", i+1, method, ip, cfg.CWeb.Port, route.Path, "-->", route.Name, route.Description)
 		}
 	}
+	log.Info().Msgf("程序所在路径 %s", filepath.ToSlash(filepath.Dir(path)))
 
 	if !file.IsFileExist(crtPath) || !file.IsFileExist(keyPath) {
 		return engine.Engine.Run(fmt.Sprintf("%s:%d", host, port))
@@ -168,7 +171,7 @@ func (engine *Engine) checkDuplicateRoutes() {
 //   - 创建自定义gin.Engine对象，用于自定义路由和中间件。
 func New(opts ...gin.OptionFunc) *Engine {
 	sessionStore := func() cookie.Store {
-		store := cookie.NewStore([]byte("api/internal/core/session:xxx:vvv:rrr"), []byte("apxi/intcernal/cvore/sessbion:xnxx:vvnv:rmrr"))
+		store := cookie.NewStore(variable.PrivatePEM)
 		store.Options(sessions.Options{
 			Path:     "/",
 			MaxAge:   0, // 3600 * 24 * 7, // 有效期 7 天
