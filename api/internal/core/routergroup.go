@@ -24,7 +24,7 @@ type RoutesInfo struct {
 // HandlerFunc 路由处理函数
 type HandlerFunc func(*Context)
 
-var routesInfo = make(map[string]RoutesInfo)
+var routesInfo = map[string]RoutesInfo{}
 
 // wrapHandler 路由处理函数包装
 func wrapHandler(handlerFunc HandlerFunc) gin.HandlerFunc {

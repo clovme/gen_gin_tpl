@@ -125,13 +125,3 @@ func (r *PublicHandler) PostSendEmailCaptcha(c *core.Context) {
 	}
 	c.JsonSafe(code.Success, "验证码发送成功！", nil)
 }
-
-// GetDemo 心跳
-// @Type			api
-// @Group 			public
-// @Router			/public/demo [GET]
-// @Name			demo
-// @Summary			Demo
-func (r *PublicHandler) GetDemo(c *core.Context) {
-	c.JsonUnSafeSuccess(c.Router)
-}

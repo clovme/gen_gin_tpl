@@ -3,11 +3,8 @@ package routers
 import (
 	"gen_gin_tpl/internal/bootstrap/middleware"
 	"gen_gin_tpl/internal/core"
-	"gen_gin_tpl/public"
 	"gorm.io/gorm"
 	"html/template"
-	"io/fs"
-	"strings"
 	"time"
 )
 
@@ -24,22 +21,10 @@ func regeditMiddleware(engine *core.Engine, staticDir string) {
 
 // regeditTemplate 注册模板
 func regeditTemplate(engine *core.Engine) {
-	loadTemplates := func(funcMap template.FuncMap) *template.Template {
-		files, _ := fs.Glob(public.TemplatesFS, "web/templates/**/*.html")
-		tpl := template.New("templates").Funcs(funcMap)
-		for _, file := range files {
-			// 去掉 "templates/" 前缀，让模板名变得更简洁
-			content, _ := public.TemplatesFS.ReadFile(file)
-			tplName := strings.TrimPrefix(file, "web/templates/")
-			tpl = template.Must(tpl.New(tplName).Parse(string(content)))
-		}
-		return tpl
-	}
-
-	engine.Engine.SetHTMLTemplate(loadTemplates(template.FuncMap{
+	engine.SetHTMLTemplate("web/templates", template.FuncMap{
 		"timeStamp":  timeStamp,
 		"formatDate": formatDate,
-	}))
+	})
 }
 
 // regeditRoutes 注册路由

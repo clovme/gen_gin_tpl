@@ -45,7 +45,7 @@ func (h *ViewsHandler) GetViewsMeHandler(c *core.Context) {
 // @Summary			首页
 func (h *ViewsHandler) GetViewsIndexHandler(c *core.Context) {
 	fmt.Printf("%+v\n", c.UserInfo)
-	fmt.Println(c.Router.Method("meIndex"), c.Router.Path("meIndex"), c.Router.Desc("meIndex"))
+	fmt.Println(c.Router.Method("emailCode"), c.Router.Path("emailCode"), c.Router.Desc("emailCode"))
 	c.HTML("views/index.html", "首页", nil)
 }
 

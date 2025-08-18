@@ -42,11 +42,11 @@ func StartInitializeWeb() {
 	staticFS, _ := fs.Sub(public.InitWebFS, "initweb/assets")
 	engine.Engine.StaticFS("/assets", http.FS(staticFS))
 
-	engine.GET("/", viewHandler, "web", "初始化首页", "初始化首页")
-	engine.GET("/logs", LogWebSocketHandler, "log", "WebSocket 日志", "WebSocket 日志打印")
-	engine.GET("/copyright", copyrightHandler, "api", "版权信息", "版权信息")
-	engine.GET("/initialize", formHandler, "api", "获取初始化配置", "获取初始化配置")
-	engine.POST("/initialize", postHandler, "api", "提交初始化配置", "提交初始化配置")
+	engine.GET("/", viewHandler, "web", "index", "初始化首页")
+	engine.GET("/logs", LogWebSocketHandler, "log", "wsLog", "WebSocket日志打印")
+	engine.GET("/copyright", copyrightHandler, "api", "copyright", "版权信息")
+	engine.GET("/initialize", formHandler, "api", "initialize", "获取初始化配置")
+	engine.POST("/initialize", postHandler, "api", "postInitialize", "提交初始化配置")
 
 	engine.NoRoute(func(c *core.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/")
@@ -58,10 +58,6 @@ func StartInitializeWeb() {
 		Handler: engine.Engine,
 	}
 
-	for i, route := range engine.Routes() {
-		method := fmt.Sprintf("[%s]", route.Method)
-		fmt.Printf("%03d %-6s http://%s%-30s%-10s%s\n", i+1, method, server.Addr, route.Path, "-->", route.Name)
-	}
 	fmt.Printf("初始化服务启动完成，访问 http://%s 进行初始化配置\n程序所在路径: %s\n", server.Addr, exePath)
 
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
@@ -80,13 +76,13 @@ func StopInitializeWeb() {
 					_ = server.Close()
 				}
 				cancel()
-				log.Info().Msgf("初始化服务已关闭，访问 http://%s:%d 首页", network.GetLocalIP(cfg.CWeb.Host), cfg.CWeb.Port)
+				log.Info().Msgf("初始化服务已关闭，访问 https://%s:%d 首页", network.GetLocalIP(cfg.CWeb.Host), cfg.CWeb.Port)
 			}
 			break
 		}
 		time.Sleep(time.Second)
 	}
 	time.Sleep(100 * time.Millisecond)
-	logger.LogHub.SendMessage(fmt.Sprintf("000000http://%s:%d", network.GetLocalIP(cfg.CWeb.Host), cfg.CWeb.Port))
+	logger.LogHub.SendMessage(fmt.Sprintf("000000https://%s:%d", cfg.CWeb.Host, cfg.CWeb.Port))
 	logger.LogHub.CloseAllClient()
 }

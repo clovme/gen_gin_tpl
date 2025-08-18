@@ -8,18 +8,56 @@ import (
 	"gen_gin_tpl/pkg/utils/file"
 	"gen_gin_tpl/pkg/utils/network"
 	"gen_gin_tpl/pkg/variable"
+	"gen_gin_tpl/public"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"html/template"
+	"io/fs"
 	"path/filepath"
 	"sort"
+	"strings"
 )
 
 // Engine 自定义gin.Engine
 type Engine struct {
 	Engine *gin.Engine
 	RouterGroup
+}
+
+// SetHTMLTemplate 设置模版
+//
+// 参数:
+//   - templatePath: 模版路径
+//   - funcMap: 模版函数
+//
+// 返回值:
+//   - *template.Template: 模版对象
+//
+// 说明:
+//   - 设置模版路径和函数，返回模版对象。
+//   - templatePath: 模版路径，例如: web/templates/views/index.html
+//     -------------------------- web/templates/admin/index.html
+//     -------------------------- web/templates/me/index.html
+//   - 使用的时候，传入 web/templates，会自动加载 web/templates 下的所有文件
+//   - handler 中使用模版,views/index.html
+//     ---------------- admin/index.html
+//     ---------------- me/index.html
+//     c.HTML("views/index.html", "首页", nil)
+func (engine *Engine) SetHTMLTemplate(templatePath string, funcMap template.FuncMap) {
+	if !strings.HasSuffix(templatePath, "/") {
+		templatePath += "/"
+	}
+	files, _ := fs.Glob(public.TemplatesFS, templatePath+"**/*.html")
+	tpl := template.New("templates").Funcs(funcMap)
+	for _, file_ := range files {
+		// 去掉 "templates/" 前缀，让模板名变得更简洁
+		content, _ := public.TemplatesFS.ReadFile(file_)
+		tplName := strings.TrimPrefix(file_, templatePath)
+		tpl = template.Must(tpl.New(tplName).Parse(string(content)))
+	}
+	engine.Engine.SetHTMLTemplate(tpl)
 }
 
 // Use 注册中间件
@@ -170,6 +208,8 @@ func (engine *Engine) checkDuplicateRoutes() {
 // 说明:
 //   - 创建自定义gin.Engine对象，用于自定义路由和中间件。
 func New(opts ...gin.OptionFunc) *Engine {
+	routesInfo = make(map[string]RoutesInfo)
+
 	sessionStore := func() cookie.Store {
 		store := cookie.NewStore(variable.PrivatePEM)
 		store.Options(sessions.Options{

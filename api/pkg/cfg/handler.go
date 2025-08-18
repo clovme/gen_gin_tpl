@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gen_gin_tpl/pkg/constants"
 	"gen_gin_tpl/pkg/utils/file"
-	"gen_gin_tpl/pkg/utils/network"
 	"gen_gin_tpl/pkg/variable"
 	"github.com/mojocn/base64Captcha"
 	"github.com/rs/zerolog"
@@ -37,14 +36,14 @@ func init() {
 				DbName: fmt.Sprintf("%s.db", constants.ProjectName),
 			},
 			MySQL: MySQL{
-				Host:     "127.0.0.1",
+				Host:     "localhost",
 				Port:     3306,
 				Username: "root",
 				Password: "",
 				DbName:   constants.ProjectName,
 			},
 			Redis: Redis{
-				Host:     network.GetLanIP(),
+				Host:     "localhost",
 				Port:     6379,
 				Password: "",
 				DB:       0,
@@ -54,7 +53,7 @@ func init() {
 				SMTPPort: 587,
 			},
 			Web: Web{
-				Host: network.GetLanIP(),
+				Host: "localhost",
 				Port: 9527,
 				Mode: "release",
 			},

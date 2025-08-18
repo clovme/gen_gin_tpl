@@ -39,7 +39,6 @@ func (r *routeGroup) register(db *gorm.DB) {
 	r.public.GET("/public/ping", ctx.ApiPublicHandler.GetPing, "api", "ping", "心跳检测")
 	r.public.GET("/public/time", ctx.ApiPublicHandler.GetServerTime, "api", "serverTime", "服务器时间")
 	r.public.POST("/public/email/code", ctx.ApiPublicHandler.PostSendEmailCaptcha, "api", "emailCode", "发送邮箱验证码")
-	r.public.GET("/public/demo", ctx.ApiPublicHandler.GetDemo, "api", "demo", "Demo")
 
 	r.publicView.GET("/", ctx.WebViewsHandler.GetViewsIndexHandler, "web", "indexView", "首页")
 	r.publicView.GET("/public/captcha.png", ctx.WebViewsHandler.GetImagesCaptcha, "web", "captcha", "生成图形验证码")

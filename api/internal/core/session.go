@@ -120,8 +120,14 @@ func (r *Session) GetUserID(c *gin.Context) (uid int64, ok bool, isToken bool) {
 	}
 
 	now := time.Now().Unix()
-	iat := mapClaims["iat"].(int64)
-	exp := mapClaims["exp"].(int64)
+	iat, ok := mapClaims["iat"].(int64)
+	if !ok {
+		return 0, false, true
+	}
+	exp, ok := mapClaims["exp"].(int64)
+	if !ok {
+		return 0, false, true
+	}
 
 	if exp-now <= now-iat {
 		return 0, false, true
