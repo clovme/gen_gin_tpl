@@ -1,6 +1,7 @@
 package network
 
 import (
+	"crypto/tls"
 	"fmt"
 	"gen_gin_tpl/pkg/logger/log"
 	"net"
@@ -47,17 +48,19 @@ func GetLocalIP(ip string) string {
 
 // IsMainWebStart 用 HTTP 请求检测主程序是否启动
 // 参数：
-//   - ip 主程序IP地址
-//   - port 主程序端口
+//   - requestAddr 请求地址
 //
 // 返回值：
 //   - bool 是否启动, true: 启动, false: 未启动
-func IsMainWebStart(ip string, port int) bool {
-	client := http.Client{
+func IsMainWebStart(requestAddr string) bool {
+	client := &http.Client{
 		Timeout: 5 * time.Second,
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // 跳过证书验证
+		},
 	}
 
-	resp, err := client.Get(fmt.Sprintf("http://%s:%d", GetLocalIP(ip), port))
+	resp, err := client.Get(requestAddr)
 	if err != nil {
 		return false
 	}

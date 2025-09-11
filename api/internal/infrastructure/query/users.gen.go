@@ -57,7 +57,7 @@ type user struct {
 	Password    field.String // 密码，别json序列化
 	Nickname    field.String // 昵称，非必填
 	Avatar      field.String // 头像URL
-	Gender      field.Int    // 性别 0未知 1男 2女
+	Gender      field.Int    // 性别 0男 1女 2未知
 	Birthday    field.Time   // 生日
 	Status      field.Int    // 状态：Enable启用，Disable禁用，其他扩展(如审核中，待发布等)
 	Description field.String // 个人简介、备注

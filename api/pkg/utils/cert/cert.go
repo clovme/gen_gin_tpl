@@ -9,11 +9,13 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"gen_gin_tpl/pkg/logger/log"
+	"gen_gin_tpl/pkg/utils/file"
 	"gen_gin_tpl/pkg/variable"
 	"math/big"
 	"net"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -31,7 +33,12 @@ func GetCertificatePath(dataPath string) (crtPath, keyPath string) {
 }
 
 // GenCertificateFile 生成证书
-func GenCertificateFile(dataPath string) {
+func GenCertificateFile(domainName, ip, dataPath string) {
+	crtPath, keyPath := GetCertificatePath(dataPath)
+	if file.IsFileExist(crtPath) && file.IsFileExist(keyPath) {
+		return
+	}
+	// 生成私钥
 	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		log.Error().Err(err).Msg("证书 P256 生成失败！")
@@ -42,8 +49,8 @@ func GenCertificateFile(dataPath string) {
 	template := x509.Certificate{
 		SerialNumber: big.NewInt(time.Now().UnixNano()),
 		Subject: pkix.Name{
-			Organization: []string{"Local Dev"},
-			CommonName:   "localhost",
+			Organization: []string{"Local Me"},
+			CommonName:   "Local Me",
 		},
 		NotBefore: time.Now(),
 		NotAfter:  time.Now().Add(365 * 24 * time.Hour), // 有效期 1 年
@@ -52,9 +59,9 @@ func GenCertificateFile(dataPath string) {
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		BasicConstraintsValid: true,
 
-		DNSNames: []string{"localhost"},
+		DNSNames: []string{domainName},
 		IPAddresses: []net.IP{
-			net.ParseIP("127.0.0.1"), // 一定要确保不是 nil
+			net.ParseIP(ip), // 一定要确保不是 nil
 		},
 	}
 
@@ -63,8 +70,6 @@ func GenCertificateFile(dataPath string) {
 		log.Error().Err(err).Msg("证书生成失败！")
 		return
 	}
-
-	crtPath, keyPath := GetCertificatePath(dataPath)
 
 	certOut, _ := os.Create(crtPath)
 	_ = pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
@@ -76,7 +81,8 @@ func GenCertificateFile(dataPath string) {
 	_ = pem.Encode(keyOut, &pem.Block{Type: "EC PRIVATE KEY", Bytes: b})
 	_ = keyOut.Close()
 
-	log.Info().Msgf("✅ 证书生成完成: %s + %s", crtPath, keyPath)
+	log.Info().Msgf("✅ 证书生成完成: %s", crtPath)
+	log.Info().Msgf("✅ 证书生成完成: %s", keyPath)
 }
 
 // InitRSAVariable 初始化RSA变量
@@ -94,4 +100,7 @@ func InitRSAVariable() {
 	// 从私钥生成公钥
 	pubBytes, _ := x509.MarshalPKIXPublicKey(&privateKey.PublicKey)
 	variable.PublicPEM = pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: pubBytes})
+
+	privateLines := strings.Split(string(variable.PrivatePEM), "\n")
+	variable.SessionKey = []byte(privateLines[len(privateLines)/2])
 }

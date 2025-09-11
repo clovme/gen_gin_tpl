@@ -28,6 +28,7 @@ func newEnums(db *gorm.DB, opts ...gen.DOOption) enums {
 	tableName := _enums.enumsDo.TableName()
 	_enums.ALL = field.NewAsterisk(tableName)
 	_enums.ID = field.NewInt64(tableName, "id")
+	_enums.EID = field.NewInt64(tableName, "e_id")
 	_enums.Category = field.NewString(tableName, "category")
 	_enums.Key = field.NewString(tableName, "key")
 	_enums.Name = field.NewString(tableName, "name")
@@ -49,6 +50,7 @@ type enums struct {
 
 	ALL         field.Asterisk
 	ID          field.Int64  // 枚举项ID，主键
+	EID         field.Int64  // 枚举项ID，主键
 	Category    field.String // 枚举分类
 	Key         field.String // 枚举键（唯一标识）
 	Name        field.String // 枚举名称（显示用）
@@ -76,6 +78,7 @@ func (e enums) As(alias string) *enums {
 func (e *enums) updateTableName(table string) *enums {
 	e.ALL = field.NewAsterisk(table)
 	e.ID = field.NewInt64(table, "id")
+	e.EID = field.NewInt64(table, "e_id")
 	e.Category = field.NewString(table, "category")
 	e.Key = field.NewString(table, "key")
 	e.Name = field.NewString(table, "name")
@@ -102,8 +105,9 @@ func (e *enums) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (e *enums) fillFieldMap() {
-	e.fieldMap = make(map[string]field.Expr, 11)
+	e.fieldMap = make(map[string]field.Expr, 12)
 	e.fieldMap["id"] = e.ID
+	e.fieldMap["e_id"] = e.EID
 	e.fieldMap["category"] = e.Category
 	e.fieldMap["key"] = e.Key
 	e.fieldMap["name"] = e.Name

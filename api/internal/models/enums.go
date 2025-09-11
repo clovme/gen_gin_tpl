@@ -11,6 +11,7 @@ import (
 // Enums 枚举表
 type Enums struct {
 	ID          int64          `gorm:"primaryKey;type:bigint;autoIncrement:false;comment:枚举项ID，主键"`
+	EID         int64          `gorm:"primaryKey;type:bigint;autoIncrement:false;comment:枚举项ID，主键"`
 	Category    string         `gorm:"type:varchar(50);index;not null;comment:枚举分类"`
 	Key         string         `gorm:"type:varchar(100);not null;comment:枚举键（唯一标识）"`
 	Name        string         `gorm:"type:varchar(100);not null;comment:枚举名称（显示用）"`

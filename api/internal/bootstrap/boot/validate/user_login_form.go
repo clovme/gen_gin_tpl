@@ -15,7 +15,7 @@ func LoginCaptchaValid(fl validator.FieldLevel) bool {
 	_form, ok := fl.Parent().Interface().(dto.LoginDTO)
 
 	// 校验长度
-	if len(value) != cfg.CCaptcha.Length || !ok {
+	if len(value) != cfg.C.Captcha.Length || !ok {
 		return false
 	}
 

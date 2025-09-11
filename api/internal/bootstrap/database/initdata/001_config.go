@@ -7,20 +7,20 @@ import (
 )
 
 // Config 初始化配置
-func (d *InitData) Config() {
+func (r *InitData) Config() {
 	modelList := libs.WebConfig.GetModelList()
 
 	newModelList := insertIfNotExist[models.Config](modelList, func(model models.Config) (*models.Config, error) {
-		return d.Q.Config.Where(d.Q.Config.Name.Eq(model.Name)).Take()
+		return r.Q.Config.Where(r.Q.Config.Name.Eq(model.Name)).Take()
 	})
 
 	if len(newModelList) <= 0 {
 		return
 	}
 
-	if err := d.Q.Config.CreateInBatches(newModelList, 100); err != nil {
-		log.Error().Err(err).Msgf("[%s]初始化失败:", "系统配置表")
+	if err := r.Q.Config.CreateInBatches(newModelList, 100); err != nil {
+		log.Error().Err(err).Msg("[系统配置表]初始化失败！")
 	} else {
-		log.Info().Msgf("[%s]初始化成功，共%d条数据！", "系统配置表", len(newModelList))
+		log.Info().Msgf("[系统配置表]初始化成功，共%d条数据！", len(newModelList))
 	}
 }

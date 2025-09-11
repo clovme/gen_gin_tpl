@@ -39,7 +39,7 @@ func (r *PublicHandler) GetPublicKey(c *core.Context) {
 // @Type			api
 // @Group 			public
 // @Router			/public/enums [GET]
-// @Name			enumList
+// @Name			enumListApi
 // @Summary			枚举列表
 func (r *PublicHandler) GetEnumList(c *core.Context) {
 	enums, err := r.Service.GetAllEnumsData()
@@ -54,7 +54,7 @@ func (r *PublicHandler) GetEnumList(c *core.Context) {
 // @Type			api
 // @Group 			public
 // @Router			/public/ping [GET]
-// @Name			ping
+// @Name			pingApi
 // @Summary			心跳检测
 func (r *PublicHandler) GetPing(c *core.Context) {
 	c.JsonUnSafeSuccess(nil)
@@ -64,7 +64,7 @@ func (r *PublicHandler) GetPing(c *core.Context) {
 // @Type			api
 // @Group 			public
 // @Router			/public/time [GET]
-// @Name			serverTime
+// @Name			serverTimeApi
 // @Summary			服务器时间
 func (r *PublicHandler) GetServerTime(c *core.Context) {
 	now := time.Now()
@@ -96,7 +96,7 @@ func (r *PublicHandler) GetServerTime(c *core.Context) {
 // @Type			api
 // @Group 			public
 // @Router			/public/email/code [POST]
-// @Name			emailCode
+// @Name			emailCodeApi
 // @Summary			发送邮箱验证码
 func (r *PublicHandler) PostSendEmailCaptcha(c *core.Context) {
 	var emailCode dto.EmailCode
@@ -110,7 +110,7 @@ func (r *PublicHandler) PostSendEmailCaptcha(c *core.Context) {
 		c.JsonSafeDesc(code.RequestUnknown, c.Params)
 		return
 	}
-	if strings.EqualFold(emailCode.Email, cfg.CEmail.From) {
+	if strings.EqualFold(emailCode.Email, cfg.C.Email.From) {
 		c.JsonSafeDesc(code.ServerInternalError, c.Params)
 		return
 	}

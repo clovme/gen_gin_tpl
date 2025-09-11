@@ -36,12 +36,8 @@ func autoMigrateWithComments(db *gorm.DB, tables []interface{}) error {
 		if method, ok := t.MethodByName("TableComment"); ok {
 			comment = method.Func.Call([]reflect.Value{reflect.ValueOf(table)})[0].String()
 		}
-		// MySQL 迁移
 		if err := db.Set("gorm:table_options", fmt.Sprintf("COMMENT='%s'", comment)).AutoMigrate(table); err != nil {
-			// 迁移失败时，尝试无注释迁移
-			if err = db.AutoMigrate(table); err != nil {
-				return errors.New(fmt.Sprintf("[(%s)%s]数据表迁移失败: %s，错误信息:%s", t.Name(), comment, t.PkgPath(), err.Error()))
-			}
+			return errors.New(fmt.Sprintf("[(%s)%s]数据库迁移失败: %s，错误信息:%s", t.Name(), comment, t.PkgPath(), err.Error()))
 		}
 	}
 	return nil

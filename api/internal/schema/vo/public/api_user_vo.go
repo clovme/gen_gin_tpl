@@ -2,6 +2,7 @@ package public
 
 import (
 	"gen_gin_tpl/internal/models"
+	"gen_gin_tpl/pkg/enums/gender"
 	"gen_gin_tpl/pkg/enums/status"
 	"gorm.io/gorm"
 	"time"
@@ -15,7 +16,7 @@ type ApiUserVO struct {
 	Password    string         `json:"password"`
 	Nickname    string         `json:"nickname"`
 	Avatar      string         `json:"avatar"`
-	Gender      int            `json:"gender"`
+	Gender      gender.Gender  `json:"gender"`
 	Birthday    *time.Time     `json:"birthday"`
 	Status      status.Status  `json:"status"`
 	Description string         `json:"description"`

@@ -32,22 +32,21 @@ const (
 var (
 	initiate = map[ResponseCode]enums.Enums{
 		// 正常返回
-		Success: {Key: "Success", Name: "成功", Desc: "请求已成功处理！"},
-		Fail:    {Key: "Fail", Name: "操作失败", Desc: "操作失败，请稍后重试！"},
+		Success: {ID: 1000000000000000000, Key: "Success", Name: "成功", Desc: "请求已成功处理！"},
+		Fail:    {ID: 1000000000000000001, Key: "Fail", Name: "操作失败", Desc: "操作失败，请稍后重试！"},
 
 		// 业务错误
-		ServiceVerifyError: {Key: "ServiceVerifyError", Name: "验证失败", Desc: "数据验证失败，请检查输入数据！"},
-		ServiceCreateError: {Key: "ServiceCreateError", Name: "创建失败", Desc: "数据创建失败，请稍后重试！"},
-
+		ServiceVerifyError: {ID: 1000000000000000002, Key: "ServiceVerifyError", Name: "验证失败", Desc: "数据验证失败，请检查输入数据！"},
+		ServiceCreateError: {ID: 1000000000000000003, Key: "ServiceCreateError", Name: "创建失败", Desc: "数据创建失败，请稍后重试！"},
 		// 请求错误
-		RequestBadRequest:   {Key: "RequestBadRequest", Name: "错误请求", Desc: "请求参数格式错误或缺失，服务器无法处理！"},
-		RequestUnauthorized: {Key: "RequestUnauthorized", Name: "未认证", Desc: "当前请求需要用户认证或认证已失效！"},
-		RequestForbidden:    {Key: "RequestForbidden", Name: "禁止访问", Desc: "此资源当前无权访问！"},
-		RequestNotFound:     {Key: "RequestNotFound", Name: "资源不存在", Desc: "请求的资源不存在或已被删除！"},
-		RequestUnknown:      {Key: "RequestUnknown", Name: "未知错误", Desc: "未知错误或异常，请检查请求参数或配置！"},
+		RequestBadRequest:   {ID: 1000000000000000004, Key: "RequestBadRequest", Name: "错误请求", Desc: "请求参数格式错误或缺失，服务器无法处理！"},
+		RequestUnauthorized: {ID: 1000000000000000005, Key: "RequestUnauthorized", Name: "未认证", Desc: "当前请求未认证或者您没有权限访问！"},
+		RequestForbidden:    {ID: 1000000000000000006, Key: "RequestForbidden", Name: "禁止访问", Desc: "拒绝访问此资源！"},
+		RequestNotFound:     {ID: 1000000000000000007, Key: "RequestNotFound", Name: "资源不存在", Desc: "请求的资源不存在或已被删除！"},
+		RequestUnknown:      {ID: 1000000000000000008, Key: "RequestUnknown", Name: "未知错误", Desc: "未知错误或异常，请检查请求参数或配置！"},
 
 		// 服务器内部错误
-		ServerInternalError: {Key: "ServerInternalError", Name: "服务器内部错误", Desc: "服务器开小差了，请稍后再试！"},
+		ServerInternalError: {ID: 1000000000000000009, Key: "ServerInternalError", Name: "服务器内部错误", Desc: "服务器开小差了，请稍后再试！"},
 	}
 
 	enumToValue = make(map[string]ResponseCode)
@@ -57,6 +56,11 @@ func init() {
 	for code, meta := range initiate {
 		enumToValue[meta.Key] = code
 	}
+}
+
+// ID 获取enums.ID
+func (c ResponseCode) ID() int64 {
+	return initiate[c].ID
 }
 
 // Key 获取enums.Key

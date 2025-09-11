@@ -1,4 +1,4 @@
-package middleware
+package minit
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"gen_gin_tpl/internal/models"
 	"gen_gin_tpl/pkg/constants"
 	httpLog "gen_gin_tpl/pkg/logger/http"
+	"github.com/gin-gonic/gin"
 	"strings"
 	"time"
 )
@@ -18,7 +19,7 @@ import (
 //
 // 返回值:
 //   - bool: 是否是Ajax请求，true 是 Ajax 请求，false 不是 Ajax 请求
-func isAjax(c *core.Context) bool {
+func isAjax(c *gin.Context) bool {
 	referer := c.GetHeader("Referer")
 	if referer != "" {
 		referer = strings.SplitN(referer, "/", 3)[2]
@@ -34,18 +35,34 @@ func isAjax(c *core.Context) bool {
 	return hostReferer && xmlHttpRequest && accept
 }
 
-// setContextUserInfo 设置上下文用户信息
-func setContextUserInfo(userID int64, ok bool, c *core.Context) {
-	if !ok {
-		return
-	}
+func getContextUserInfo(c *core.Context, userID int64) {
 	if user, err := query.Q.User.Where(query.User.ID.Eq(userID)).First(); err == nil {
 		c.Set(constants.ContextUserInfo, user)
 		c.Set(constants.IsContextLogin, true)
 		return
 	}
 	c.Set(constants.IsContextLogin, false)
-	httpLog.Info(c.Context).Msg("User 不存在，删除Session会话标识")
+	c.Set(constants.HttpLogKey, "User 不存在，删除Session会话标识")
+	c.Session.ClearSession() // 建议清理 session
+}
+
+// setContextUserInfo 设置上下文用户信息
+func setContextUserInfo(c *core.Context) {
+	userID, ok, isToken := c.Session.GetUserID(c.Context)
+
+	if ok && !isToken { // 非Token请求
+		getContextUserInfo(c, userID)
+		return
+	} else if ok && isToken { // Token请求，判断是否过期
+		if token, err := query.Q.Token.Where(query.Q.Token.UserID.Eq(userID)).First(); err == nil {
+			if tokenUpdate(token, c) {
+				getContextUserInfo(c, userID)
+				return
+			}
+		}
+		c.Session.ClearSession()
+	}
+	c.Set(constants.IsContextLogin, false)
 }
 
 // tokenUpdate 更新Token
@@ -78,23 +95,27 @@ func tokenUpdate(token *models.Token, c *core.Context) bool {
 // InitializationMiddleware 初始化中间件
 func InitializationMiddleware() core.HandlerFunc {
 	return func(c *core.Context) {
-		c.Set(constants.IsContextLogin, false)
-		c.Set(constants.IsContextAjax, isAjax(c))
-		c.Header("Client-ID", c.Session.BrowserClientID())
-		userID, ok, isToken := c.Session.GetUserID(c.Context)
+		// 1. 限制本地 IP 访问
+		//host := strings.SplitN(c.Request.Host, ":", 2)[0]
+		//if net.ParseIP(host) != nil {
+		//	c.AbortWithStatus(http.StatusForbidden)
+		//	return
+		//}
 
-		// 非Token请求，直接返回
-		if ok && !isToken {
-			setContextUserInfo(userID, ok, c)
+		// 2. 基础上下文初始化
+		c.Set(constants.IsContextLogin, false) // 默认未登录
+		c.Set(constants.IsContextAjax, isAjax(c.Context))
+		c.Header("Client-ID", c.Session.BrowserClientID())
+
+		// 3. 设置用户信息（可能成功，也可能失败）
+		setContextUserInfo(c)
+
+		// 4. 公共资源：即便没登录，也直接放行（页面可以自己判断是否有用户信息）
+		if strings.HasPrefix(c.Router.Path(c.Request.URL.Path).Group, "public") {
+			c.Set(constants.HttpLogKey, "公共资源")
 		}
-		// Token请求，判断是否过期
-		if ok && isToken {
-			if token, err := query.Q.Token.Where(query.Q.Token.UserID.Eq(userID)).First(); err == nil {
-				if tokenUpdate(token, c) {
-					setContextUserInfo(userID, ok, c)
-				}
-			}
-		}
+
+		// 7. 放行
 		c.Next()
 	}
 }

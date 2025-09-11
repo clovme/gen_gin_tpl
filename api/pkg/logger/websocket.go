@@ -54,12 +54,6 @@ var LogHub = &hub{
 	clients: make(map[*client]bool),
 }
 
-func (h *hub) CloseAllClient() {
-	for c, _ := range h.clients {
-		h.RemoveClient(c)
-	}
-}
-
 // SendMessage 发送消息给所有客户端
 // 每个 client 都有自己的 writer goroutine，负责写入消息
 // 这里我们直接将消息发送到每个 client 的 sendCh 通道

@@ -39,7 +39,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       minify: 'terser', // 使用 terser 进行代码压缩
       terserOptions: {
         compress: {
-          drop_console: true, // 去掉 console.log 等调试代码
+          drop_console: false, // 去掉 console.log 等调试代码
           drop_debugger: true, // 去掉 debugger 语句
           pure_funcs: ['console.log'] // 去掉特定函数调用
         },

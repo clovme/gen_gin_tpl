@@ -28,9 +28,9 @@ type clientEmail struct {
 //
 // 返回值：
 //   - string 验证码
-func (c *emailTmpl) SendCode(emailId string, to, flag string) error {
+func (c *emailTmpl) SendCode(emailId, to, flag string) error {
 	charset := strings.Split("0123456789ABCDEFGHJKMNOQRSTUVXYZ", "")
-	codeRunes := make([]string, cfg.CCaptcha.Length)
+	codeRunes := make([]string, cfg.C.Captcha.Length)
 	for i := range codeRunes {
 		codeRunes[i] = array.RandomArray[string](charset)
 	}
@@ -54,7 +54,7 @@ func (c *clientEmail) SendEmail(to []string, subject string, data interface{}) e
 	if err != nil {
 		return fmt.Errorf("模板渲染失败: %w", err)
 	}
-	return c.send(to, subject, body, cfg.CEmail)
+	return c.send(to, subject, body, cfg.C.Email)
 }
 
 // renderTemplate 渲染模板
@@ -77,7 +77,7 @@ func (c *clientEmail) renderTemplate(data interface{}) (string, error) {
 }
 
 // send 发送邮件，基于 jordan-wright/email 封装
-func (c *clientEmail) send(to []string, subject, body string, cfg *cfg.Email) error {
+func (c *clientEmail) send(to []string, subject, body string, cfg cfg.Email) error {
 	e := email.NewEmail()
 	e.From = fmt.Sprintf("%s <%s>", variable.WebTitle, cfg.From)
 	e.To = to

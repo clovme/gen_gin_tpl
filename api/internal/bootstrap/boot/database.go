@@ -37,9 +37,9 @@ func databaseAutoMigrate(db *gorm.DB, engine *core.Engine) {
 
 // databaseConnectDB 连接数据库
 func databaseConnectDB(dataPath string) *gorm.DB {
-	dbPath := filepath.Join(dataPath, cfg.CSQLite.DbName)
-	if !strings.HasSuffix(cfg.CSQLite.DbName, ".db") {
-		dbPath = filepath.Join(dataPath, fmt.Sprintf("%s.db", cfg.CSQLite.DbName))
+	dbPath := filepath.Join(dataPath, cfg.C.SQLite.DbName)
+	if !strings.HasSuffix(cfg.C.SQLite.DbName, ".db") {
+		dbPath = filepath.Join(dataPath, fmt.Sprintf("%s.db", cfg.C.SQLite.DbName))
 	}
-	return database.OpenConnectDB(cfg.CMySQL.Username, cfg.CMySQL.Password, cfg.CMySQL.Host, cfg.CMySQL.Port, cfg.CMySQL.DbName, cfg.COther.DbType, dbPath)
+	return database.OpenConnectDB(cfg.C.MySQL.Username, cfg.C.MySQL.Password, cfg.C.MySQL.Host, cfg.C.MySQL.Port, cfg.C.MySQL.DbName, cfg.C.Other.DbType, dbPath)
 }

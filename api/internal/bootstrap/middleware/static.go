@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gen_gin_tpl/internal/core"
 	"gen_gin_tpl/pkg/cfg"
+	"gen_gin_tpl/pkg/constants"
 	"gen_gin_tpl/pkg/enums/code"
 	"gen_gin_tpl/pkg/logger/log"
 	"gen_gin_tpl/pkg/utils/file"
@@ -30,6 +31,7 @@ func loadStaticFS(group *core.Engine, name string, staticDir any) {
 
 func favicon(c *gin.Context) {
 	c.Data(200, "image/x-icon", public.Favicon)
+	c.Set(constants.HttpLogKey, "favicon")
 	c.Abort()
 }
 
@@ -38,7 +40,7 @@ func FaviconMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if c.Request.URL.Path == "/favicon.ico" {
 			// 加载自定义 favicon.ico
-			staticPath, err := file.GetFileAbsPath(cfg.COther.DataPath, "static", "favicon.ico")
+			staticPath, err := file.GetFileAbsPath(cfg.C.Other.DataPath, "static", "favicon.ico")
 			if err != nil || !file.IsFileExist(staticPath) {
 				// 加载默认 favicon.ico
 				favicon(c)
@@ -53,6 +55,7 @@ func FaviconMiddleware() gin.HandlerFunc {
 				return
 			}
 			c.Data(200, "image/x-icon", data)
+			c.Set(constants.HttpLogKey, "favicon")
 			c.Abort()
 			return
 		}
@@ -80,6 +83,9 @@ func ResourceDirInterception(engine *core.Engine, staticDir string) {
 
 	// 静态资源路由拦截中间件处理，中间件部分
 	engine.Use(func(c *core.Context) {
+		if strings.HasSuffix(c.FullPath(), "*filepath") {
+			c.Set(constants.HttpLogKey, "静态资源")
+		}
 		for name, _ := range rootDirMap {
 			if strings.EqualFold(c.Request.URL.Path, fmt.Sprintf("/%s/", name)) {
 				responseJsonOrHtml(c, code.RequestNotFound, http.StatusNotFound)

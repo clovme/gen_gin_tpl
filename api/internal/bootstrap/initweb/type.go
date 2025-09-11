@@ -61,37 +61,47 @@ type FormItems struct {
 }
 
 type FormData struct {
-	WebTitle          string   `json:"WebTitle"`
-	OtherIsEmail      bool     `json:"OtherIsEmail"`
-	OtherDbType       string   `json:"OtherDbType"`
-	OtherCacheType    string   `json:"OtherCacheType"`
-	OtherDataPath     string   `json:"OtherDataPath"`
-	SQLiteDbName      string   `json:"SQLiteDbName"`
-	MySQLHost         string   `json:"MySQLHost"`
-	MySQLPort         int      `json:"MySQLPort"`
-	MySQLUsername     string   `json:"MySQLUsername"`
-	MySQLPassword     string   `json:"MySQLPassword"`
-	MySQLDbName       string   `json:"MySQLDbName"`
-	WebHost           string   `json:"WebHost"`
-	WebPort           int      `json:"WebPort"`
-	WebMode           string   `json:"WebMode"`
-	RedisHost         string   `json:"RedisHost"`
-	RedisPort         int      `json:"RedisPort"`
-	RedisUsername     string   `json:"RedisUsername"`
-	RedisPassword     string   `json:"RedisPassword"`
-	RedisDB           int      `json:"RedisDB"`
-	EmailSMTPHost     string   `json:"EmailSMTPHost"`
-	EmailSMTPPort     int      `json:"EmailSMTPPort"`
-	EmailUsername     string   `json:"EmailUsername"`
-	EmailPassword     string   `json:"EmailPassword"`
-	EmailFrom         string   `json:"EmailFrom"`
-	LoggerLevel       string   `json:"LoggerLevel"`
-	LoggerLogPath     string   `json:"LoggerLogPath"`
-	LoggerFormatJson  bool     `json:"LoggerFormatJson"`
-	LoggerCompress    bool     `json:"LoggerCompress"`
-	LoggerMaxSize     int      `json:"LoggerMaxSize"`
-	LoggerMaxAge      int      `json:"LoggerMaxAge"`
-	LoggerMaxBackups  int      `json:"LoggerMaxBackups"`
+	WebTitle       string `json:"WebTitle"`
+	OtherIsEmail   bool   `json:"OtherIsEmail"`
+	OtherDbType    string `json:"OtherDbType"`
+	OtherCacheType string `json:"OtherCacheType"`
+	OtherDataPath  string `json:"OtherDataPath"`
+
+	SQLiteDbName string `json:"SQLiteDbName"`
+
+	MySQLHost     string `json:"MySQLHost"`
+	MySQLPort     int    `json:"MySQLPort"`
+	MySQLUsername string `json:"MySQLUsername"`
+	MySQLPassword string `json:"MySQLPassword"`
+	MySQLDbName   string `json:"MySQLDbName"`
+
+	WebHost       string `json:"WebHost"`
+	WebIP         string `json:"WebIP"`
+	WebDomain     string `json:"WebDomain"`
+	WebPort       int    `json:"WebPort"`
+	WebIsLocalDNS bool   `json:"WebIsLocalDNS"`
+	WebMode       string `json:"WebMode"`
+
+	RedisHost     string `json:"RedisHost"`
+	RedisPort     int    `json:"RedisPort"`
+	RedisUsername string `json:"RedisUsername"`
+	RedisPassword string `json:"RedisPassword"`
+	RedisDB       int    `json:"RedisDB"`
+
+	EmailSMTPHost string `json:"EmailSMTPHost"`
+	EmailSMTPPort int    `json:"EmailSMTPPort"`
+	EmailUsername string `json:"EmailUsername"`
+	EmailPassword string `json:"EmailPassword"`
+	EmailFrom     string `json:"EmailFrom"`
+
+	LoggerLevel      string `json:"LoggerLevel"`
+	LoggerLogPath    string `json:"LoggerLogPath"`
+	LoggerFormatJson bool   `json:"LoggerFormatJson"`
+	LoggerCompress   bool   `json:"LoggerCompress"`
+	LoggerMaxSize    int    `json:"LoggerMaxSize"`
+	LoggerMaxAge     int    `json:"LoggerMaxAge"`
+	LoggerMaxBackups int    `json:"LoggerMaxBackups"`
+
 	CaptchaLength     int      `json:"CaptchaLength"`
 	CaptchaNoiseCount int      `json:"CaptchaNoiseCount"`
 	CaptchaType       []string `json:"CaptchaType"`
@@ -115,13 +125,13 @@ type ValidConfig struct {
 }
 
 type FormOptions struct {
-	Border          bool                `json:"border,omitempty"`
-	TitleColon      bool                `json:"titleColon,omitempty"`
-	TitleAlign      string              `json:"titleAlign,omitempty"`
-	TitleWidth      int                 `json:"titleWidth,omitempty"`
-	TitleBackground bool                `json:"titleBackground,omitempty"`
-	ValidConfig     *ValidConfig        `json:"validConfig,omitempty"`
-	FormData        *FormData           `json:"data,omitempty"`
-	Rules           *map[string][]Rules `json:"rules,omitempty"`
-	FormItems       []FormItems         `json:"items,omitempty"`
+	Border          bool               `json:"border,omitempty"`
+	TitleColon      bool               `json:"titleColon,omitempty"`
+	TitleAlign      string             `json:"titleAlign,omitempty"`
+	TitleWidth      int                `json:"titleWidth,omitempty"`
+	TitleBackground bool               `json:"titleBackground,omitempty"`
+	ValidConfig     ValidConfig        `json:"validConfig,omitempty"`
+	FormData        FormData           `json:"data,omitempty"`
+	Rules           map[string][]Rules `json:"rules,omitempty"`
+	FormItems       []FormItems        `json:"items,omitempty"`
 }

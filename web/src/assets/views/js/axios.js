@@ -4379,13 +4379,13 @@
             if (result.data.code === 10000) {
                 return result.data;
             }
-            toast.warning(result.data.message);
+            meMsg.toast.warning(result.data.message);
             return Promise.reject(result.data);
         }, error => {
             if (error.response.data) {
-                toast.error(error.response.data.message);
+                meMsg.toast.error(error.response.data.message);
             } else {
-                toast.error(error.message);
+                meMsg.toast.error(error.message);
             }
             return Promise.reject(error);
         })
@@ -4394,7 +4394,6 @@
     // 请求拦截器
     function request$default(config) {
         config.use(config => {
-            console.log(config)
             const token = localStorage.getItem('TOKEN')
             if (token) {
                 config.headers['TOKEN'] = token;

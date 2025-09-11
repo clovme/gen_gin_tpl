@@ -18,10 +18,10 @@ const (
 
 var (
 	initiate = map[Perm]enums.Enums{
-		Menu:    {Key: "menu", Name: "菜单", Desc: "菜单权限"},
-		Api:     {Key: "api", Name: "接口", Desc: "接口权限"},
-		Page:    {Key: "page", Name: "页面", Desc: "页面权限"},
-		Unknown: {Key: "unknown", Name: "未知", Desc: "未知权限"},
+		Menu:    {ID: 1000000000000000000, Key: "menu", Name: "菜单", Desc: "菜单权限"},
+		Api:     {ID: 1000000000000000001, Key: "api", Name: "接口", Desc: "接口权限"},
+		Page:    {ID: 1000000000000000002, Key: "view", Name: "页面", Desc: "页面权限"},
+		Unknown: {ID: 1000000000000000003, Key: "unknown", Name: "未知", Desc: "未知权限"},
 	}
 
 	enumToValue = make(map[string]Perm)
@@ -31,6 +31,11 @@ func init() {
 	for code, meta := range initiate {
 		enumToValue[meta.Key] = code
 	}
+}
+
+// ID 获取enums.ID
+func (c Perm) ID() int64 {
+	return initiate[c].ID
 }
 
 // Key 获取enums.Key

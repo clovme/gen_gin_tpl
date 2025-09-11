@@ -2,16 +2,14 @@ eventListener.addLoadEventListener(() => {
     eventListener.globalOnSwitchCaptcha('.verification-img', '#floatingCaptcha')
     const request = (form) => {
         axios.post(form.action, new FormData(form)).then(result => {
-            toast.success(result.message)
-            const trimer = setTimeout(() => {
-                if (result.data.token !== '') {
-                    localStorage.setItem('TOKEN', result.data.token)
-                } else {
-                    localStorage.removeItem('TOKEN')
-                }
-                location.reload()
-                clearTimeout(trimer)
-            }, 2000)
+            if (result.data.token !== '') {
+                localStorage.setItem('TOKEN', result.data.token)
+            } else {
+                localStorage.removeItem('TOKEN')
+            }
+            meMsg.alert.success("登录提示", result.message, function () {
+                window.location.reload()
+            })
         }).catch(error => {
             for (let key in error.data) {
                 utils.toast.createTippy(key, error.data[key]).show()

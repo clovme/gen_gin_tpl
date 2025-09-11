@@ -17,9 +17,9 @@ const (
 
 var (
 	initiate = map[Gender]enums.Enums{
-		Male:    {Key: "Male", Name: "男", Desc: "性别男"},
-		Female:  {Key: "Female", Name: "女", Desc: "性别女"},
-		Unknown: {Key: "Unknown", Name: "未知", Desc: "未知性别"},
+		Male:    {ID: 1000000000000000000, Key: "Male", Name: "男", Desc: "性别男"},
+		Female:  {ID: 1000000000000000001, Key: "Female", Name: "女", Desc: "性别女"},
+		Unknown: {ID: 1000000000000000002, Key: "Unknown", Name: "未知", Desc: "未知性别"},
 	}
 
 	enumToValue = make(map[string]Gender)
@@ -29,6 +29,11 @@ func init() {
 	for code, meta := range initiate {
 		enumToValue[meta.Key] = code
 	}
+}
+
+// ID 获取enums.ID
+func (c Gender) ID() int64 {
+	return initiate[c].ID
 }
 
 // Key 获取enums.Key

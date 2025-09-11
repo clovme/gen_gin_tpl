@@ -14,11 +14,11 @@ type RouterGroup struct {
 }
 
 type RoutesInfo struct {
-	Method      string
-	Path        string
-	Name        string
-	Type        string
-	Description string
+	Path        string // 路由路径(/regedit.html)唯一标识，不能重复
+	Name        string // 路由名称(regeditApi)唯一标识，不能重复
+	Method      string // 请求方法(GET)
+	Group       string // 路由分组(noAuthView)
+	Description string // 路由描述(注册页面)
 }
 
 // HandlerFunc 路由处理函数
@@ -49,51 +49,107 @@ func groupFunc(group RouterGroup, relativePath string, handlers ...HandlerFunc) 
 }
 
 // handle 路由处理函数注册
-func (group *RouterGroup) handle(httpMethod, relativePath string, handler HandlerFunc, typ, name, description string) {
+func (group *RouterGroup) handle(httpMethod, relativePath string, handler HandlerFunc, groupName, name, description string) {
 	key := fmt.Sprintf("%s:%s%s", httpMethod, group.uriPrefix, relativePath)
 	routesInfo[key] = RoutesInfo{
 		Method:      httpMethod,
 		Path:        group.uriPrefix + relativePath,
 		Name:        name,
-		Type:        typ,
+		Group:       groupName,
 		Description: description,
 	}
 	group.RouterGroup.Handle(httpMethod, relativePath, wrapHandler(handler))
 }
 
-// POST is a shortcut for router.Handle("POST", path, handler).
-func (group *RouterGroup) POST(relativePath string, handler HandlerFunc, typ, name, description string) {
-	group.handle(http.MethodPost, relativePath, handler, typ, name, description)
+// POST 请求 router.Handle("POST", path, handler, groupName, name, description).
+//
+// 参数:
+//   - relativePath: 路由路径(/regedit.html)唯一标识，不能重复
+//   - handler: 路由处理函数
+//   - groupName: 路由分组(noAuthView)
+//   - typ: 路由类型(view)
+//   - name: 路由名称(regeditApi)唯一标识，不能重复
+//   - description: 路由描述(注册页面)
+func (group *RouterGroup) POST(relativePath string, handler HandlerFunc, groupName, name, description string) {
+	group.handle(http.MethodPost, relativePath, handler, groupName, name, description)
 }
 
-// GET is a shortcut for router.Handle("GET", path, handler).
-func (group *RouterGroup) GET(relativePath string, handler HandlerFunc, typ, name, description string) {
-	group.handle(http.MethodGet, relativePath, handler, typ, name, description)
+// GET 请求 router.Handle("GET", path, handler, groupName, name, description).
+//
+// 参数:
+//   - relativePath: 路由路径(/regedit.html)唯一标识，不能重复
+//   - handler: 路由处理函数
+//   - groupName: 路由分组(noAuthView)
+//   - typ: 路由类型(view)
+//   - name: 路由名称(regeditApi)唯一标识，不能重复
+//   - description: 路由描述(注册页面)
+func (group *RouterGroup) GET(relativePath string, handler HandlerFunc, groupName, name, description string) {
+	group.handle(http.MethodGet, relativePath, handler, groupName, name, description)
 }
 
-// DELETE is a shortcut for router.Handle("DELETE", path, handler).
-func (group *RouterGroup) DELETE(relativePath string, handler HandlerFunc, typ, name, description string) {
-	group.handle(http.MethodDelete, relativePath, handler, typ, name, description)
+// DELETE 请求 router.Handle("DELETE", path, handler, groupName, name, description).
+//
+// 参数:
+//   - relativePath: 路由路径(/regedit.html)唯一标识，不能重复
+//   - handler: 路由处理函数
+//   - groupName: 路由分组(noAuthView)
+//   - typ: 路由类型(view)
+//   - name: 路由名称(regeditApi)唯一标识，不能重复
+//   - description: 路由描述(注册页面)
+func (group *RouterGroup) DELETE(relativePath string, handler HandlerFunc, groupName, name, description string) {
+	group.handle(http.MethodDelete, relativePath, handler, groupName, name, description)
 }
 
-// PATCH is a shortcut for router.Handle("PATCH", path, handler).
-func (group *RouterGroup) PATCH(relativePath string, handler HandlerFunc, typ, name, description string) {
-	group.handle(http.MethodPatch, relativePath, handler, typ, name, description)
+// PATCH 请求 router.Handle("PATCH", path, handler, groupName, name, description).
+//
+// 参数:
+//   - relativePath: 路由路径(/regedit.html)唯一标识，不能重复
+//   - handler: 路由处理函数
+//   - groupName: 路由分组(noAuthView)
+//   - typ: 路由类型(view)
+//   - name: 路由名称(regeditApi)唯一标识，不能重复
+//   - description: 路由描述(注册页面)
+func (group *RouterGroup) PATCH(relativePath string, handler HandlerFunc, groupName, name, description string) {
+	group.handle(http.MethodPatch, relativePath, handler, groupName, name, description)
 }
 
-// PUT is a shortcut for router.Handle("PUT", path, handler).
-func (group *RouterGroup) PUT(relativePath string, handler HandlerFunc, typ, name, description string) {
-	group.handle(http.MethodPut, relativePath, handler, typ, name, description)
+// PUT 请求 router.Handle("PUT", path, handler, groupName, name, description).
+//
+// 参数:
+//   - relativePath: 路由路径(/regedit.html)唯一标识，不能重复
+//   - handler: 路由处理函数
+//   - groupName: 路由分组(noAuthView)
+//   - typ: 路由类型(view)
+//   - name: 路由名称(regeditApi)唯一标识，不能重复
+//   - description: 路由描述(注册页面)
+func (group *RouterGroup) PUT(relativePath string, handler HandlerFunc, groupName, name, description string) {
+	group.handle(http.MethodPut, relativePath, handler, groupName, name, description)
 }
 
-// OPTIONS is a shortcut for router.Handle("OPTIONS", path, handler).
-func (group *RouterGroup) OPTIONS(relativePath string, handler HandlerFunc, typ, name, description string) {
-	group.handle(http.MethodOptions, relativePath, handler, typ, name, description)
+// OPTIONS 请求 router.Handle("OPTIONS", path, handler, groupName, name, description).
+//
+// 参数:
+//   - relativePath: 路由路径(/regedit.html)唯一标识，不能重复
+//   - handler: 路由处理函数
+//   - groupName: 路由分组(noAuthView)
+//   - typ: 路由类型(view)
+//   - name: 路由名称(regeditApi)唯一标识，不能重复
+//   - description: 路由描述(注册页面)
+func (group *RouterGroup) OPTIONS(relativePath string, handler HandlerFunc, groupName, name, description string) {
+	group.handle(http.MethodOptions, relativePath, handler, groupName, name, description)
 }
 
-// HEAD is a shortcut for router.Handle("HEAD", path, handler).
-func (group *RouterGroup) HEAD(relativePath string, handler HandlerFunc, typ, name, description string) {
-	group.handle(http.MethodHead, relativePath, handler, typ, name, description)
+// HEAD 请求 router.Handle("HEAD", path, handler, groupName, name, description).
+//
+// 参数:
+//   - relativePath: 路由路径(/regedit.html)唯一标识，不能重复
+//   - handler: 路由处理函数
+//   - groupName: 路由分组(noAuthView)
+//   - typ: 路由类型(view)
+//   - name: 路由名称(regeditApi)唯一标识，不能重复
+//   - description: 路由描述(注册页面)
+func (group *RouterGroup) HEAD(relativePath string, handler HandlerFunc, groupName, name, description string) {
+	group.handle(http.MethodHead, relativePath, handler, groupName, name, description)
 }
 
 // Group creates a new router group. You should add all the routes that have common middlewares or the same path prefix.

@@ -9,8 +9,8 @@ import (
 )
 
 // InitializationLogger 初始化日志
-func InitializationLogger() {
-	path, err := file.GetFileAbsPath(cfg.CLogger.LogPath)
+func InitializationLogger(c cfg.Logger) {
+	path, err := file.GetFileAbsPath(c.LogPath)
 	if err != nil {
 		fmt.Println("获取日志目录失败:", err)
 		os.Exit(-1)
@@ -18,11 +18,11 @@ func InitializationLogger() {
 	// 初始化一次
 	logger.InitLogger(logger.LoggerConfig{
 		Dir:        path,
-		MaxSize:    cfg.CLogger.MaxSize,
-		MaxBackups: cfg.CLogger.MaxBackups,
-		MaxAge:     cfg.CLogger.MaxAge,
-		Compress:   cfg.CLogger.Compress,
-		Level:      cfg.CLogger.Level,
-		FormatJSON: cfg.CLogger.FormatJSON, // true=结构化；false=文本
+		MaxSize:    c.MaxSize,
+		MaxBackups: c.MaxBackups,
+		MaxAge:     c.MaxAge,
+		Compress:   c.Compress,
+		Level:      c.Level,
+		FormatJSON: c.FormatJSON, // true=结构化；false=文本
 	})
 }

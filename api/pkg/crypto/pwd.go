@@ -9,7 +9,7 @@ import (
 )
 
 func _md5(value string) string {
-	value = fmt.Sprintf("%s%s", value, "ViewsRegeditPostHandler-fm")
+	value = fmt.Sprintf("%s%s", value, "tiMciaIg8DiYakIyQ7yNY9Xdyd/SPF5qXqNZIMnZODqTEO0Z6zGUgfcCgYEA+5Pr")
 	hash := md5.Sum([]byte(value))
 	return hex.EncodeToString(hash[:])
 }

@@ -9,6 +9,13 @@ import (
 	"strconv"
 )
 
+func viewError(errCode code.ResponseCode) gin.H {
+	return gin.H{
+		"Code": errCode.Int(),
+		"Desc": errCode.Desc(),
+	}
+}
+
 func responseJsonOrHtml(c *core.Context, errCode code.ResponseCode, httpCode int) {
 	if c.IsAjax {
 		c.JsonSafeDesc(errCode, nil)
@@ -16,14 +23,11 @@ func responseJsonOrHtml(c *core.Context, errCode code.ResponseCode, httpCode int
 		return
 	}
 	if code.RequestForbidden.Is(errCode) {
-		c.Redirect(http.StatusFound, c.Router.Path("indexView")) // 302 跳转更常用
-		c.Abort()                                                // 中断后续中间件和 handler 执行！
+		c.Redirect(http.StatusFound, c.Router.Name("indexView").Path) // 302 跳转更常用
+		c.Abort()                                                     // 中断后续中间件和 handler 执行！
 		return
 	}
-	c.HTML("views/error.html", strconv.Itoa(httpCode), gin.H{
-		"Code": errCode.Int(),
-		"Desc": errCode.Desc(),
-	})
+	c.HTML("views/error.html", strconv.Itoa(httpCode), viewError(errCode))
 	c.AbortWithStatus(httpCode)
 }
 

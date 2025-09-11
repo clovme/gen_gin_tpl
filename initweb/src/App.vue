@@ -4,8 +4,6 @@ import { onMounted, onUnmounted } from 'vue'
 import { useAppStore } from '@/store/app.ts'
 import { addLineLog } from '@/utils/log.ts'
 
-let isWS = false
-let count = 3
 const appStore = useAppStore()
 
 let ws: WebSocket
@@ -24,37 +22,12 @@ onMounted(() => {
 
   appStore.setIsMaximize(true)
   ws.onopen = () => {
-    isWS = true
     addLineLog('WebSocket 已正常链接日志后台', true)
     appStore.setIsMaximize(false)
   }
-  ws.onmessage = (event) => {
-    if (event.data.includes('000000http://')) {
-      const timer = setTimeout(() => {
-        clearTimeout(timer)
-        window.location.replace(event.data.replace('000000', ''))
-      }, 5000)
-    } else {
-      addLineLog(event.data)
-    }
-  }
+  ws.onmessage = (event) => { addLineLog(event.data) }
   ws.onerror = (err) => { addLineLog(`WebSocket 链接错误，请检查网络是否连通或者其他异常，错误信息：${err}`, true) }
-  ws.onclose = () => {
-    if (!isWS) {
-      addLineLog(`WebSocket 已关闭 <i id="skipMainPage">${count}s</i> 后跳转`, true)
-      return
-    }
-    addLineLog(`WebSocket 已关闭 <i id="skipMainPage">${count}s</i> 后跳转`, true)
-
-    const skipMainPage = document.getElementById('skipMainPage') as HTMLElement
-    const timer = setInterval(() => {
-      skipMainPage.innerText = `${count}s`
-      count--
-      if (count < 0) {
-        clearInterval(timer)
-      }
-    }, 1000)
-  }
+  ws.onclose = () => { addLineLog('WebSocket 已关闭，程序已退出，请重新启动程序进入正式模式！', true) }
 })
 
 onUnmounted(() => {

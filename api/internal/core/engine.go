@@ -2,11 +2,9 @@ package core
 
 import (
 	"fmt"
-	"gen_gin_tpl/pkg/cfg"
 	"gen_gin_tpl/pkg/logger/log"
 	"gen_gin_tpl/pkg/utils/cert"
 	"gen_gin_tpl/pkg/utils/file"
-	"gen_gin_tpl/pkg/utils/network"
 	"gen_gin_tpl/pkg/variable"
 	"gen_gin_tpl/public"
 	"github.com/gin-contrib/gzip"
@@ -15,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"html/template"
 	"io/fs"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -155,34 +154,29 @@ func (engine *Engine) Routes() []RoutesInfo {
 //
 // 返回值:
 //   - error: 错误信息
-func (engine *Engine) RunTLS(host string, port int, dataPath string) error {
+func (engine *Engine) RunTLS(ip string, port int, dataPath string) {
 	engine.checkDuplicateRoutes()
 
 	path, err := file.GetFileAbsPath(dataPath)
 	if err != nil {
-		return err
-	}
-	crtPath, keyPath := cert.GetCertificatePath(path)
-
-	ip := cfg.CWeb.Host
-	if ip == "0.0.0.0" {
-		ip = network.GetLocalIP(cfg.CWeb.Host)
+		log.Error().Err(err).Msg("获取证书路径失败")
+		return
 	}
 
+	// 打印路由信息
 	for i, route := range engine.Routes() {
 		method := fmt.Sprintf("[%s]", route.Method)
-		if !file.IsFileExist(crtPath) || !file.IsFileExist(keyPath) {
-			log.Info().Msgf("%03d %-6s http://%s:%d%-30s%-10s%-15s%s", i+1, method, ip, cfg.CWeb.Port, route.Path, "-->", route.Name, route.Description)
-		} else {
-			log.Info().Msgf("%03d %-6s https://%s:%d%-30s%-10s%-15s%s", i+1, method, ip, cfg.CWeb.Port, route.Path, "-->", route.Name, route.Description)
-		}
+		hostAddr := fmt.Sprintf("%s:%d", ip, port)
+		log.Info().Msgf("%03d %-6s https://%s%-30s%-10s%-15s%s", i+1, method, hostAddr, route.Path, "-->", route.Name, route.Description)
 	}
 	log.Info().Msgf("程序所在路径 %s", filepath.ToSlash(filepath.Dir(path)))
 
-	if !file.IsFileExist(crtPath) || !file.IsFileExist(keyPath) {
-		return engine.Engine.Run(fmt.Sprintf("%s:%d", host, port))
+	crtPath, keyPath := cert.GetCertificatePath(path)
+	addr := fmt.Sprintf("%s:%d", ip, port) // ⚠️ 用IP，不要用Domain
+	if err := engine.Engine.RunTLS(addr, crtPath, keyPath); err != nil {
+		log.Error().Err(err).Msg("服务启动失败")
+		os.Exit(-1)
 	}
-	return engine.Engine.RunTLS(fmt.Sprintf("%s:%d", host, port), crtPath, keyPath)
 }
 
 func (engine *Engine) checkDuplicateRoutes() {
@@ -211,7 +205,7 @@ func New(opts ...gin.OptionFunc) *Engine {
 	routesInfo = make(map[string]RoutesInfo)
 
 	sessionStore := func() cookie.Store {
-		store := cookie.NewStore(variable.PrivatePEM)
+		store := cookie.NewStore(variable.SessionKey)
 		store.Options(sessions.Options{
 			Path:     "/",
 			MaxAge:   0, // 3600 * 24 * 7, // 有效期 7 天

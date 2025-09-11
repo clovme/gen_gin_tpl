@@ -30,6 +30,7 @@ func _field(_log *zerolog.Event, c *gin.Context) *zerolog.Event {
 		Str("Path", c.Request.URL.Path).
 		Str("RequestURI", c.Request.RequestURI).
 		Str("Referer", c.Request.Referer()).
+		Str("RemoteAddr", c.Request.RemoteAddr).
 		Int("Length", c.Writer.Size())
 }
 
@@ -63,7 +64,6 @@ func _addDebugFields(_log *zerolog.Event, c *gin.Context) *zerolog.Event {
 		Interface("Body", c.Request.Body).
 		Interface("TransferEncoding", c.Request.TransferEncoding).
 		Interface("MultipartForm", c.Request.MultipartForm).
-		Interface("RemoteAddr", c.Request.RemoteAddr).
 		Interface("TLS", c.Request.TLS).
 		Interface("Response", c.Writer)
 }

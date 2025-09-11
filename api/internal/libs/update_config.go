@@ -18,6 +18,7 @@ type Config struct {
 	WebTitle           *models.Config `json:"WEB_TITLE"`
 	PublicPEM          *models.Config `json:"PUBLIC_PEM"`
 	PrivatePEM         *models.Config `json:"PRIVATE_PEM"`
+	SessionKey         *models.Config `json:"SESSION_KEY"`
 	Countdown          *models.Config `json:"COUNTDOWN"`
 }
 
@@ -28,17 +29,22 @@ var (
 
 func InitializeWebConfig() {
 	ones.Do(func() {
-		WebConfig = &Config{
-			ContextIsEncrypted: &models.Config{Name: constants.ContextIsEncrypted, Value: boolean.False.Key(), Default: boolean.False.Key(), ValueT: dtype.Bool, Show: boolean.True, Description: "是否开启加密模式"},
-			WebTitle:           &models.Config{Name: constants.WebTitle, Value: variable.WebTitle, Default: variable.WebTitle, ValueT: dtype.String, Show: boolean.True, Description: "站点标题"},
-			PublicPEM:          &models.Config{Name: constants.PublicPEM, Value: string(variable.PublicPEM), Default: string(variable.PublicPEM), ValueT: dtype.String, Show: boolean.True, Description: "加密公钥"},
-			PrivatePEM:         &models.Config{Name: constants.PrivatePEM, Value: string(variable.PrivatePEM), Default: string(variable.PrivatePEM), ValueT: dtype.String, Show: boolean.True, Description: "加密私钥"},
-			Countdown:          &models.Config{Name: constants.Countdown, Value: "60", Default: "60", ValueT: dtype.Int, Show: boolean.True, Description: "统一倒计时时间，单位秒"},
-		}
+		InitializeUpdateWebConfig()
 	})
 }
 
-func (r *Config) Update() {
+func InitializeUpdateWebConfig() {
+	WebConfig = &Config{
+		ContextIsEncrypted: &models.Config{Name: constants.ContextIsEncrypted, Value: boolean.False.Key(), Default: boolean.False.Key(), ValueT: dtype.Bool, Show: boolean.True, Description: "是否开启加密模式"},
+		WebTitle:           &models.Config{Name: constants.WebTitle, Value: variable.WebTitle, Default: variable.WebTitle, ValueT: dtype.String, Show: boolean.True, Description: "站点标题"},
+		PublicPEM:          &models.Config{Name: constants.PublicPEM, Value: string(variable.PublicPEM), Default: string(variable.PublicPEM), ValueT: dtype.String, Show: boolean.True, Description: "加密公钥"},
+		PrivatePEM:         &models.Config{Name: constants.PrivatePEM, Value: string(variable.PrivatePEM), Default: string(variable.PrivatePEM), ValueT: dtype.String, Show: boolean.True, Description: "加密私钥"},
+		SessionKey:         &models.Config{Name: constants.SessionKey, Value: string(variable.SessionKey), Default: string(variable.SessionKey), ValueT: dtype.String, Show: boolean.True, Description: "会话密钥"},
+		Countdown:          &models.Config{Name: constants.Countdown, Value: "60", Default: "60", ValueT: dtype.Int, Show: boolean.True, Description: "统一倒计时时间，单位秒"},
+	}
+}
+
+func (r *Config) UpdateWebConfig() {
 	configs, err := query.Config.Find()
 	if err != nil {
 		return
@@ -59,6 +65,7 @@ func (r *Config) Update() {
 	variable.WebTitle = r.GetWebTitle()
 	variable.PublicPEM = r.GetPublicPEM()
 	variable.PrivatePEM = r.GetPrivatePEM()
+	variable.SessionKey = r.GetSessionKey()
 }
 
 func (r *Config) IsContextIsEncrypted() bool {
@@ -87,6 +94,13 @@ func (r *Config) GetPrivatePEM() []byte {
 		return []byte(r.PrivatePEM.Default)
 	}
 	return []byte(r.PrivatePEM.Value)
+}
+
+func (r *Config) GetSessionKey() []byte {
+	if r.SessionKey.Value == "" {
+		return []byte(r.SessionKey.Default)
+	}
+	return []byte(r.SessionKey.Value)
 }
 
 func (r *Config) GetCountdown() int {

@@ -9,13 +9,13 @@ import (
 )
 
 func initCache() {
-	if strings.EqualFold(constants.Redis, cfg.COther.CacheType) {
+	if strings.EqualFold(constants.Redis, cfg.C.Other.CacheType) {
 		cache.RegisterCache(cache.NewRedisCache(cache.RedisConfig{
-			Host:            cfg.CRedis.Host,
-			Port:            cfg.CRedis.Port,
-			Username:        cfg.CRedis.Username,
-			Password:        cfg.CRedis.Password,
-			DB:              cfg.CRedis.DB,
+			Host:            cfg.C.Redis.Host,
+			Port:            cfg.C.Redis.Port,
+			Username:        cfg.C.Redis.Username,
+			Password:        cfg.C.Redis.Password,
+			DB:              cfg.C.Redis.DB,
 			PoolSize:        50,
 			MinIdleConns:    10,
 			PoolTimeout:     5 * time.Second,

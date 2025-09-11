@@ -1,7 +1,6 @@
 package variable
 
 import (
-	"gen_gin_tpl/pkg/constants"
 	"github.com/mojocn/base64Captcha"
 	"sync/atomic"
 )
@@ -9,7 +8,9 @@ import (
 var (
 	PublicPEM  []byte
 	PrivatePEM []byte
-	WebTitle   = constants.ProjectName
+	//WebTitle   = constants.ProjectName
+	WebTitle   = "知识库"
+	SessionKey []byte
 
 	ConfigPath    string
 	CaptchaStore  = base64Captcha.DefaultMemStore

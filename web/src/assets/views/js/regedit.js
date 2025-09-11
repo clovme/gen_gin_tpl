@@ -4,18 +4,16 @@ eventListener.addLoadEventListener(() => {
 
     const request = (form) => {
         axios.post(form.action, new FormData(form)).then(result => {
-            toast.success(result.message)
-            const trimer = setTimeout(() => {
-                utils.storage.remove('time')
-                utils.storage.remove('form')
-                if (result.data.token !== '') {
-                    localStorage.setItem('TOKEN', result.data.token)
-                } else {
-                    localStorage.removeItem('TOKEN')
-                }
-                location.reload()
-                clearTimeout(trimer)
-            }, 2000)
+            utils.storage.remove('time')
+            utils.storage.remove('form')
+            if (result.data.token !== '') {
+                localStorage.setItem('TOKEN', result.data.token)
+            } else {
+                localStorage.removeItem('TOKEN')
+            }
+            meMsg.alert.success("登录提示", result.message, function () {
+                window.location.reload()
+            })
         }).catch(error => {
             for (let key in error.data) {
                 const el = form.elements[key];

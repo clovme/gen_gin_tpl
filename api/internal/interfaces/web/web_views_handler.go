@@ -7,10 +7,12 @@ import (
 	"gen_gin_tpl/internal/schema/dto"
 	"gen_gin_tpl/pkg/captcha"
 	"gen_gin_tpl/pkg/enums/code"
+	"gen_gin_tpl/pkg/enums/role"
 	"gen_gin_tpl/pkg/logger/log"
 	"gen_gin_tpl/pkg/utils"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type ViewsHandler struct {
@@ -44,8 +46,6 @@ func (h *ViewsHandler) GetViewsMeHandler(c *core.Context) {
 // @Name			indexView
 // @Summary			首页
 func (h *ViewsHandler) GetViewsIndexHandler(c *core.Context) {
-	fmt.Printf("%+v\n", c.UserInfo)
-	fmt.Println(c.Router.Method("emailCode"), c.Router.Path("emailCode"), c.Router.Desc("emailCode"))
 	c.HTML("views/index.html", "首页", nil)
 }
 
@@ -57,8 +57,8 @@ func (h *ViewsHandler) GetViewsIndexHandler(c *core.Context) {
 // @Summary			登录
 func (h *ViewsHandler) GetViewsLoginHandler(c *core.Context) {
 	var loginDTO dto.LoginDTO
-	loginDTO.Username = "qingyuheji@qq.com"
-	loginDTO.Password = "silvery.0"
+	loginDTO.Username = strings.ToLower(role.System.Key())
+	loginDTO.Password = loginDTO.Username
 	c.HTML("views/login.html", "用户登录", loginDTO)
 }
 
@@ -80,7 +80,7 @@ func (h *ViewsHandler) GetViewsRegeditHandler(c *core.Context) {
 // @Type			web
 // @Group 			publicView
 // @Router			/public/captcha.png [GET]
-// @Name			captcha
+// @Name			captchaApi
 // @Summary			生成图形验证码
 func (h *ViewsHandler) GetImagesCaptcha(c *core.Context) {
 	// 生成验证码

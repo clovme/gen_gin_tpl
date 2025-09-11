@@ -6,11 +6,13 @@ package constants
 const (
 	ProjectName     = "gen_gin_tpl" // 项目名称
 	HeaderEncrypted = "X-Encrypted" // 加密标识, 用于标识请求是否加密
+	HttpLogKey      = "HTTP_LOG_KEY"
 
 	WebTitle           = "WEB_TITLE"             // 站点标题标志
 	PublicPEM          = "PUBLIC_PEM"            // 公钥, 用于加密解密
 	Countdown          = "COUNTDOWN"             // 倒计时标记
 	PrivatePEM         = "PRIVATE_PEM"           // 私钥, 用于加密解密
+	SessionKey         = "SESSION_KEY"           // 会话密钥, 用于加密解密
 	ContextIsEncrypted = "IS_ENCRYPTED_RESPONSE" // 上下文是否加密的标识
 
 	IsContextAjax   = "IS_CONTEXT_AJAX"   // Ajax 请求标识

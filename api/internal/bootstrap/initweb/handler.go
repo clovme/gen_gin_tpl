@@ -39,8 +39,8 @@ func formHandler(c *core.Context) {
 	}
 	Web := []*Form{
 		{Field: "WebTitle", Title: "网站标题", Span: 24, ItemRender: ItemRender{Name: "VxeInput"}},
-		{Field: "WebHost", Title: "监听地址", Span: 14, ItemRender: ItemRender{Name: "VxeInput"}},
-		{Field: "WebPort", Title: "监听端口", Span: 10, ItemRender: ItemRender{Name: "VxeInput", Props: &Props{Type: numberType}}},
+		{Field: "WebIP", Title: "监听地址", Span: 12, ItemRender: ItemRender{Name: "VxeInput", Props: &Props{Placeholder: "Web 服务监听地址，IP 地址，支持多个，逗号分隔"}}},
+		{Field: "WebPort", Title: "监听端口", Span: 12, ItemRender: ItemRender{Name: "VxeInput", Props: &Props{Type: numberType, Placeholder: "Web 服务监听端口"}}},
 		{Field: "WebMode", Title: "服务模式", Span: 24, ItemRender: ItemRender{Name: vxeSelect, Options: []*Options{{Label: "生产模式", Value: "release"}, {Label: "调试模式", Value: "debug"}}}},
 	}
 	Redis := []*Form{
@@ -114,28 +114,38 @@ func formHandler(c *core.Context) {
 	OtherIsEmail := []*Options{{Label: "启用", Value: true}, {Label: "禁用", Value: false}}
 
 	rules := map[string][]Rules{
-		"WebTitle":          {{Required: true, Message: "网站标题不能为空"}},
-		"OtherDataPath":     {{Required: true, Message: "请选择数据存放位置"}},
-		"SQLiteDbName":      {{Required: true, Message: "SQLite 数据库名称"}},
-		"MySQLHost":         {{Required: true, Message: "请输入主机地址"}},
-		"MySQLPort":         {{Required: true, Type: numberType, Min: 1024, Max: 65535, Message: "请输入(1024~65535)范围内的端口号"}},
-		"MySQLUsername":     {{Required: true, Message: "请输入用户名"}},
-		"MySQLDbName":       {{Required: true, Message: "请输入数据库名称"}},
-		"WebHost":           {{Required: true, Message: "请输入主机地址"}},
-		"WebPort":           {{Required: true, Type: numberType, Min: 1024, Max: 65535, Message: "请输入(1024~65535)范围内的端口号"}},
-		"WebMode":           {{Required: true, Message: "请选择服务模式"}},
-		"RedisHost":         {{Required: true, Message: "请输入主机地址"}},
-		"RedisPort":         {{Required: true, Type: numberType, Min: 1024, Max: 65535, Message: "请输入(1024~65535)范围内的端口号"}},
-		"RedisDB":           {{Required: true, Type: numberType, Min: 0, Max: 15, Message: "请输入(0~15)范围内的端口号"}},
-		"EmailSMTPHost":     {{Required: true, Message: "邮件服务器地址(smtp.qq.com)"}},
-		"EmailSMTPPort":     {{Required: true, Type: numberType, Min: 1, Max: 65535, Message: "请输入(0~65535)范围内的端口号"}},
-		"EmailUsername":     {{Required: true, Message: "请输入正确的邮箱地址", Validator: "EMAIL_ADDRESS"}},
-		"EmailPassword":     {{Required: true, Message: "授权码不能为空"}},
-		"EmailFrom":         {{Required: true, Message: "发件地址不能为空", Validator: "EMAIL_ADDRESS"}},
-		"LoggerLogPath":     {{Required: true, Message: "请输入日志存放路径"}},
-		"LoggerMaxSize":     {{Required: true, Type: numberType, Min: 1, Message: "分割大小(>MB)"}},
-		"LoggerMaxAge":      {{Required: true, Type: numberType, Min: 1, Message: "保存天数(天) > 1"}},
-		"LoggerMaxBackups":  {{Required: true, Type: numberType, Min: 1, Message: "旧日志数量 > 0"}},
+		"OtherDbType":    {{Required: true, Message: "必须选择数据库类型"}},
+		"OtherCacheType": {{Required: true, Message: "必须选择缓存数据库"}},
+		"OtherIsEmail":   {{Required: true, Message: "必须选择是否使用邮箱"}},
+
+		"WebTitle": {{Required: true, Message: "网站标题不能为空"}},
+
+		"SQLiteDbName": {{Required: true, Message: "SQLite 数据库名称"}},
+
+		"MySQLHost":     {{Required: true, Message: "请输入主机地址"}},
+		"MySQLPort":     {{Required: true, Type: numberType, Min: 1024, Max: 65535, Message: "请输入(1024~65535)范围内的端口号"}},
+		"MySQLUsername": {{Required: true, Message: "请输入用户名"}},
+		"MySQLDbName":   {{Required: true, Message: "请输入数据库名称"}},
+
+		"WebIP":   {{Required: true, Message: "请输入IP地址"}},
+		"WebPort": {{Required: true, Type: numberType, Min: 70, Max: 65535, Message: "请输入(0~65535)范围内的端口号"}},
+		"WebMode": {{Required: true, Message: "请选择服务模式"}},
+
+		"RedisHost": {{Required: true, Message: "请输入主机地址"}},
+		"RedisPort": {{Required: true, Type: numberType, Min: 1024, Max: 65535, Message: "请输入(1024~65535)范围内的端口号"}},
+		"RedisDB":   {{Required: true, Type: numberType, Min: 0, Max: 15, Message: "请输入(0~15)范围内的端口号"}},
+
+		"EmailSMTPHost": {{Required: true, Message: "邮件服务器地址(smtp.qq.com)"}},
+		"EmailSMTPPort": {{Required: true, Type: numberType, Min: 1, Max: 65535, Message: "请输入(0~65535)范围内的端口号"}},
+		"EmailUsername": {{Required: true, Message: "请输入正确的邮箱地址", Validator: "EMAIL_ADDRESS"}},
+		"EmailPassword": {{Required: true, Message: "授权码不能为空"}},
+		"EmailFrom":     {{Required: true, Message: "发件地址不能为空", Validator: "EMAIL_ADDRESS"}},
+
+		"LoggerLogPath":    {{Required: true, Message: "请输入日志存放路径"}},
+		"LoggerMaxSize":    {{Required: true, Type: numberType, Min: 1, Message: "分割大小(>MB)"}},
+		"LoggerMaxAge":     {{Required: true, Type: numberType, Min: 1, Message: "保存天数(天) > 1"}},
+		"LoggerMaxBackups": {{Required: true, Type: numberType, Min: 1, Message: "旧日志数量 > 0"}},
+
 		"CaptchaLength":     {{Required: true, Type: numberType, Min: 4, Max: 6, Message: "验证码长度 4~6"}},
 		"CaptchaNoiseCount": {{Required: true, Type: numberType, Min: 0, Max: 100, Message: "噪点数量 0~100"}},
 		"CaptchaType":       {{Required: true, Message: "至少选择一个验证码类型选项"}},
@@ -149,48 +159,56 @@ func formHandler(c *core.Context) {
 		TitleWidth:      120,
 		TitleAlign:      "right",
 		TitleBackground: true,
-		ValidConfig: &ValidConfig{
+		ValidConfig: ValidConfig{
 			Theme: normalTheme,
 		},
-		FormData: &FormData{
-			WebTitle:          variable.WebTitle,
-			OtherIsEmail:      cfg.COther.IsEmail,
-			OtherDbType:       cfg.COther.DbType,
-			OtherCacheType:    cfg.COther.CacheType,
-			OtherDataPath:     cfg.COther.DataPath,
-			SQLiteDbName:      cfg.CSQLite.DbName,
-			MySQLHost:         cfg.CMySQL.Host,
-			MySQLPort:         cfg.CMySQL.Port,
-			MySQLUsername:     cfg.CMySQL.Username,
-			MySQLPassword:     cfg.CMySQL.Password,
-			MySQLDbName:       cfg.CMySQL.DbName,
-			WebHost:           cfg.CWeb.Host,
-			WebPort:           cfg.CWeb.Port,
-			WebMode:           cfg.CWeb.Mode,
-			RedisHost:         cfg.CRedis.Host,
-			RedisPort:         cfg.CRedis.Port,
-			RedisUsername:     cfg.CRedis.Username,
-			RedisPassword:     cfg.CRedis.Password,
-			RedisDB:           cfg.CRedis.DB,
-			EmailSMTPHost:     cfg.CEmail.SMTPHost,
-			EmailSMTPPort:     cfg.CEmail.SMTPPort,
-			EmailUsername:     cfg.CEmail.Username,
-			EmailPassword:     cfg.CEmail.Password,
-			EmailFrom:         cfg.CEmail.From,
-			LoggerLevel:       cfg.CLogger.Level,
-			LoggerLogPath:     cfg.CLogger.LogPath,
-			LoggerFormatJson:  cfg.CLogger.FormatJSON,
-			LoggerCompress:    cfg.CLogger.Compress,
-			LoggerMaxSize:     cfg.CLogger.MaxSize,
-			LoggerMaxAge:      cfg.CLogger.MaxAge,
-			LoggerMaxBackups:  cfg.CLogger.MaxBackups,
-			CaptchaLength:     cfg.CCaptcha.Length,
-			CaptchaNoiseCount: cfg.CCaptcha.NoiseCount,
-			CaptchaType:       cfg.CCaptcha.Type,
-			CaptchaFonts:      cfg.CCaptcha.Fonts,
-			CaptchaShowLine:   cfg.CCaptcha.ShowLine,
+		FormData: FormData{
+			WebTitle: variable.WebTitle,
+
+			OtherIsEmail:   cfg.C.Other.IsEmail,
+			OtherDbType:    cfg.C.Other.DbType,
+			OtherCacheType: cfg.C.Other.CacheType,
+			OtherDataPath:  cfg.C.Other.DataPath,
+
+			SQLiteDbName: cfg.C.SQLite.DbName,
+
+			MySQLHost:     cfg.C.MySQL.Host,
+			MySQLPort:     cfg.C.MySQL.Port,
+			MySQLUsername: cfg.C.MySQL.Username,
+			MySQLPassword: cfg.C.MySQL.Password,
+			MySQLDbName:   cfg.C.MySQL.DbName,
+
+			WebIP:   cfg.C.Web.IP,
+			WebPort: cfg.C.Web.Port,
+			WebMode: cfg.C.Web.Mode,
+
+			RedisHost:     cfg.C.Redis.Host,
+			RedisPort:     cfg.C.Redis.Port,
+			RedisUsername: cfg.C.Redis.Username,
+			RedisPassword: cfg.C.Redis.Password,
+			RedisDB:       cfg.C.Redis.DB,
+
+			EmailSMTPHost: cfg.C.Email.SMTPHost,
+			EmailSMTPPort: cfg.C.Email.SMTPPort,
+			EmailUsername: cfg.C.Email.Username,
+			EmailPassword: cfg.C.Email.Password,
+			EmailFrom:     cfg.C.Email.From,
+
+			LoggerLevel:      cfg.C.Logger.Level,
+			LoggerLogPath:    cfg.C.Logger.LogPath,
+			LoggerFormatJson: cfg.C.Logger.FormatJSON,
+			LoggerCompress:   cfg.C.Logger.Compress,
+			LoggerMaxSize:    cfg.C.Logger.MaxSize,
+			LoggerMaxAge:     cfg.C.Logger.MaxAge,
+			LoggerMaxBackups: cfg.C.Logger.MaxBackups,
+
+			CaptchaLength:     cfg.C.Captcha.Length,
+			CaptchaNoiseCount: cfg.C.Captcha.NoiseCount,
+			CaptchaType:       cfg.C.Captcha.Type,
+			CaptchaFonts:      cfg.C.Captcha.Fonts,
+			CaptchaShowLine:   cfg.C.Captcha.ShowLine,
 		},
-		Rules: &rules,
+		Rules: rules,
 		FormItems: []FormItems{
 			{Span: 24, Vertical: true, TitleBold: true, Title: "数据库选择", Children: []*Form{
 				{Field: "OtherDbType", Title: "数据库类型", Span: 8, ItemRender: ItemRender{Name: vxeSelect, Options: OtherDbType}},
@@ -204,7 +222,9 @@ func formHandler(c *core.Context) {
 			{Span: 24, Vertical: true, TitleBold: true, Title: "Email 配置", Children: Email, ShowWhen: &ShowWhen{Field: "OtherIsEmail", Value: true}},
 			{Span: 24, Vertical: true, TitleBold: true, Title: "验证码配置", Children: Captcha},
 			{Span: 24, Vertical: true, TitleBold: true, Title: "系统日志配置", Children: Logger},
-			{Span: 24, Vertical: true, TitleBold: true, Title: "其他配置", Children: []*Form{{Field: "OtherDataPath", Title: "数据存放路径", Span: 24, ItemRender: ItemRender{Name: "VxeInput"}}}},
+			{Span: 24, Vertical: true, TitleBold: true, Title: "其他配置", Children: []*Form{
+				{Field: "OtherDataPath", Title: "数据存放位置", Span: 24, ItemRender: ItemRender{Name: "VxeInput", Props: &Props{Placeholder: "数据存放位置，可以是相对路径，也可以是绝对路径"}}},
+			}},
 			{Span: 24, Children: []*Form{
 				{Align: "center", Span: 24, ItemRender: ItemRender{Name: "VxeButtonGroup", Options: []*Options{{Type: "submit", Content: "保存配置", Status: "primary"}}}},
 			}},
@@ -224,54 +244,54 @@ func postHandler(c *core.Context) {
 
 	variable.WebTitle = formData.WebTitle
 
-	cfg.CSQLite.DbName = formData.SQLiteDbName
+	cfg.C.SQLite.DbName = formData.SQLiteDbName
 
-	cfg.CMySQL.Host = formData.MySQLHost
-	cfg.CMySQL.Port = formData.MySQLPort
-	cfg.CMySQL.Username = formData.MySQLUsername
-	cfg.CMySQL.Password = formData.MySQLPassword
-	cfg.CMySQL.DbName = formData.MySQLDbName
+	cfg.C.MySQL.Host = formData.MySQLHost
+	cfg.C.MySQL.Port = formData.MySQLPort
+	cfg.C.MySQL.Username = formData.MySQLUsername
+	cfg.C.MySQL.Password = formData.MySQLPassword
+	cfg.C.MySQL.DbName = formData.MySQLDbName
 
-	cfg.CWeb.Host = formData.WebHost
-	cfg.CWeb.Port = formData.WebPort
-	cfg.CWeb.Mode = formData.WebMode
+	cfg.C.Web.IP = formData.WebIP
+	cfg.C.Web.Port = formData.WebPort
+	cfg.C.Web.Mode = formData.WebMode
 
-	cfg.CRedis.Host = formData.RedisHost
-	cfg.CRedis.Port = formData.RedisPort
-	cfg.CRedis.Username = formData.RedisUsername
-	cfg.CRedis.Password = formData.RedisPassword
-	cfg.CRedis.DB = formData.RedisDB
+	cfg.C.Redis.Host = formData.RedisHost
+	cfg.C.Redis.Port = formData.RedisPort
+	cfg.C.Redis.Username = formData.RedisUsername
+	cfg.C.Redis.Password = formData.RedisPassword
+	cfg.C.Redis.DB = formData.RedisDB
 
-	cfg.CEmail.SMTPHost = formData.EmailSMTPHost
-	cfg.CEmail.SMTPPort = formData.EmailSMTPPort
-	cfg.CEmail.Username = formData.EmailUsername
-	cfg.CEmail.Password = formData.EmailPassword
-	cfg.CEmail.From = formData.EmailFrom
+	cfg.C.Email.SMTPHost = formData.EmailSMTPHost
+	cfg.C.Email.SMTPPort = formData.EmailSMTPPort
+	cfg.C.Email.Username = formData.EmailUsername
+	cfg.C.Email.Password = formData.EmailPassword
+	cfg.C.Email.From = formData.EmailFrom
 
-	cfg.CLogger.Level = formData.LoggerLevel
-	cfg.CLogger.MaxSize = formData.LoggerMaxSize
-	cfg.CLogger.LogPath = formData.LoggerLogPath
-	cfg.CLogger.FormatJSON = formData.LoggerFormatJson
-	cfg.CLogger.Compress = formData.LoggerCompress
-	cfg.CLogger.MaxAge = formData.LoggerMaxAge
-	cfg.CLogger.MaxBackups = formData.LoggerMaxBackups
+	cfg.C.Logger.Level = formData.LoggerLevel
+	cfg.C.Logger.MaxSize = formData.LoggerMaxSize
+	cfg.C.Logger.LogPath = formData.LoggerLogPath
+	cfg.C.Logger.FormatJSON = formData.LoggerFormatJson
+	cfg.C.Logger.Compress = formData.LoggerCompress
+	cfg.C.Logger.MaxAge = formData.LoggerMaxAge
+	cfg.C.Logger.MaxBackups = formData.LoggerMaxBackups
 
-	cfg.CCaptcha.Length = formData.CaptchaLength
-	cfg.CCaptcha.NoiseCount = formData.CaptchaNoiseCount
-	cfg.CCaptcha.Type = formData.CaptchaType
-	cfg.CCaptcha.Fonts = formData.CaptchaFonts
-	cfg.CCaptcha.ShowLine = formData.CaptchaShowLine
+	cfg.C.Captcha.Length = formData.CaptchaLength
+	cfg.C.Captcha.NoiseCount = formData.CaptchaNoiseCount
+	cfg.C.Captcha.Type = formData.CaptchaType
+	cfg.C.Captcha.Fonts = formData.CaptchaFonts
+	cfg.C.Captcha.ShowLine = formData.CaptchaShowLine
 
-	cfg.COther.IsEmail = formData.OtherIsEmail
-	cfg.COther.DbType = formData.OtherDbType
-	cfg.COther.CacheType = formData.OtherCacheType
-	cfg.COther.DataPath = formData.OtherDataPath
+	cfg.C.Other.IsEmail = formData.OtherIsEmail
+	cfg.C.Other.DbType = formData.OtherDbType
+	cfg.C.Other.CacheType = formData.OtherCacheType
+	cfg.C.Other.DataPath = formData.OtherDataPath
 
-	boot.InitializationLogger()
+	boot.InitializationLogger(cfg.C.Logger)
 
 	// 检测数据库链接
-	if strings.EqualFold(cfg.COther.DbType, constants.MySQL) {
-		db, err := database.CheckDbConnect(cfg.CMySQL.Username, cfg.CMySQL.Password, cfg.CMySQL.Host, cfg.CMySQL.Port)
+	if strings.EqualFold(cfg.C.Other.DbType, constants.MySQL) {
+		db, err := database.CheckDbConnect(cfg.C.MySQL.Username, cfg.C.MySQL.Password, cfg.C.MySQL.Host, cfg.C.MySQL.Port)
 		if err != nil {
 			return
 		}
@@ -279,8 +299,8 @@ func postHandler(c *core.Context) {
 	}
 
 	// 检测缓存链接
-	if strings.EqualFold(cfg.COther.CacheType, constants.Redis) {
-		if err := utils.CheckRedisConn(cfg.CRedis.Host, cfg.CRedis.Port, cfg.CRedis.Username, cfg.CRedis.Password, cfg.CRedis.DB); err != nil {
+	if strings.EqualFold(cfg.C.Other.CacheType, constants.Redis) {
+		if err := utils.CheckRedisConn(cfg.C.Redis.Host, cfg.C.Redis.Port, cfg.C.Redis.Username, cfg.C.Redis.Password, cfg.C.Redis.DB); err != nil {
 			log.Error().Err(err).Msg("Redis 连接失败")
 			return
 		}
@@ -288,11 +308,11 @@ func postHandler(c *core.Context) {
 
 	// 验证是否能够链接邮件服务器
 	if formData.OtherIsEmail {
-		if !email.CheckSMTPConnection(cfg.CEmail.SMTPHost, cfg.CEmail.SMTPPort) {
+		if !email.CheckSMTPConnection(cfg.C.Email.SMTPHost, cfg.C.Email.SMTPPort) {
 			return
 		}
 
-		if !email.CheckSMTPAuth(cfg.CEmail.SMTPHost, cfg.CEmail.SMTPPort, cfg.CEmail.Username, cfg.CEmail.Password) {
+		if !email.CheckSMTPAuth(cfg.C.Email.SMTPHost, cfg.C.Email.SMTPPort, cfg.C.Email.Username, cfg.C.Email.Password) {
 			return
 		}
 	}

@@ -16,8 +16,8 @@ const (
 
 var (
 	initiate = map[Bool]enums.Enums{
-		True:  {Key: "true", Name: "True", Desc: "布尔值true"},
-		False: {Key: "false", Name: "False", Desc: "布尔值false"},
+		True:  {ID: 1000000000000000000, Key: "true", Name: "True", Desc: "布尔值true"},
+		False: {ID: 1000000000000000001, Key: "false", Name: "False", Desc: "布尔值false"},
 	}
 
 	enumToValue = make(map[string]Bool)
@@ -27,6 +27,11 @@ func init() {
 	for code, meta := range initiate {
 		enumToValue[meta.Key] = code
 	}
+}
+
+// ID 获取enums.ID
+func (c Bool) ID() int64 {
+	return initiate[c].ID
 }
 
 // Key 获取enums.Key

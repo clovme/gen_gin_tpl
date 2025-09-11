@@ -51,14 +51,18 @@ func TestCopyGoFile(t *testing.T) {
 }
 
 func TestDemo(t *testing.T) {
-	filepath.WalkDir("../internal/core", func(path string, d fs.DirEntry, err error) error {
+	filepath.WalkDir(`D:\Develop\MsgBox\src\assets\plugins\MsgBox`, func(path string, d fs.DirEntry, err error) error {
 		if d.IsDir() {
+			return nil
+		}
+		ext := filepath.Ext(path)
+		if ext != ".js" {
 			return nil
 		}
 		file, _ := os.ReadFile(path)
 		fmt.Println(filepath.ToSlash(path[3:]))
-		fmt.Println("\n```go")
-		fmt.Println(string(file))
+		fmt.Println("\n```javaScript")
+		fmt.Print(string(file))
 		fmt.Printf("```\n")
 		return nil
 	})

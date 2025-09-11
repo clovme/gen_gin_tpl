@@ -16,8 +16,8 @@ const (
 
 var (
 	initiate = map[Status]enums.Enums{
-		Enable:  {Key: "enable", Name: "启用", Desc: "启用"},
-		Disable: {Key: "disable", Name: "禁用", Desc: "禁用"},
+		Enable:  {ID: 1000000000000000000, Key: "enable", Name: "启用", Desc: "启用"},
+		Disable: {ID: 1000000000000000001, Key: "disable", Name: "禁用", Desc: "禁用"},
 	}
 
 	enumToValue = make(map[string]Status)
@@ -27,6 +27,11 @@ func init() {
 	for code, meta := range initiate {
 		enumToValue[meta.Key] = code
 	}
+}
+
+// ID 获取enums.ID
+func (c Status) ID() int64 {
+	return initiate[c].ID
 }
 
 // Key 获取enums.Key

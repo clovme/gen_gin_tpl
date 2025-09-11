@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"gen_gin_tpl/pkg/constants"
 	httpLog "gen_gin_tpl/pkg/logger/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -24,7 +26,11 @@ func LogMiddleware(threshold time.Duration) gin.HandlerFunc {
 		} else if duration > threshold {
 			httpLog.Warn(c).Dur("latency", duration).Msg("慢请求")
 		} else {
-			httpLog.Log(c).Dur("latency", duration).Msg("请求成功")
+			value, exists := c.Get(constants.HttpLogKey)
+			if !exists {
+				value = "请求成功"
+			}
+			httpLog.Log(c).Dur("latency", duration).Msg(strings.TrimSuffix(value.(string), "！"))
 		}
 	}
 }

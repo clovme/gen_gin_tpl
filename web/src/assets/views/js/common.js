@@ -10,181 +10,551 @@ const utils = {
      * 全局 toast 方法
      */
     toast: {
-        /**
-         * toast 模块
-         * @returns {{msg: toast, error: (function(*): void), warning: (function(*): void), success: (function(*): void)}}
-         */
         newToast: () => {
-            const animationTime = 390;
-            let options, defaults, container, icon, layout, popStyle, positions, close, headStyle;
+            const messageBox = {
+                Alert(options) {
+                    const config = {
+                        ...defaultMsgBoxConfig,
+                        ...options,
+                        buttons: {
+                            ...defaultMsgBoxConfig.buttons,
+                            ...(options.buttons || {})
+                        }
+                    };
+                    renderMsgBox(config, "alert");
+                },
+                Confirm(options) {
+                    const config = {
+                        ...defaultMsgBoxConfig,
+                        ...options,
+                        buttons: {
+                            ...defaultMsgBoxConfig.buttons,
+                            ...(options.buttons || {})
+                        }
+                    };
+                    renderMsgBox(config, "confirm");
+                },
+                Notify(options) {
+                    const config = {
+                        ...defaultNotificationConfig,
+                        ...options
+                    };
 
-            const _Toast = function (template, style) {
-                this.defaults = {
-                    template: null,
-                    style: 'info',
-                    autoclose: 3000,
-                    position: 'top-center',
-                    icon: true,
-                    group: "toast-message-group",
-                    onOpen: false,
-                    onClose: false
-                };
+                    switch (config.location) {
+                        case "top":
+                            config.location = "locationT";
+                            break;
+                        case "right":
+                            config.location = "locationR";
+                            break;
+                        default:
+                            config.location = "locationR";
+                            break;
+                    }
+                    renderNotification(config);
+                },
 
-                headStyle = 'toast-pop--head-style'
-                defaults = extend(this.defaults, toast.defaults);
-                if (typeof template === 'string' || typeof style === 'string') {
-                    options = {template: template, style: style || defaults.style};
-                } else if (typeof template === 'object') {
-                    options = template;
+                alert: {
+                    normal: function (title, content, callback) {
+                        messageBox.Alert({title: title, content: content, callback: callback})
+                    },
+                    success: function (title, content, callback) {
+                        messageBox.Alert({title: title, content: content, type: "success", callback: callback})
+                    },
+                    warning: function (title, content, callback) {
+                        messageBox.Alert({title: title, content: content, type: "warning", callback: callback})
+                    },
+                    error: function (title, content, callback) {
+                        messageBox.Alert({title: title, content: content, type: "error", callback: callback})
+                    }
+                },
+                confirm: {
+                    question: function (title, content, callback) {
+                        messageBox.Confirm({title: title, content: content, callback: callback})
+                    },
+                    warning: function (title, content, callback) {
+                        messageBox.Confirm({title: title, content: content, type: "warning", callback: callback})
+                    },
+                    success: function (title, content, callback) {
+                        messageBox.Confirm({title: title, content: content, type: "success", callback: callback})
+                    },
+                    error: function (title, content, callback) {
+                        messageBox.Confirm({title: title, content: content, type: "error", callback: callback})
+                    }
+                },
+                toast: {
+                    normal: function (content) {
+                        messageBox.Notify({content: content, showtime: 3000, location: "top"});
+                    },
+                    success: function (content) {
+                        messageBox.Notify({content: content, type: "success", showtime: 3000, location: "top"});
+                    },
+                    warning: function (content) {
+                        messageBox.Notify({content: content, type: "warning", showtime: 3000, location: "top"});
+                    },
+                    error: function (content) {
+                        messageBox.Notify({content: content, type: "error", showtime: 3000, location: "top"});
+                    },
+                    info: function (content) {
+                        messageBox.Notify({content: content, type: "info", showtime: 3000, location: "top"});
+                    }
+                },
+                notify: {
+                    normal: function (content, title="通知") {
+                        messageBox.Notify({title: title, content: content, showtime: 3000});
+                    },
+                    success: function (content, title="通知") {
+                        messageBox.Notify({title: title, content: content, type: "success", showtime: 3000});
+                    },
+                    warning: function (content, title="通知") {
+                        messageBox.Notify({title: title, content: content, type: "warning", showtime: 3000});
+                    },
+                    error: function (content, title="通知") {
+                        messageBox.Notify({title: title, content: content, type: "error", showtime: 3000});
+                    },
+                    info: function (content, title="通知") {
+                        messageBox.Notify({title: title, content: content, type: "info", showtime: 3000});
+                    }
+                },
+            };
+
+            function renderMsgBox(config, mode) {
+                const zIndex = calculateLayer("messagebox");
+
+                // 背景层
+                const backdrop = document.createElement("div");
+                backdrop.className = "me-message-box-bg";
+                backdrop.style.display = "block";
+
+                // 主容器
+                const box = document.createElement("div");
+                box.className = "me-message-box-alert";
+
+                if (zIndex >= 99999) {
+                    backdrop.style.zIndex = zIndex - 1;
+                    box.style.zIndex = zIndex;
+                }
+
+                // 顶部区域（用于拖动）
+                const dragBar = document.createElement("div");
+                dragBar.className = "distop";
+                box.appendChild(dragBar);
+
+                // 内容容器
+                const contentBox = document.createElement("div");
+                contentBox.className = "msgcontainer";
+                box.appendChild(contentBox);
+
+                // 图标
+                if (mode === "confirm") {
+                    const type = config.type && config.type !== "none" ? config.type : "question";
+                    config.type = type;
+                    const icon = document.createElement("div");
+                    icon.className = `icon ${type}`;
+                    contentBox.appendChild(icon);
+                } else if (config.type && config.type !== "none") {
+                    const icon = document.createElement("div");
+                    icon.className = `icon ${config.type}`;
+                    contentBox.appendChild(icon);
+                }
+
+                // 标题
+                if (config.title) {
+                    const titleEl = document.createElement("div");
+                    titleEl.className = "msgtitle";
+                    titleEl.textContent = config.title;
+                    contentBox.appendChild(titleEl);
+                }
+
+                // 内容
+                if (config.content) {
+                    const text = document.createElement("div");
+                    text.className = "msgcon";
+                    text.textContent = config.content;
+                    contentBox.appendChild(text);
+                }
+
+                // 底部按钮栏
+                const footer = document.createElement("div");
+                footer.className = "operatebar";
+                box.appendChild(footer);
+
+                const confirmBtn = document.createElement("button");
+                confirmBtn.type = "button";
+                confirmBtn.textContent = config.buttons.confirm.text;
+
+                const cancelBtn = document.createElement("button");
+                cancelBtn.type = "button";
+                cancelBtn.textContent = config.buttons.cancel.text;
+                cancelBtn.className = "cancel";
+
+                // 按钮样式
+                switch (config.type) {
+                    case "success":
+                        confirmBtn.classList.add("success");
+                        break;
+                    case "question":
+                        confirmBtn.classList.add("normal");
+                        break;
+                    case "warning":
+                        confirmBtn.classList.add("warning");
+                        break;
+                    case "error":
+                        confirmBtn.classList.add("error");
+                        break;
+                    default:
+                        confirmBtn.classList.add("normal");
+                        contentBox.classList.add("typenone");
+                        break;
+                }
+
+                // 不同模式的按钮组合
+                if (mode === "alert") {
+                    footer.appendChild(confirmBtn);
+                } else if (mode === "confirm") {
+                    footer.appendChild(confirmBtn);
+                    footer.appendChild(cancelBtn);
+                    confirmBtn.classList.add("beleft");
+                    cancelBtn.classList.add("beright");
                 } else {
-                    console.error('Invalid arguments.');
-                    return false;
-                }
-                this.opt = extend(defaults, options);
-                if ($(`toast-pop--${this.opt.group}`)) {
-                    this.remove($('toast-pop--' + this.opt.group));
-                }
-                this.open();
-            };
-
-            _Toast.prototype.create = function (template) {
-                // 设置消息弹框样式
-                const head = document.head || document.querySelector('head');
-                if (!$(headStyle)) {
-                    const style = document.createElement('style');
-                    style.id = headStyle;
-                    style.innerHTML = `@charset "UTF-8";.toast-pop-container{z-index:9999;position:fixed}.toast-pop-container,.toast-pop-container *,.toast-pop-container :after,.toast-pop-container :before{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}.toast-pop--top-left{top:0;left:0}.toast-pop--top-left .toast-pop{-webkit-transform-origin:0 0;-ms-transform-origin:0 0;transform-origin:0 0}.toast-pop--top-center{top:0;left:50%;-webkit-transform:translateX(-50%);-ms-transform:translateX(-50%);transform:translateX(-50%)}.toast-pop--top-center .toast-pop{-webkit-transform-origin:50% 0;-ms-transform-origin:50% 0;transform-origin:50% 0}.toast-pop--top-right{top:0;right:0}.toast-pop--top-right .toast-pop{-webkit-transform-origin:100% 0;-ms-transform-origin:100% 0;transform-origin:100% 0}.toast-pop--center{top:50%;left:50%;-webkit-transform:translate3d(-50%,-50%,0);transform:translate3d(-50%,-50%,0)}.toast-pop--center .toast-pop{-webkit-transform-origin:50% 0;-ms-transform-origin:50% 0;transform-origin:50% 0}.toast-pop--bottom-left{bottom:0;left:0}.toast-pop--bottom-left .toast-pop{-webkit-transform-origin:0 100%;-ms-transform-origin:0 100%;transform-origin:0 100%}.toast-pop--bottom-center{bottom:0;left:50%;-webkit-transform:translateX(-50%);-ms-transform:translateX(-50%);transform:translateX(-50%)}.toast-pop--bottom-center .toast-pop{-webkit-transform-origin:50% 100%;-ms-transform-origin:50% 100%;transform-origin:50% 100%}.toast-pop--bottom-right{bottom:0;right:0}.toast-pop--bottom-right .toast-pop{-webkit-transform-origin:100% 100%;-ms-transform-origin:100% 100%;transform-origin:100% 100%}@media screen and (max-width:30em){.toast-pop--bottom-center,.toast-pop--bottom-left,.toast-pop--bottom-right,.toast-pop--top-center,.toast-pop--top-left,.toast-pop--top-right{top:auto;bottom:0;left:0;right:0;margin-left:0;-webkit-transform:translateX(0);-ms-transform:translateX(0);transform:translateX(0)}.toast-pop--bottom-center .toast-pop,.toast-pop--bottom-left .toast-pop,.toast-pop--bottom-right .toast-pop,.toast-pop--top-center .toast-pop,.toast-pop--top-left .toast-pop,.toast-pop--top-right .toast-pop{-webkit-transform-origin:50% 100%;-ms-transform-origin:50% 100%;transform-origin:50% 100%}.toast-pop{border-bottom:1px solid rgba(0,0,0,.15)}}.toast-pop{font-size:14px;-webkit-transform:translateZ(0);transform:translateZ(0);display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}@media screen and (min-width:30em){.toast-pop{border-radius:2px;margin:.7em}}.toast-pop--error,.toast-pop--info,.toast-pop--success,.toast-pop--warning{color:#fff;background-color:#454a56}@-webkit-keyframes a{0%{-webkit-transform:scale(.2);transform:scale(.2)}95%{-webkit-transform:scale(1.1);transform:scale(1.1)}to{-webkit-transform:scale(1);transform:scale(1)}}@keyframes a{0%{-webkit-transform:scale(.2);transform:scale(.2)}95%{-webkit-transform:scale(1.1);transform:scale(1.1)}to{-webkit-transform:scale(1);transform:scale(1)}}@-webkit-keyframes b{0%{opacity:1;-webkit-transform:scale(1);transform:scale(1)}20%{-webkit-transform:scale(1.1);transform:scale(1.1)}to{opacity:0;-webkit-transform:scale(0);transform:scale(0)}}@keyframes b{0%{opacity:1;-webkit-transform:scale(1);transform:scale(1)}20%{-webkit-transform:scale(1.1);transform:scale(1.1)}to{opacity:0;-webkit-transform:scale(0);transform:scale(0)}}.toast-pop--out{-webkit-animation:b .4s ease-in-out;animation:b .4s ease-in-out}.toast--in{-webkit-animation:a .4s ease-in-out;animation:a .4s ease-in-out}.toast-pop-body{-webkit-box-flex:1;-webkit-flex:1;-moz-box-flex:1;-ms-flex:1;flex:1;padding-top:1px}.toast-pop-body p{margin:0}.toast-pop-body a{color:#fff;text-decoration:underline}.toast-pop-body a:hover{color:hsla(0,0%,100%,.8);text-decoration:none}.toast-pop-title{margin-top:0;margin-bottom:.25em;color:#fff}.toast-pop-close{height:32px;width:32px;padding-top:7px;padding-right:1px;font-size:22px;font-weight:700;text-align:center;line-height:.8;color:#fff;opacity:.5}.toast-pop-close:hover{opacity:.7;cursor:pointer}.toast-pop-icon{position:relative;margin:7px;width:30px;height:30px;border-radius:50%;-webkit-animation:a .4s .4s ease-in-out;animation:a .4s .4s ease-in-out}.toast-pop-icon:after,.toast-pop-icon:before{content:"";position:absolute;display:block}.toast-pop-icon--error,.toast-pop-icon--info{border:2px solid #3a95ed}.toast-pop-icon--error:before,.toast-pop-icon--info:before{top:5px;left:11px;width:4px;height:4px;background-color:#3a95ed}.toast-pop-icon--error:after,.toast-pop-icon--info:after{top:12px;left:11px;width:4px;height:9px;background-color:#3a95ed}.toast-pop-icon--error{border-color:#ff5656}.toast-pop-icon--error:before{top:16px;background-color:#ff5656}.toast-pop-icon--error:after{top:5px;background-color:#ff5656}.toast-pop-icon--success{border:2px solid #2ecc54}.toast-pop-icon--success:before{top:7px;left:7px;width:13px;height:8px;border-bottom:3px solid #2ecc54;border-left:3px solid #2ecc54;-webkit-transform:rotate(-45deg);-ms-transform:rotate(-45deg);transform:rotate(-45deg)}.toast-pop-icon--warning{border:2px solid #fcd000}.toast-pop-icon--warning:before{top:7px;left:7px;width:0;height:0;border-style:solid;border-color:transparent transparent #fcd000;border-width:0 6px 10px}`
-                    head.appendChild(style);
+                    footer.appendChild(confirmBtn);
                 }
 
-                container = $(this.getPosition('toast-pop--', this.opt.position));
-                icon = (!this.opt.icon) ? '' : `<i class="toast-pop-icon ${this.getStyle('toast-pop-icon--', this.opt.style)}"></i>`;
-                layout = `${icon}<div class="toast-pop-body">${template}</div><div class="toast-pop-close" data-pop-toast="close" aria-label="Close">&times;</div>`;
-
-                if (!container) {
-                    this.popContainer = document.createElement('div');
-                    this.popContainer.setAttribute('class', `toast-pop-container ${this.getPosition('toast-pop--', this.opt.position)}`);
-                    this.popContainer.setAttribute('id', this.getPosition('toast-pop--', this.opt.position));
-                    document.body.appendChild(this.popContainer);
-                    container = $(this.getPosition('toast-pop--', this.opt.position));
+                // 是否已有弹窗
+                if (document.querySelectorAll(".me-message-box-alert").length > 0) {
+                    const timer = setInterval(() => {
+                        if (document.querySelectorAll(".me-message-box-alert").length <= 0) {
+                            clearInterval(timer);
+                            show();
+                        }
+                    }, 500);
+                } else {
+                    show();
                 }
-                this.pop = document.createElement('div');
-                this.pop.setAttribute('class', `toast-pop toast-pop--out toast--in ${this.getStyle('toast-pop--', this.opt.style)}`);
-                if (this.opt.group && typeof this.opt.group === 'string') {
-                    this.pop.setAttribute('id', 'toast-pop--' + this.opt.group);
-                }
-                this.pop.setAttribute('role', 'alert');
-                this.pop.innerHTML = layout;
-                container.appendChild(this.pop);
-            };
 
-            _Toast.prototype.getStyle = function (sufix, arg) {
-                popStyle = {
-                    'success': 'success',
-                    'error': 'error',
-                    'warning': 'warning'
-                };
-                return sufix + (popStyle[arg] || 'info');
-            };
-
-            _Toast.prototype.getPosition = function (sufix, position) {
-                positions = {
-                    'top-left': 'top-left',
-                    'top-center': 'top-center',
-                    'top-right': 'top-right',
-                    'bottom-left': 'bottom-left',
-                    'bottom-center': 'bottom-center',
-                    'bottom-right': 'bottom-right'
-                };
-                return sufix + (positions[position] || 'top-right');
-            };
-
-            _Toast.prototype.open = function () {
-                this.create(this.opt.template);
-                if (this.opt.onOpen) {
-                    this.opt.onOpen();
-                }
-                this.close();
-            };
-
-            _Toast.prototype.close = function () {
-                if (this.opt.autoclose && typeof this.opt.autoclose === 'number') {
-                    this.autocloseTimer = setTimeout(this.remove.bind(this, this.pop), this.opt.autoclose);
-                }
-                this.pop.addEventListener('click', this.addListeners.bind(this), false);
-            };
-
-            _Toast.prototype.addListeners = function (event) {
-                close = event.target.getAttribute('data-pop-toast');
-                if (close === 'close') {
-                    if (this.autocloseTimer) {
-                        clearTimeout(this.autocloseTimer);
+                /** 展示逻辑 */
+                function show() {
+                    if (config.aero) {
+                        document.body.style.overflowX = "hidden";
+                        backdrop.classList.add("aero");
                     }
-                    this.remove(this.pop);
-                }
-            };
 
-            _Toast.prototype.remove = function (elm) {
-                const _this = this;
-                if (this.opt.onClose) {
-                    this.opt.onClose();
-                }
-                removeClass(elm, 'toast--in');
-                setTimeout(function () {
-                    if (document.body.contains(elm)) {
-                        elm.parentNode.removeChild(elm);
+                    document.body.appendChild(backdrop);
+                    document.body.appendChild(box);
+
+                    // 居中计算
+                    if (window.innerWidth < parseInt(getComputedStyle(box).maxWidth)) {
+                        box.style.maxWidth = `${window.innerWidth - 10}px`;
                     }
-                    const toastHeadStyle = $(headStyle)
-                    const toastContainer = $(_this.getPosition('toast-pop--', _this.opt.position));
-                    if (toastContainer.childNodes.length <= 0) {
-                        toastContainer.remove()
-                        if (toastHeadStyle) {
-                            toastHeadStyle.remove();
+
+                    adjustContentHeight();
+                    window.addEventListener("resize", adjustContentHeight);
+
+                    function adjustContentHeight() {
+                        const availableHeight =
+                            window.innerHeight -
+                            dragBar.offsetHeight -
+                            footer.offsetHeight -
+                            120;
+                        const msgCon = box.querySelector("div.msgcon");
+                        if (msgCon) {
+                            msgCon.style.maxHeight = `${availableHeight <= 100 ? 100 : availableHeight}px`;
                         }
                     }
-                }, animationTime);
-            };
 
+                    backdrop.classList.add("me-message-box--motion", "me-message-box-bg--show");
+                    box.style.left = `${(window.innerWidth - box.offsetWidth) / 2}px`;
+                    box.style.top = `${(window.innerHeight - box.offsetHeight) / 2}px`;
+                    box.style.display = "block";
+                    box.classList.add("me-message-box--motion", "me-message-box-alert--open");
 
-            // Helpers
-            function $(el, con) {
-                return typeof el === 'string' ? (con || document).getElementById(el) : el || null;
+                    box.addEventListener("animationend", () => {
+                        box.classList.remove("me-message-box-alert--open");
+                        backdrop.addEventListener("mousedown", () => {
+                            box.classList.add("me-message-box--leap");
+                            box.addEventListener("animationend", () => {
+                                box.classList.remove("me-message-box--leap");
+                                if (cancelBtn) {
+                                    cancelBtn.focus();
+                                } else {
+                                    confirmBtn.focus();
+                                }
+                            }, { once: true });
+                        });
+                    }, { once: true });
+
+                    const icon = box.querySelector("div.icon");
+                    if (icon) {
+                        icon.classList.add("me-message-box--showicon", "me-message-box--motion");
+                    }
+
+                    initEvents();
+                }
+
+                /** 事件绑定 */
+                function initEvents() {
+                    if (mode === "alert") {
+                        confirmBtn.focus();
+                    } else {
+                        cancelBtn.focus();
+                    }
+
+                    cancelBtn.addEventListener("click", () => close(false));
+                    confirmBtn.addEventListener("click", () => close(true));
+                }
+
+                /** 关闭逻辑 */
+                function close(result) {
+                    box.classList.remove("me-message-box-alert--open");
+                    box.classList.add("me-message-box-alert--close");
+
+                    box.addEventListener("animationend", () => {
+                        document.body.style.overflowX = "initial";
+                        box.remove();
+                        if (typeof config.callback === "function") {
+                            config.callback(result);
+                        }
+                    }, { once: true });
+
+                    backdrop.classList.remove("me-message-box-bg--show");
+                    backdrop.classList.add("me-message-box-bg--hide");
+                    backdrop.style.animationDelay = ".3s";
+                    backdrop.addEventListener("animationend", () => backdrop.remove(), { once: true });
+                }
             }
 
-            function removeClass(el, className) {
-                if (el.classList) {
-                    el.classList.remove(className);
+            function renderNotification(config) {
+                // 容器
+                let container = document.querySelector(
+                    `.me-notification-container.${config.location}.${config.tipSort}`
+                );
+
+                if (!container) {
+                    container = document.createElement("div");
+                    container.className = `me-notification-container ${config.location} ${config.tipSort}`;
+                    container.style.zIndex = calculateLayer("tips");
+                    document.body.appendChild(container);
+                }
+
+                // 外壳
+                const capsule = document.createElement("div");
+                capsule.className = "notification-capsule";
+                capsule.style.height = "0px";
+
+                // 内容
+                const notification = document.createElement("div");
+                notification.className = "notification";
+
+                // 类型图标
+                if (config.type) {
+                    notification.classList.add("carrystate", config.type);
+                    const icon = document.createElement("i");
+                    icon.className =
+                        "notification-icon icon-state me-notification--motion me-message-box--showicon";
+                    notification.appendChild(icon);
+                    icon.addEventListener("animationend", e => e.stopPropagation());
+                }
+
+                // 标题
+                if (config.title) {
+                    const title = document.createElement("div");
+                    title.className = "title me-notification--motion me-motion--inlinecon";
+                    title.textContent = config.title;
+                    notification.appendChild(title);
+                    title.addEventListener("animationend", e => e.stopPropagation());
+                }
+
+                // 内容文本
+                if (config.content) {
+                    const content = document.createElement("div");
+                    content.className = "con me-notification--motion me-motion--inlinecon";
+                    if (notification.querySelector(".title")) {
+                        content.style.marginTop = "5px";
+                    }
+                    content.textContent = config.content;
+                    content.style.animationDelay = ".3s";
+                    notification.appendChild(content);
+                    content.addEventListener("animationend", e => e.stopPropagation());
+                }
+
+                // 插入容器（顶部 or 底部）
+                if (config.tipSort === "top" && container.children.length > 0) {
+                    container.insertBefore(capsule, container.firstChild);
                 } else {
-                    el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+                    container.appendChild(capsule);
+                }
+
+                // 关闭按钮
+                if (config.closable) {
+                    const closeBox = document.createElement("div");
+                    closeBox.className = "me-notification-close";
+
+                    const closeBtn = document.createElement("button");
+                    closeBtn.type = "button";
+                    closeBtn.className = "close";
+                    closeBox.appendChild(closeBtn);
+                    closeBtn.addEventListener("click", () => close());
+                    notification.appendChild(closeBox);
+                }
+
+                // 动画方向
+                let showAnim = "me-notification-show--right";
+                let hideAnim = "me-notification-hide--right";
+                if (config.location === "locationT") {
+                    showAnim = "me-notification-show--top";
+                    hideAnim = "me-notification-hide--top";
+                }
+
+                // 插入内容
+                capsule.appendChild(notification);
+                capsule.style.height = notification.offsetHeight + 10 + "px";
+                capsule.addEventListener("transitionend", () => {
+                    document.body.style.overflowX = "hidden";
+                });
+
+                // 出现动画
+                notification.classList.add("me-notification--motion", showAnim);
+                notification.addEventListener("animationend", function onAnimEnd(e) {
+                    capsule.style.height = "auto";
+                    document.body.style.overflowX = "initial";
+
+                    // 自动关闭逻辑
+                    if (typeof config.showtime === "number") {
+                        if (config.progressBar) {
+                            const progress = document.createElement("div");
+                            progress.className = "processbar";
+                            const inner = document.createElement("div");
+                            inner.className = "me-notification--motion me-notification--process";
+                            inner.style.animationDuration = `${config.showtime / 1000}s`;
+
+                            inner.addEventListener("animationend", ev => {
+                                close();
+                                ev.stopPropagation();
+                            });
+
+                            progress.appendChild(inner);
+                            notification.appendChild(progress);
+
+                            notification.addEventListener("mouseover", () => {
+                                inner.style.animationPlayState = "paused";
+                            });
+                            notification.addEventListener("mouseout", () => {
+                                inner.style.animationPlayState = "running";
+                            });
+                        } else {
+                            setTimeout(() => close(), config.showtime);
+                        }
+                    }
+
+                    e.stopPropagation();
+                    notification.removeEventListener("animationend", onAnimEnd);
+                });
+
+                /** 关闭函数 */
+                function close() {
+                    capsule.style.height = capsule.offsetHeight + "px";
+                    notification.classList.remove(showAnim);
+                    notification.classList.add(hideAnim);
+
+                    notification.addEventListener(
+                        "animationend",
+                        () => {
+                            notification.remove();
+                            capsule.style.height = "0";
+                            capsule.addEventListener("transitionend", () => {
+                                capsule.remove();
+                                if (typeof config.callback === "function") {
+                                    config.callback();
+                                }
+                                if (container.children.length === 0) {
+                                    container.remove();
+                                }
+                            }, { once: true });
+                        },
+                        { once: true }
+                    );
                 }
             }
 
-            function extend(obj, src) {
-                for (const key in src) {
-                    if (src.hasOwnProperty(key)) obj[key] = src[key];
+            function calculateLayer(type) {
+                let layerIndex = 0;
+
+                switch (type) {
+                    case "messagebox":
+                        break;
+
+                    case "news": {
+                        const alertBox = document.querySelector(".me-message-box-alert");
+                        if (alertBox) {
+                            const zIndex = parseFloat(getComputedStyle(alertBox).zIndex);
+                            layerIndex = zIndex - 3;
+                        }
+                        break;
+                    }
+
+                    case "tips": {
+                        const notification = document.querySelector(".me-notification-container");
+                        if (notification) {
+                            const zIndex = parseFloat(getComputedStyle(notification).zIndex);
+                            layerIndex = zIndex + 1;
+                        }
+                        break;
+                    }
+
+                    default:
+                        break;
                 }
-                return obj;
+
+                if (layerIndex <= 0) {
+                    // 遍历所有元素，取最大 z-index
+                    const allElements = Array.from(document.body.querySelectorAll("*"));
+                    const zIndices = allElements
+                        .map(el => {
+                            const style = getComputedStyle(el);
+                            if (style.position !== "static") {
+                                return parseInt(style.zIndex, 10) || -1;
+                            }
+                            return -1;
+                        })
+                        .filter(z => z >= 0);
+
+                    layerIndex = zIndices.length > 0 ? Math.max(...zIndices) : -1;
+
+                    if (layerIndex <= 0 || layerIndex === "auto") {
+                        layerIndex = 9999;
+                    }
+                }
+
+                return layerIndex;
             }
 
-            const toast = function (template, style) {
-                if (!template || !window.addEventListener) {
-                    return false;
-                }
-                return new _Toast(template, style);
+            // 默认消息框配置
+            const defaultMsgBoxConfig = {
+                title: "",
+                content: "",
+                type: "none",
+                aero: true,
+                buttons: {
+                    confirm: { text: "确定" },
+                    cancel: { text: "取消" }
+                },
+                callback: () => {}
             };
 
-            window.toast = {
-                msg: toast,
-                error: function (msg) {
-                    toast(msg, 'error');
-                },
-                warning: function (msg) {
-                    toast(msg, 'warning');
-                },
-                success: function (msg) {
-                    toast(msg, 'success');
-                }
-            }
+            // 默认提示条配置
+            const defaultNotificationConfig = {
+                title: "",
+                content: "",
+                location: "right",
+                tipSort: "top",
+                type: "",
+                duration: null,
+                closable: true,
+                progressBar: true,
+                callback: null
+            };
+
+            window.meMsg = messageBox || {}
         },
         /**
          * 创建 tippy 实例
@@ -423,7 +793,7 @@ const eventListener = {
         btnElement.addEventListener("click", function () {
             const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/
             if (!emailRegex.test(emailElement.value)) {
-                toast.error("请输入正确的邮箱地址！")
+                meMsg.toast.warning("请输入正确的邮箱地址！")
                 return
             }
 
@@ -431,7 +801,7 @@ const eventListener = {
 
             axios.post('/public/email/code', data).then(async result => {
                 const rt = await utils.currentTime()
-                toast.success(result.message)
+                meMsg.toast.success(result.message)
                 utils.storage.set((rt + 60).toString(), 'time')
                 // 启用倒计时
                 await countdown(rt)
@@ -465,15 +835,20 @@ eventListener.addLoadEventListener(() => {
     const logoutBtn = document.getElementById('logoutBtn')
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            axios.post('/logout').then(result => {
-                toast.success(result.message)
-                const trimer = setTimeout(() => {
+            meMsg.confirm.question("注销提示", "是否确认注销当前登录用户！", function (isOk) {
+                if (!isOk) {
+                    return
+                }
+                axios.post('/logout').then(result => {
+                    if (result.code !== 10000) {
+                        meMsg.toast.warning(result.message)
+                        return
+                    }
                     utils.storage.remove('time')
                     utils.storage.remove('form')
                     localStorage.removeItem('TOKEN')
                     location.reload()
-                    clearTimeout(trimer)
-                }, 2000)
+                })
             })
         })
     }

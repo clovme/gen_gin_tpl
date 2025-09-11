@@ -16,7 +16,7 @@ func RegeditCaptchaValid(fl validator.FieldLevel) bool {
 	_form, ok := fl.Parent().Interface().(dto.RegeditDTO)
 
 	// 校验长度
-	if len(value) != cfg.CCaptcha.Length || !ok {
+	if len(value) != cfg.C.Captcha.Length || !ok {
 		return false
 	}
 
@@ -31,7 +31,7 @@ func RegeditEmailCodeValid(fl validator.FieldLevel) bool {
 	_form, ok := fl.Parent().Interface().(dto.RegeditDTO)
 
 	// 校验长度
-	if len(value) != cfg.CCaptcha.Length || !ok {
+	if len(value) != cfg.C.Captcha.Length || !ok {
 		return false
 	}
 

@@ -23,23 +23,23 @@ func (r *routeGroup) register(db *gorm.DB) {
 	// 初始化仓库和服务
 	ctx := bootstrap.NewAppContext(db)
 
-	r.adminView.GET("/admin.html", ctx.WebViewsHandler.GetViewsAdminHandler, "web", "adminIndexView", "系统管理首页")
+	r.adminView.GET("/admin.html", ctx.WebViewsHandler.GetViewsAdminHandler, "adminView", "adminIndexView", "系统管理首页")
 
-	r.auth.POST("/logout", ctx.WebViewsHandler.GetViewsLogoutHandler, "api", "logoutApi", "注销系统登录接口")
+	r.auth.POST("/logout", ctx.WebViewsHandler.GetViewsLogoutHandler, "auth", "logoutApi", "注销系统登录接口")
 
-	r.authView.GET("/me.html", ctx.WebViewsHandler.GetViewsMeHandler, "web", "meIndexView", "个人中心")
+	r.authView.GET("/me.html", ctx.WebViewsHandler.GetViewsMeHandler, "authView", "meIndexView", "个人中心")
 
-	r.noAuthView.GET("/login.html", ctx.WebViewsHandler.GetViewsLoginHandler, "web", "loginView", "登录")
-	r.noAuthView.GET("/regedit.html", ctx.WebViewsHandler.GetViewsRegeditHandler, "web", "regeditView", "注册")
-	r.noAuthView.POST("/login.html", ctx.WebViewsHandler.PostViewsLoginHandler, "api", "loginApi", "用户登录处理接口")
-	r.noAuthView.POST("/regedit.html", ctx.WebViewsHandler.PostViewsRegeditHandler, "api", "regeditApi", "用户注册处理接口")
+	r.noAuthView.GET("/login.html", ctx.WebViewsHandler.GetViewsLoginHandler, "noAuthView", "loginView", "登录")
+	r.noAuthView.GET("/regedit.html", ctx.WebViewsHandler.GetViewsRegeditHandler, "noAuthView", "regeditView", "注册")
+	r.noAuthView.POST("/login.html", ctx.WebViewsHandler.PostViewsLoginHandler, "noAuthView", "loginApi", "用户登录处理接口")
+	r.noAuthView.POST("/regedit.html", ctx.WebViewsHandler.PostViewsRegeditHandler, "noAuthView", "regeditApi", "用户注册处理接口")
 
-	r.public.GET("/public/key", ctx.ApiPublicHandler.GetPublicKey, "api", "publicKey", "公钥")
-	r.public.GET("/public/enums", ctx.ApiPublicHandler.GetEnumList, "api", "enumList", "枚举列表")
-	r.public.GET("/public/ping", ctx.ApiPublicHandler.GetPing, "api", "ping", "心跳检测")
-	r.public.GET("/public/time", ctx.ApiPublicHandler.GetServerTime, "api", "serverTime", "服务器时间")
-	r.public.POST("/public/email/code", ctx.ApiPublicHandler.PostSendEmailCaptcha, "api", "emailCode", "发送邮箱验证码")
+	r.public.GET("/public/key", ctx.ApiPublicHandler.GetPublicKey, "public", "publicKey", "公钥")
+	r.public.GET("/public/enums", ctx.ApiPublicHandler.GetEnumList, "public", "enumListApi", "枚举列表")
+	r.public.GET("/public/ping", ctx.ApiPublicHandler.GetPing, "public", "pingApi", "心跳检测")
+	r.public.GET("/public/time", ctx.ApiPublicHandler.GetServerTime, "public", "serverTimeApi", "服务器时间")
+	r.public.POST("/public/email/code", ctx.ApiPublicHandler.PostSendEmailCaptcha, "public", "emailCodeApi", "发送邮箱验证码")
 
-	r.publicView.GET("/", ctx.WebViewsHandler.GetViewsIndexHandler, "web", "indexView", "首页")
-	r.publicView.GET("/public/captcha.png", ctx.WebViewsHandler.GetImagesCaptcha, "web", "captcha", "生成图形验证码")
+	r.publicView.GET("/", ctx.WebViewsHandler.GetViewsIndexHandler, "publicView", "indexView", "首页")
+	r.publicView.GET("/public/captcha.png", ctx.WebViewsHandler.GetImagesCaptcha, "publicView", "captchaApi", "生成图形验证码")
 }

@@ -20,12 +20,12 @@ const (
 
 var (
 	initiate = map[DType]enums.Enums{
-		Int:     {Key: "int", Name: "int", Desc: "整数类型"},
-		Int64:   {Key: "bigint", Name: "int64", Desc: "长整型"},
-		Float64: {Key: "double", Name: "float64", Desc: "浮点型"},
-		String:  {Key: "varchar", Name: "string", Desc: "字符串类型"},
-		Bool:    {Key: "tinyint(1)", Name: "bool", Desc: "布尔值"},
-		Time:    {Key: "datetime", Name: "time.Time", Desc: "时间类型"},
+		Int:     {ID: 1000000000000000000, Key: "int", Name: "int", Desc: "整数类型"},
+		Int64:   {ID: 1000000000000000001, Key: "bigint", Name: "int64", Desc: "长整型"},
+		Float64: {ID: 1000000000000000002, Key: "double", Name: "float64", Desc: "浮点型"},
+		String:  {ID: 1000000000000000003, Key: "varchar", Name: "string", Desc: "字符串类型"},
+		Bool:    {ID: 1000000000000000004, Key: "tinyint(1)", Name: "bool", Desc: "布尔值"},
+		Time:    {ID: 1000000000000000005, Key: "datetime", Name: "time.Time", Desc: "时间类型"},
 	}
 
 	enumToValue = make(map[string]DType)
@@ -35,6 +35,11 @@ func init() {
 	for code, meta := range initiate {
 		enumToValue[meta.Key] = code
 	}
+}
+
+// ID 获取enums.ID
+func (c DType) ID() int64 {
+	return initiate[c].ID
 }
 
 // Key 获取enums.Key

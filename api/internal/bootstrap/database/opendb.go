@@ -30,14 +30,23 @@ import (
 func CheckDbConnect(username, password, host string, port int) (*sql.DB, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/", username, password, host, port))
 	if err != nil {
-		log.Error().Err(err).Msg("[数据库初始化] 数据库连接失败")
-		return nil, err
+		log.Error().Err(err).Msg("[数据库检测] 数据库连接失败，请检查MySQL服务是否启动，或者IP或者端口号")
+		os.Exit(-1)
 	}
 
 	if err = db.Ping(); err != nil {
-		log.Error().Err(err).Msg("[数据库初始化] 无法建立数据库连接")
-		return nil, err
+		log.Error().Err(err).Msg("[数据库检测] 无法建立数据库连接，请检查MySQL服务是否启动，或者IP或者端口号")
+		os.Exit(-1)
 	}
+
+	// 查询数据库版本
+	var version string
+	if err := db.QueryRow("SELECT VERSION()").Scan(&version); err != nil {
+		log.Warn().Err(err).Msg("[数据库检测] 查询数据库版本失败")
+	} else {
+		log.Info().Msgf("[数据库检测] 数据库连接成功，版本: %s", version)
+	}
+
 	return db, nil
 }
 
