@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"gen_gin_tpl/pkg/constants"
+	"gen_gin_tpl/pkg/config/constants"
 	"gen_gin_tpl/pkg/logger/log"
 	"gen_gin_tpl/pkg/utils"
-	"github.com/dgraph-io/ristretto"
 	"sync"
 	"time"
+
+	"github.com/dgraph-io/ristretto"
 )
 
 var (

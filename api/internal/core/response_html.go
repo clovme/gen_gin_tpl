@@ -2,7 +2,7 @@ package core
 
 import (
 	"gen_gin_tpl/internal/models"
-	"gen_gin_tpl/pkg/variable"
+	"gen_gin_tpl/pkg/config/variable"
 	"net/http"
 )
 

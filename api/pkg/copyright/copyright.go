@@ -1,7 +1,7 @@
 package copyright
 
 import (
-	"gen_gin_tpl/pkg/variable"
+	"gen_gin_tpl/pkg/config/variable"
 	"time"
 )
 

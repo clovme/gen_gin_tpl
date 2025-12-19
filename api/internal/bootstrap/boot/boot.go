@@ -6,7 +6,7 @@ import (
 	"gen_gin_tpl/internal/core"
 	"gen_gin_tpl/internal/libs"
 	"gen_gin_tpl/pkg/captcha"
-	"gen_gin_tpl/pkg/cfg"
+	"gen_gin_tpl/pkg/config/cfg"
 	"gen_gin_tpl/pkg/enums/role"
 	"gen_gin_tpl/pkg/logger/log"
 	"gen_gin_tpl/pkg/utils/cert"

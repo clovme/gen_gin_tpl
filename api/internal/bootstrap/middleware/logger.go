@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"gen_gin_tpl/pkg/constants"
+	"gen_gin_tpl/pkg/config/constants"
 	httpLog "gen_gin_tpl/pkg/logger/http"
 	"strings"
 	"time"

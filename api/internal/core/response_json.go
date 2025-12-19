@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	"gen_gin_tpl/pkg/constants"
+	"gen_gin_tpl/pkg/config/constants"
 	"gen_gin_tpl/pkg/enums/code"
 	"net/http"
 )

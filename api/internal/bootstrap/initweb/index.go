@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"gen_gin_tpl/internal/bootstrap/middleware"
 	"gen_gin_tpl/internal/core"
-	"gen_gin_tpl/pkg/cfg"
+	"gen_gin_tpl/pkg/config/cfg"
 	"gen_gin_tpl/pkg/utils/file"
 	"gen_gin_tpl/pkg/utils/network"
 	"gen_gin_tpl/public"

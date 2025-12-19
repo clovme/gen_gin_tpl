@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"gen_gin_tpl/pkg/variable"
-	"github.com/gorilla/websocket"
+	"gen_gin_tpl/pkg/config/variable"
 	"sync"
+
+	"github.com/gorilla/websocket"
 )
 
 var logQueue = make(chan []byte, 1000)

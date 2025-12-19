@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"gen_gin_tpl/pkg/constants"
+	"gen_gin_tpl/pkg/config/constants"
 	"gen_gin_tpl/pkg/logger/log"
-	"github.com/redis/go-redis/v9"
 	"sync"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 var (

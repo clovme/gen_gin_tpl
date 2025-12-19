@@ -1,8 +1,15 @@
 <template>
   <div class="page-top">
     <div class="page-nav">
-      <vxe-tabs v-model="selectTab" type="round-card" :options="tabList" :show-close="tabList.length > 1" @tab-click="tabClickEvent" @tab-close="tabCloseEvent">
-        <template #extra>
+      <vxe-tabs
+        v-model="selectTab"
+        type="round-card"
+        :options="tabList"
+        :show-body="false"
+        :show-close="tabList.length > 1"
+        @tab-click="tabClickEvent"
+        @tab-close="tabCloseEvent">
+        <template #tab-suffix>
           <vxe-pulldown :options="tabOptions" trigger="click" show-popup-shadow transfer
             @option-click="tabOptionClickEvent">
             <template #default>

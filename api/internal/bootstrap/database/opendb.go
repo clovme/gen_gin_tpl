@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"gen_gin_tpl/internal/infrastructure/query"
-	"gen_gin_tpl/pkg/constants"
+	"gen_gin_tpl/pkg/config/constants"
 	"gen_gin_tpl/pkg/logger"
 	"gen_gin_tpl/pkg/logger/log"
 	"gen_gin_tpl/pkg/utils/file"

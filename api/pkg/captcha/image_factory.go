@@ -2,9 +2,9 @@ package captcha
 
 import (
 	"fmt"
+	"gen_gin_tpl/pkg/config/variable"
 	"gen_gin_tpl/pkg/logger/log"
 	"gen_gin_tpl/pkg/utils/array"
-	"gen_gin_tpl/pkg/variable"
 	"github.com/mojocn/base64Captcha"
 	"image/color"
 	"strings"

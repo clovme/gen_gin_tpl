@@ -3,7 +3,7 @@ package core
 import (
 	"fmt"
 	"gen_gin_tpl/internal/models"
-	"gen_gin_tpl/pkg/variable"
+	"gen_gin_tpl/pkg/config/variable"
 	"github.com/golang-jwt/jwt/v4"
 	"time"
 )

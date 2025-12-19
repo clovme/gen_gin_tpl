@@ -2,9 +2,10 @@ package validate
 
 import (
 	"gen_gin_tpl/internal/schema/dto"
-	"gen_gin_tpl/pkg/cfg"
+	"gen_gin_tpl/pkg/config/cfg"
+	"gen_gin_tpl/pkg/config/variable"
 	"gen_gin_tpl/pkg/utils/email"
-	"gen_gin_tpl/pkg/variable"
+
 	"github.com/go-playground/validator/v10"
 )
 

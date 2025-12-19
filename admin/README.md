@@ -1,4 +1,4 @@
-# gen_gin_tpl 后台管理系统
+# Vxe 后台管理系统模板
 
 一个基于 [Vxe UI](https://vxeui.com) 轻量级、极致流畅的系统模板
 
@@ -58,7 +58,7 @@ git clone https://github.com/x-extends/vxe-admin-template.git
 
 ### 切换目录
 ```
-cd vxe-admin-template
+cd vxe-admin-template192.168.0.5
 ```
 
 ### 设置镜像源(可忽略)
@@ -74,6 +74,11 @@ npm run update
 ### 运行项目
 ```
 npm run serve
+```
+
+### 打包zip
+```
+npm run build:zip
 ```
 
 ## index.html

@@ -2,8 +2,8 @@ package boot
 
 import (
 	"gen_gin_tpl/pkg/cache"
-	"gen_gin_tpl/pkg/cfg"
-	"gen_gin_tpl/pkg/constants"
+	"gen_gin_tpl/pkg/config/cfg"
+	"gen_gin_tpl/pkg/config/constants"
 	"strings"
 	"time"
 )

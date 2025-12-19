@@ -5,7 +5,7 @@ import (
 	"gen_gin_tpl/internal/core"
 	"gen_gin_tpl/internal/infrastructure/query"
 	"gen_gin_tpl/internal/models"
-	"gen_gin_tpl/pkg/constants"
+	"gen_gin_tpl/pkg/config/constants"
 	httpLog "gen_gin_tpl/pkg/logger/http"
 	"github.com/gin-gonic/gin"
 	"strings"

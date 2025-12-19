@@ -2,21 +2,22 @@ package core
 
 import (
 	"fmt"
+	"gen_gin_tpl/pkg/config/constants"
 	"gen_gin_tpl/pkg/logger/log"
 	"gen_gin_tpl/pkg/utils/cert"
 	"gen_gin_tpl/pkg/utils/file"
-	"gen_gin_tpl/pkg/variable"
 	"gen_gin_tpl/public"
-	"github.com/gin-contrib/gzip"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
-	"github.com/gin-gonic/gin"
 	"html/template"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-gonic/gin"
 )
 
 // Engine 自定义gin.Engine
@@ -205,7 +206,7 @@ func New(opts ...gin.OptionFunc) *Engine {
 	routesInfo = make(map[string]RoutesInfo)
 
 	sessionStore := func() cookie.Store {
-		store := cookie.NewStore(variable.SessionKey)
+		store := cookie.NewStore([]byte(constants.SessionKey))
 		store.Options(sessions.Options{
 			Path:     "/",
 			MaxAge:   0, // 3600 * 24 * 7, // 有效期 7 天

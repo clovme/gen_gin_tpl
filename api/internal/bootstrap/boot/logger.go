@@ -2,7 +2,7 @@ package boot
 
 import (
 	"fmt"
-	"gen_gin_tpl/pkg/cfg"
+	"gen_gin_tpl/pkg/config/cfg"
 	"gen_gin_tpl/pkg/logger"
 	"gen_gin_tpl/pkg/utils/file"
 	"os"

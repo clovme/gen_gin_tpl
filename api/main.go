@@ -4,14 +4,15 @@ import (
 	"gen_gin_tpl/internal/bootstrap/boot"
 	"gen_gin_tpl/internal/bootstrap/initweb"
 	"gen_gin_tpl/internal/libs"
-	"gen_gin_tpl/pkg/cfg"
+	"gen_gin_tpl/pkg/config/cfg"
+	"gen_gin_tpl/pkg/config/variable"
 	"gen_gin_tpl/pkg/utils"
 	"gen_gin_tpl/pkg/utils/cert"
 	"gen_gin_tpl/pkg/utils/file"
-	"gen_gin_tpl/pkg/variable"
-	"github.com/gin-gonic/gin"
 	"io"
 	"time"
+
+	"github.com/gin-gonic/gin"
 
 	"github.com/mojocn/base64Captcha"
 )

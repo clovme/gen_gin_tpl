@@ -2,7 +2,7 @@ package core
 
 import (
 	"gen_gin_tpl/internal/models"
-	"gen_gin_tpl/pkg/constants"
+	"gen_gin_tpl/pkg/config/constants"
 	"github.com/gin-gonic/gin"
 )
 

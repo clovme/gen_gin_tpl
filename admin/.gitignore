@@ -13,7 +13,6 @@ package-lock.json
 node_modules
 dist
 dist-ssr
-.idea
 *.local
 
 # Editor directories and files

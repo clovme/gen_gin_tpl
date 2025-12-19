@@ -4,16 +4,17 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
-	"gen_gin_tpl/pkg/cfg"
+	"gen_gin_tpl/pkg/config/cfg"
+	"gen_gin_tpl/pkg/config/variable"
 	"gen_gin_tpl/pkg/utils/array"
 	utilEmail "gen_gin_tpl/pkg/utils/email"
-	"gen_gin_tpl/pkg/variable"
 	"gen_gin_tpl/public"
-	"github.com/jordan-wright/email"
 	"html/template"
 	"net/smtp"
 	"strings"
 	"time"
+
+	"github.com/jordan-wright/email"
 )
 
 // EmailTmpl 邮件模板

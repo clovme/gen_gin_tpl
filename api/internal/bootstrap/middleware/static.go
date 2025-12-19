@@ -3,17 +3,18 @@ package middleware
 import (
 	"fmt"
 	"gen_gin_tpl/internal/core"
-	"gen_gin_tpl/pkg/cfg"
-	"gen_gin_tpl/pkg/constants"
+	"gen_gin_tpl/pkg/config/cfg"
+	"gen_gin_tpl/pkg/config/constants"
 	"gen_gin_tpl/pkg/enums/code"
 	"gen_gin_tpl/pkg/logger/log"
 	"gen_gin_tpl/pkg/utils/file"
 	"gen_gin_tpl/public"
-	"github.com/gin-gonic/gin"
 	"io/fs"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 // loadStaticFS 加载静态资源

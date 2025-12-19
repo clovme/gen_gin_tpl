@@ -14,6 +14,7 @@ import (
 	"gen_gin_tpl/internal/infrastructure/query"
 	"gorm.io/gorm"
 	"reflect"
+	"strings"
 )
 
 // autoMigrateWithComments 数据库迁移
@@ -29,15 +30,21 @@ import (
 // 注意:
 //   - 该函数会自动迁移数据库表结构，支持添加表注释
 //   - 迁移失败时，会记录错误日志
-func autoMigrateWithComments(db *gorm.DB, tables []interface{}) error {
+func autoMigrateWithComments(db *gorm.DB, tables ...interface{}) error {
 	for _, table := range tables {
 		t := reflect.TypeOf(table)
 		comment := t.Name()
 		if method, ok := t.MethodByName("TableComment"); ok {
 			comment = method.Func.Call([]reflect.Value{reflect.ValueOf(table)})[0].String()
 		}
-		if err := db.Set("gorm:table_options", fmt.Sprintf("COMMENT='%s'", comment)).AutoMigrate(table); err != nil {
-			return errors.New(fmt.Sprintf("[(%s)%s]数据库迁移失败: %s，错误信息:%s", t.Name(), comment, t.PkgPath(), err.Error()))
+		if strings.EqualFold(db.Name(), "MySQL") {
+			if err := db.Set("gorm:table_options", fmt.Sprintf(" COMMENT='%s';", comment)).AutoMigrate(table); err != nil {
+				return errors.New(fmt.Sprintf("[(%s)%s]数据库迁移失败: %s，错误信息:%s", t.Name(), comment, t.PkgPath(), err.Error()))
+			}
+		} else {
+			if err := db.AutoMigrate(table); err != nil {
+				return errors.New(fmt.Sprintf("[(%s)%s]数据库迁移失败: %s，错误信息:%s", t.Name(), comment, t.PkgPath(), err.Error()))
+			}
 		}
 	}
 	return nil
@@ -54,7 +61,7 @@ func autoMigrateWithComments(db *gorm.DB, tables []interface{}) error {
 // 返回值:
 //   - error: 迁移错误
 func AutoMigrate(db *gorm.DB, dbq *query.Query, router []core.RoutesInfo) error {
-	err := autoMigrateWithComments(db, []interface{}{
+	err := autoMigrateWithComments(db,
 		&auth.Permission{},
 		&auth.Role{},
 		&auth.RoleGroup{},
@@ -65,7 +72,7 @@ func AutoMigrate(db *gorm.DB, dbq *query.Query, router []core.RoutesInfo) error 
 		&models.Enums{},
 		&models.Token{},
 		&models.User{},
-	})
+	)
 
 	if err != nil {
 		return err

@@ -2,7 +2,8 @@ package dto
 
 import (
 	"errors"
-	"gen_gin_tpl/pkg/variable"
+	"gen_gin_tpl/pkg/config/variable"
+
 	"github.com/go-playground/validator/v10"
 )
 

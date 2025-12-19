@@ -3,7 +3,7 @@ package initdata
 import (
 	"fmt"
 	modelUser "gen_gin_tpl/internal/models"
-	"gen_gin_tpl/pkg/constants"
+	"gen_gin_tpl/pkg/config/constants"
 	"gen_gin_tpl/pkg/enums/gender"
 	"gen_gin_tpl/pkg/enums/role"
 	"gen_gin_tpl/pkg/enums/status"

@@ -8,14 +8,13 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"gen_gin_tpl/pkg/config/variable"
 	"gen_gin_tpl/pkg/logger/log"
 	"gen_gin_tpl/pkg/utils/file"
-	"gen_gin_tpl/pkg/variable"
 	"math/big"
 	"net"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 )
 
@@ -100,7 +99,4 @@ func InitRSAVariable() {
 	// 从私钥生成公钥
 	pubBytes, _ := x509.MarshalPKIXPublicKey(&privateKey.PublicKey)
 	variable.PublicPEM = pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: pubBytes})
-
-	privateLines := strings.Split(string(variable.PrivatePEM), "\n")
-	variable.SessionKey = []byte(privateLines[len(privateLines)/2])
 }
